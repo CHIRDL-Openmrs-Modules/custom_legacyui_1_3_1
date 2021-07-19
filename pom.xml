@@ -45,7 +45,7 @@
 	</modules>
 	
 	<properties>
-		<openMRSVersion>2.0.0</openMRSVersion>
+		<openMRSVersion>2.0.6.2</openMRSVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javaCompilerVersion>1.8</javaCompilerVersion>
 	</properties>
@@ -239,14 +239,14 @@
 
     <distributionManagement>
         <repository>
-            <id>openmrs-repo-modules</id>
-            <name>OpenMRS Modules</name>
-            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules</url>
+            <id>chirdl-repo-releases</id>
+            <name>CHIRDL Nexus Releases</name>
+            <url>https://iu-ota-icechip.ads.iu.edu:8091/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>openmrs-repo-snapshots</id>
-            <name>OpenMRS Snapshots</name>
-            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
+            <id>chirdl-repo-snapshots</id>
+            <name>CHIRDL Nexus Snapshots</name>
+            <url>https://iu-ota-icechip.ads.iu.edu:8091/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 

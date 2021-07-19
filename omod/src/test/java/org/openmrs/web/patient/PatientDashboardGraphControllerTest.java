@@ -9,8 +9,6 @@
  */
 package org.openmrs.web.patient;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
@@ -18,6 +16,9 @@ import org.openmrs.web.controller.patient.PatientDashboardGraphController;
 import org.openmrs.web.controller.patient.PatientGraphData;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 import org.springframework.ui.ModelMap;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -48,7 +49,7 @@ public class PatientDashboardGraphControllerTest extends BaseModuleWebContextSen
 		
 		String expectedData = String
 		        .format(
-		            "{\"absolute\":{\"high\":50.0,\"low\":2.0},\"critical\":{\"high\":null,\"low\":null},\"name\":\"Some concept name\",\"normal\":{\"high\":null,\"low\":null},\"data\":[[%d,null],[%d,1.0]],\"units\":\"\"}",
+		            "{\"normal\":{\"high\":null,\"low\":null},\"data\":[[1139547600000,null],[1139547600000,null],[1139461200000,1.0]],\"critical\":{\"high\":null,\"low\":null},\"absolute\":{\"high\":50.0,\"low\":2.0},\"name\":\"Some concept name\",\"units\":\"\"}",
 		            secondObsDate, firstObsDate);
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -56,7 +57,7 @@ public class PatientDashboardGraphControllerTest extends BaseModuleWebContextSen
 		JsonNode actualJson = mapper.readTree(graph.toString());
 		
 		Assert.assertEquals(expectedJson.size(), actualJson.size());
-		for (Iterator<String> fieldNames = expectedJson.getFieldNames(); fieldNames.hasNext();) {
+		for (Iterator<String> fieldNames = expectedJson.fieldNames(); fieldNames.hasNext();) {
 			String field = fieldNames.next();
 			Assert.assertEquals(expectedJson.get(field), actualJson.get(field));
 		}
