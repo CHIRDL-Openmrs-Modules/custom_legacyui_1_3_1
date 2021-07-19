@@ -237,18 +237,18 @@
 		</pluginRepository>
 	</pluginRepositories>
 
-    <distributionManagement>
-        <repository>
-            <id>openmrs-repo-modules</id>
-            <name>OpenMRS Modules</name>
-            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules</url>
-        </repository>
-        <snapshotRepository>
-            <id>openmrs-repo-snapshots</id>
-            <name>OpenMRS Snapshots</name>
-            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+        <distributionManagement>
+		<repository>
+			<id>chirdl-repo-releases</id>
+ 			<name>CHIRDL Nexus Releases</name>
+ 			<url>https://iu-ota-icechip.ads.iu.edu:8091/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>chirdl-repo-snapshots</id>
+ 			<name>CHIRDL Nexus Snapshots</name>
+ 			<url>https://iu-ota-icechip.ads.iu.edu:8091/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<profiles>
 		<profile>
