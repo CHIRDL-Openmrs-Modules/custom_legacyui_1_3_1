@@ -14,12 +14,11 @@ import java.util.Locale;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.BeansException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.mock.web.MockBodyContent;
@@ -44,7 +43,7 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	
 	private MockPageContext mockPageContext;
 	
-	@Before
+	@BeforeEach
 	public void createMockPageContext() throws Exception {
 		
 		MockServletContext sc = new MockServletContext();
@@ -68,7 +67,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
-	@Verifies(value = "evaluate specified message resolvable", method = "doEndTag()")
 	public void doEndTag_shouldEvaluateSpecifiedMessageResolvable() throws Exception {
 		String expectedOutput = "this is a test";
 		DefaultMessageSourceResolvable message = new DefaultMessageSourceResolvable(new String[] { "test" }, expectedOutput);
@@ -81,7 +79,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
-	@Verifies(value = "resolve a message of the wrong type fails", method = "doEndTag()")
 	public void doEndTag_shouldFailEvaluateRandomObjectMessage() throws Exception {
 		final Object message = new Object()
 		{
@@ -98,7 +95,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "resolve a Tag with var not set to null", method = "doEndTag()")
 	public void doEndTag_shouldEvaluateVarIfIsNotNull() throws Exception {
 		final String varName = "Mary";
 		final String expectedOutput = "had a little lamb"; 
@@ -114,7 +110,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
-	@Verifies(value = "javaScript escaping works when activated", method = "doEndTag()")
 	public void doEndTag_javaScriptEscapingWorks() throws Exception {
 		final String unescapedText = "'Eensy Weensy' spider";
 		openmrsMessageTag.setJavaScriptEscape("true");
@@ -125,7 +120,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "a single argument works", method = "doEndTag()")
 	public void doEndTag_singleArgument() throws Exception {
 		openmrsMessageTag.setArguments("singleArgument");
 		openmrsMessageTag.setCode(TEST_CODE_ONE_ARG);
@@ -135,7 +129,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "an array of arguments with more than one element works", method = "doEndTag()")
 	public void doEndTag_doubleArgument() throws Exception {
 		openmrsMessageTag.setArguments("firstArgument,secondArgument");
 		openmrsMessageTag.setCode(TEST_CODE_TWO_ARGS);
@@ -148,7 +141,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
-	@Verifies(value = "javaScript escaping is not performed when not activated", method = "doEndTag()")
 	public void doEndTag_messageIsNotEscapedWhenEscapingIsOff() throws Exception {
 		final String unescapedText = "'Eensy Weensy' spider";
 		openmrsMessageTag.setJavaScriptEscape("false");
@@ -162,7 +154,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
-	@Verifies(value = "resolve message by code", method = "doEndTag()")
 	public void doEndTag_shouldResolveMessageByCode() throws Exception {
 		String expectedOutput = "this is a test";
 		openmrsMessageTag.setCode(TEST_CODE);
@@ -174,7 +165,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
-	@Verifies(value = "resolve message in locale that different from default", method = "doEndTag()")
 	public void doEndTag_shouldResolveMessageInLocaleThatDifferentFromDefault() throws Exception {
 		
 		MockHttpServletRequest request = (MockHttpServletRequest) mockPageContext.getRequest();
@@ -190,7 +180,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
-	@Verifies(value = "return code if no message resolved", method = "doEndTag()")
 	public void doEndTag_shouldReturnCodeIfNoMessageResolved() throws Exception {
 		String expectedOutput = "test.wrong.code";
 		openmrsMessageTag.setCode("test.wrong.code");
@@ -202,7 +191,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
-	@Verifies(value = "use body content as fallback if no message resolved", method = "doEndTag()")
 	public void doEndTag_shouldUseBodyContentAsFallbackIfNoMessageResolved() throws Exception {
 		String expectedOutput = "test body content";
 		openmrsMessageTag.setBodyContent(new MockBodyContent(expectedOutput, new MockHttpServletResponse()));
@@ -215,7 +203,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
-	@Verifies(value = "use text attribute as fallback if no message resolved", method = "doEndTag()")
 	public void doEndTag_shouldUseTextAttributeAsFallbackIfNoMessageResolved() throws Exception {
 		String expectedOutput = "test content";
 		openmrsMessageTag.setText(expectedOutput);
@@ -228,7 +215,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
-	@Verifies(value = "use body content in prior to text attribute as fallback if no message resolved", method = "doEndTag()")
 	public void doEndTag_shouldUseBodyContentInPriorToTextAttributeAsFallbackIfNoMessageResolved() throws Exception {
 		String expectedOutput = "test body content";
 		openmrsMessageTag.setBodyContent(new MockBodyContent(expectedOutput, new MockHttpServletResponse()));
@@ -242,7 +228,6 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	 * @see OpenmrsMessageTag#doEndTag()
 	 */
 	@Test
-	@Verifies(value = "ignore fallbacks if tag locale differs from context locale", method = "doEndTag()")
 	public void doEndTag_shouldIgnoreFallbacksIfTagLocaleDiffersFromContextLocale() throws Exception {
 		String expectedOutput = "test.wrong.code";
 		openmrsMessageTag.setBodyContent(new MockBodyContent(expectedOutput, new MockHttpServletResponse()));
@@ -261,7 +246,7 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 		try {
 			openmrsMessageTag.doEndTag();
 			
-			Assert.assertTrue("doEndTag should have thrown an exception", false);
+			Assertions.assertTrue(false, "doEndTag should have thrown an exception");
 		}
 		catch (Exception e)
 		{
@@ -273,8 +258,8 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 		final int tagReturnValue = openmrsMessageTag.doEndTag();
 		final String output = (String) mockPageContext.getAttribute(varName, scope);
 
-		Assert.assertEquals("Tag should return 'EVAL_PAGE'", TagSupport.EVAL_PAGE, tagReturnValue);
-		Assert.assertEquals(String.format("Variable '%s' should be '%s'", varName, expectedOutput), output, expectedOutput);
+		Assertions.assertEquals(TagSupport.EVAL_PAGE, tagReturnValue, "Tag should return 'EVAL_PAGE'");
+		Assertions.assertEquals(String.format("Variable '%s' should be '%s'", varName, expectedOutput), output, expectedOutput);
 	}
 	
 	
@@ -289,8 +274,8 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 		int tagReturnValue = openmrsMessageTag.doEndTag();
 		String output = ((MockHttpServletResponse) mockPageContext.getResponse()).getContentAsString();
 		
-		Assert.assertEquals("Tag should return 'EVAL_PAGE'", TagSupport.EVAL_PAGE, tagReturnValue);
-		Assert.assertEquals(String.format("Output should be '%s'", expectedOutput), expectedOutput, output);
+		Assertions.assertEquals(TagSupport.EVAL_PAGE, tagReturnValue, "Tag should return 'EVAL_PAGE'");
+		Assertions.assertEquals(String.format("Output should be '%s'", expectedOutput), expectedOutput, output);
 	}
 	
 	/**

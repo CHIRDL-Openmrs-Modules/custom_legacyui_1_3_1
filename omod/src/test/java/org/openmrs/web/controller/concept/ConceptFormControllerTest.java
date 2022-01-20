@@ -9,14 +9,16 @@
  */
 package org.openmrs.web.controller.concept;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.web.controller.ConceptFormController;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 
 public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest {
 	
@@ -43,17 +45,17 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		ConceptFormController.ConceptFormBackingObject conceptFormBackingObject = controller.new ConceptFormBackingObject(
 		                                                                                                                  concept);
 		
-		org.junit.Assert.assertEquals(Double.valueOf(5.2), conceptFormBackingObject.getHiAbsolute());
-		org.junit.Assert.assertEquals(Double.valueOf(1.0), conceptFormBackingObject.getLowAbsolute());
+		assertEquals(Double.valueOf(5.2), conceptFormBackingObject.getHiAbsolute());
+		assertEquals(Double.valueOf(1.0), conceptFormBackingObject.getLowAbsolute());
 		
-		org.junit.Assert.assertEquals(Double.valueOf(4.1), conceptFormBackingObject.getHiCritical());
-		org.junit.Assert.assertEquals(Double.valueOf(2.1), conceptFormBackingObject.getLowCritical());
+		assertEquals(Double.valueOf(4.1), conceptFormBackingObject.getHiCritical());
+		assertEquals(Double.valueOf(2.1), conceptFormBackingObject.getLowCritical());
 		
-		org.junit.Assert.assertEquals(Double.valueOf(3.1), conceptFormBackingObject.getLowNormal());
-		org.junit.Assert.assertEquals(Double.valueOf(3.9), conceptFormBackingObject.getHiNormal());
+		assertEquals(Double.valueOf(3.1), conceptFormBackingObject.getLowNormal());
+		assertEquals(Double.valueOf(3.9), conceptFormBackingObject.getHiNormal());
 		
-		org.junit.Assert.assertEquals(Integer.valueOf(42), conceptFormBackingObject.getDisplayPrecision());
+		assertEquals(Integer.valueOf(42), conceptFormBackingObject.getDisplayPrecision());
 		
-		org.junit.Assert.assertEquals("ml", conceptFormBackingObject.getUnits());
+		assertEquals("ml", conceptFormBackingObject.getUnits());
 	}
 }

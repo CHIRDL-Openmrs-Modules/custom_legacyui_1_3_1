@@ -13,11 +13,11 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -25,9 +25,9 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttribute;
@@ -45,11 +45,10 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.controller.ConceptFormController.ConceptFormBackingObject;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.openmrs.web.test.WebTestHelper;
 import org.openmrs.web.test.WebTestHelper.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +74,7 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 
 	protected static final String CONCEPT_ATTRIBUTES_XML = "org/openmrs/api/include/ConceptServiceTest-conceptAttributeType.xml";
 
-	@Before
+	@BeforeEach
 	public void updateSearchIndex() {
 		super.updateSearchIndex();
 		if (britishEn == null) {
@@ -102,7 +101,7 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		
 		// make sure there is an "conceptId" filled in on the concept
 		ConceptFormBackingObject command = (ConceptFormBackingObject) modelAndView.getModel().get("command");
-		Assert.assertNotNull(command.getConcept().getConceptId());
+		Assertions.assertNotNull(command.getConcept().getConceptId());
 		
 	}
 	
@@ -139,8 +138,8 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		// send the parameters to the controller
 		ModelAndView mav = controller.handleRequest(request, response);
 		
-		Assert.assertNotSame("The purge attempt should have failed!", "index.htm", mav.getViewName());
-		Assert.assertNotNull(cs.getConcept(3));
+		Assertions.assertNotSame("The purge attempt should have failed!", "index.htm", mav.getViewName());
+		Assertions.assertNotNull(cs.getConcept(3));
 		
 	}
 	
@@ -614,7 +613,6 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should copy numeric values into numeric concepts", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldCopyNumericValuesIntoNumericConcepts() throws Exception {
 		final Double EXPECTED_LOW_ABSOLUTE = 100.0;
 		final Double EXPECTED_LOW_CRITICAL = 103.0;
@@ -646,19 +644,18 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		assertTrue(mav.getModel().isEmpty());
 		
 		ConceptNumeric concept = (ConceptNumeric) cs.getConcept(5089);
-		Assert.assertEquals(EXPECTED_LOW_NORMAL, concept.getLowNormal());
-		Assert.assertEquals(EXPECTED_HI_NORMAL, concept.getHiNormal());
-		Assert.assertEquals(EXPECTED_LOW_ABSOLUTE, concept.getLowAbsolute());
-		Assert.assertEquals(EXPECTED_HI_ABSOLUTE, concept.getHiAbsolute());
-		Assert.assertEquals(EXPECTED_LOW_CRITICAL, concept.getLowCritical());
-		Assert.assertEquals(EXPECTED_HI_CRITICAL, concept.getHiCritical());
+		Assertions.assertEquals(EXPECTED_LOW_NORMAL, concept.getLowNormal());
+		Assertions.assertEquals(EXPECTED_HI_NORMAL, concept.getHiNormal());
+		Assertions.assertEquals(EXPECTED_LOW_ABSOLUTE, concept.getLowAbsolute());
+		Assertions.assertEquals(EXPECTED_HI_ABSOLUTE, concept.getHiAbsolute());
+		Assertions.assertEquals(EXPECTED_LOW_CRITICAL, concept.getLowCritical());
+		Assertions.assertEquals(EXPECTED_HI_CRITICAL, concept.getHiCritical());
 	}
 	
 	/**
 	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should display numeric values from table", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldDisplayNumericValuesFromTable() throws Exception {
 		final Double EXPECTED_LOW_ABSOLUTE = 0.0;
 		final Double EXPECTED_LOW_CRITICAL = 99.0;
@@ -678,12 +675,12 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		assertNotNull(mav);
 		ConceptFormBackingObject formBackingObject = (ConceptFormBackingObject) mav.getModel().get("command");
 		
-		Assert.assertEquals(EXPECTED_LOW_NORMAL, formBackingObject.getLowNormal());
-		Assert.assertEquals(EXPECTED_HI_NORMAL, formBackingObject.getHiNormal());
-		Assert.assertEquals(EXPECTED_LOW_ABSOLUTE, formBackingObject.getLowAbsolute());
-		Assert.assertEquals(EXPECTED_HI_ABSOLUTE, formBackingObject.getHiAbsolute());
-		Assert.assertEquals(EXPECTED_LOW_CRITICAL, formBackingObject.getLowCritical());
-		Assert.assertEquals(EXPECTED_HI_CRITICAL, formBackingObject.getHiCritical());
+		Assertions.assertEquals(EXPECTED_LOW_NORMAL, formBackingObject.getLowNormal());
+		Assertions.assertEquals(EXPECTED_HI_NORMAL, formBackingObject.getHiNormal());
+		Assertions.assertEquals(EXPECTED_LOW_ABSOLUTE, formBackingObject.getLowAbsolute());
+		Assertions.assertEquals(EXPECTED_HI_ABSOLUTE, formBackingObject.getHiAbsolute());
+		Assertions.assertEquals(EXPECTED_LOW_CRITICAL, formBackingObject.getLowCritical());
+		Assertions.assertEquals(EXPECTED_HI_CRITICAL, formBackingObject.getHiCritical());
 	}
 	
 	/**
@@ -811,7 +808,6 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should return a concept with a null id if no match is found", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldReturnAConceptWithANullIdIfNoMatchIsFound() throws Exception {
 		
 		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
@@ -829,12 +825,11 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should set the local preferred name", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldSetTheLocalPreferredName() throws Exception {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = cs.getConcept(5497);
 		//sanity check, the current preferred Name should be different from what will get set in the form
-		Assert.assertNotSame("CD3+CD4+ABS CNT", concept.getPreferredName(britishEn).getName());
+		Assertions.assertNotSame("CD3+CD4+ABS CNT", concept.getPreferredName(britishEn).getName());
 		
 		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
@@ -847,16 +842,15 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		assertNotNull(mav);
 		assertTrue(mav.getModel().isEmpty());
 		
-		Assert.assertEquals("CD3+CD4+ABS CNT", concept.getPreferredName(britishEn).getName());
+		Assertions.assertEquals("CD3+CD4+ABS CNT", concept.getPreferredName(britishEn).getName());
 		//preferred name should be the new one that has been set from the form
-		Assert.assertEquals(true, concept.getPreferredName(britishEn).isLocalePreferred());
+		Assertions.assertEquals(true, concept.getPreferredName(britishEn).isLocalePreferred());
 	}
 	
 	/**
 	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should void a synonym marked as preferred when it is removed", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldVoidASynonymMarkedAsPreferredWhenItIsRemoved() throws Exception {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = cs.getConcept(5497);
@@ -878,14 +872,13 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		assertNotNull(mav);
 		assertTrue(mav.getModel().isEmpty());
 		
-		Assert.assertEquals(true, preferredName.isVoided());
+		Assertions.assertEquals(true, preferredName.isVoided());
 	}
 	
 	/**
 	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should add a new Concept map to an existing concept", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldAddANewConceptMapToAnExistingConcept() throws Exception {
 		ConceptService cs = Context.getConceptService();
 		int conceptId = 3;
@@ -916,7 +909,6 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should add a new Concept map when creating a concept", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldAddANewConceptMapWhenCreatingAConcept() throws Exception {
 		ConceptService cs = Context.getConceptService();
 		final String conceptName = "new concept";
@@ -944,14 +936,13 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		
 		Concept createdConcept = cs.getConceptByName(conceptName);
 		assertNotNull(createdConcept);
-		Assert.assertEquals(1, createdConcept.getConceptMappings().size());
+		Assertions.assertEquals(1, createdConcept.getConceptMappings().size());
 	}
 	
 	/**
 	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should ignore new concept map row if the user did not select a term", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldIgnoreNewConceptMapRowIfTheUserDidNotSelectATerm() throws Exception {
 		ConceptService cs = Context.getConceptService();
 		int conceptId = 3;
@@ -982,7 +973,6 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 	 * @see ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should remove a concept map from an existing concept", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldRemoveAConceptMapFromAnExistingConcept() throws Exception {
 		ConceptService cs = Context.getConceptService();
 		int conceptId = 5089;
@@ -1026,8 +1016,8 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		concept.addConceptMapping(new ConceptMap(term, new ConceptMapType(1)));
 		BindException errors = new BindException(concept, "concept");
 		new ConceptFormController().validateConceptUsesPersistedObjects(concept, errors);
-		Assert.assertEquals(1, errors.getErrorCount());
-		Assert.assertEquals(true,
+		Assertions.assertEquals(1, errors.getErrorCount());
+		Assertions.assertEquals(true,
 		    errors.hasFieldErrors("conceptMappings[0].conceptReferenceTerm.conceptReferenceTermMaps[0].conceptMapType"));
 	}
 	
@@ -1046,8 +1036,8 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		concept.addConceptMapping(new ConceptMap(term, new ConceptMapType(1)));
 		BindException errors = new BindException(concept, "concept");
 		new ConceptFormController().validateConceptUsesPersistedObjects(concept, errors);
-		Assert.assertEquals(1, errors.getErrorCount());
-		Assert.assertEquals(true, errors.hasFieldErrors("conceptMappings[0].conceptReferenceTerm.conceptSource"));
+		Assertions.assertEquals(1, errors.getErrorCount());
+		Assertions.assertEquals(true, errors.hasFieldErrors("conceptMappings[0].conceptReferenceTerm.conceptSource"));
 	}
 	
 	/**
@@ -1065,8 +1055,8 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		concept.addConceptMapping(new ConceptMap(term, new ConceptMapType(1)));
 		BindException errors = new BindException(concept, "concept");
 		new ConceptFormController().validateConceptUsesPersistedObjects(concept, errors);
-		Assert.assertEquals(1, errors.getErrorCount());
-		Assert.assertEquals(true,
+		Assertions.assertEquals(1, errors.getErrorCount());
+		Assertions.assertEquals(true,
 		    errors.hasFieldErrors("conceptMappings[0].conceptReferenceTerm.conceptReferenceTermMaps[0].termB"));
 	}
 	
@@ -1134,7 +1124,6 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 	 * @see ConceptFormBackingObject#getConceptFromFormData()
 	 */
 	@Test
-	@Verifies(value = "should set concept on concept answers", method = "getConceptFromFormData()")
 	public void getConceptFromFormData_shouldSetConceptOnConceptAnswers() throws Exception {
 		int conceptId = 21;
 		
@@ -1298,9 +1287,9 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		conceptFormController.handleRequest(mockHttpServletRequest, new MockHttpServletResponse());
 
 
-		Assert.assertEquals(1, concept.getAttributes().size());
-		Assert.assertFalse(((ConceptAttribute) (concept.getAttributes().toArray()[0])).getVoided());
-		Assert.assertFalse(errors.hasErrors());
+		Assertions.assertEquals(1, concept.getAttributes().size());
+		Assertions.assertFalse(((ConceptAttribute) (concept.getAttributes().toArray()[0])).getVoided());
+		Assertions.assertFalse(errors.hasErrors());
 	}
 
 	/**
@@ -1324,8 +1313,8 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 				.getBean("conceptForm");
 		conceptFormController.handleRequest(mockHttpServletRequest, new MockHttpServletResponse());
 
-		Assert.assertEquals(1, concept.getAttributes().size());
-		Assert.assertTrue(((ConceptAttribute) (concept.getAttributes().toArray()[0])).getVoided());
-		Assert.assertFalse(errors.hasErrors());
+		Assertions.assertEquals(1, concept.getAttributes().size());
+		Assertions.assertTrue(((ConceptAttribute) (concept.getAttributes().toArray()[0])).getVoided());
+		Assertions.assertFalse(errors.hasErrors());
 	}
 }

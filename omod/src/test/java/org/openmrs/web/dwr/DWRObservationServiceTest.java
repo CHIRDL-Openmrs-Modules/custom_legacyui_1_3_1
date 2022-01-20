@@ -9,13 +9,13 @@
  */
 package org.openmrs.web.dwr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Person;
@@ -23,8 +23,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 
 public class DWRObservationServiceTest extends BaseModuleWebContextSensitiveTest {
 	
@@ -32,7 +31,6 @@ public class DWRObservationServiceTest extends BaseModuleWebContextSensitiveTest
 	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
-	@Verifies(value = "should pass test on saving observation with coded concepts", method = "createObs(Integer, Integer,Integer, String, String)")
 	public void createObservation_shouldCreateObservationWithCodedConcept() throws Exception {
 		DWRObsService dwrService = new DWRObsService();
 		ConceptService conceptService = Context.getConceptService();
@@ -54,7 +52,6 @@ public class DWRObservationServiceTest extends BaseModuleWebContextSensitiveTest
 	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
-	@Verifies(value = "should pass test on saving observation with boolean concepts with value yes", method = "createObs(Integer, Integer, Integer, String, String)")
 	public void createObservation_shouldCreateObservationWithBooleanConceptWithValueYes() throws Exception {
 		DWRObsService dwrService = new DWRObsService();
 		ConceptService conceptService = Context.getConceptService();
@@ -80,7 +77,6 @@ public class DWRObservationServiceTest extends BaseModuleWebContextSensitiveTest
 	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
-	@Verifies(value = "should pass test on saving observation with boolean concepts with value no", method = "createObs(Integer, Integer, Integer, String, String)")
 	public void createObservation_shouldCreateObservationWithBooleanConceptWithValueNo() throws Exception {
 		DWRObsService dwrService = new DWRObsService();
 		ConceptService conceptService = Context.getConceptService();
@@ -106,7 +102,6 @@ public class DWRObservationServiceTest extends BaseModuleWebContextSensitiveTest
 	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
-	@Verifies(value = "should pass test on saving observation with boolean concepts with value true", method = "createObs(Integer, Integer, Integer, String, String)")
 	public void createObservation_shouldCreateObservationWithBooleanConceptWithValueTrue() throws Exception {
 		DWRObsService dwrService = new DWRObsService();
 		ConceptService conceptService = Context.getConceptService();
@@ -132,7 +127,6 @@ public class DWRObservationServiceTest extends BaseModuleWebContextSensitiveTest
 	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
-	@Verifies(value = "should pass test on saving observation with boolean concepts with value false", method = "createObs(Integer, Integer, Integer, String, String)")
 	public void createObservation_shouldCreateObservationWithBooleanConceptWithValueFalse() throws Exception {
 		DWRObsService dwrService = new DWRObsService();
 		ConceptService conceptService = Context.getConceptService();
@@ -158,7 +152,6 @@ public class DWRObservationServiceTest extends BaseModuleWebContextSensitiveTest
 	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
-	@Verifies(value = "should pass test on saving observation with boolean concepts with value zero", method = "createObs(Integer, Integer, Integer, String, String)")
 	public void createObservation_shouldCreateObservationWithBooleanConceptWithValueZero() throws Exception {
 		DWRObsService dwrService = new DWRObsService();
 		ConceptService conceptService = Context.getConceptService();
@@ -184,7 +177,6 @@ public class DWRObservationServiceTest extends BaseModuleWebContextSensitiveTest
 	 * @see org.openmrs.web.dwr.DWRObsService#createObs(Integer, Integer, Integer, String, String)
 	 */
 	@Test
-	@Verifies(value = "should pass test on saving observation with boolean concepts with value one", method = "createObs(Integer, Integer, Integer, String, String)")
 	public void createObservation_shouldCreateObservationWithBooleanConceptWithValueOne() throws Exception {
 		DWRObsService dwrService = new DWRObsService();
 		ConceptService conceptService = Context.getConceptService();

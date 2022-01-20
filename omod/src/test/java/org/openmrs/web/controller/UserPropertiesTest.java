@@ -9,13 +9,12 @@
  */
 package org.openmrs.web.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.User;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.user.UserProperties;
 
@@ -30,7 +29,6 @@ public class UserPropertiesTest {
 	 * @see UserProperties#setSupposedToChangePassword(Boolean)
 	 */
 	@Test
-	@Verifies(value = "add forcePassword property in user properties map when value is set to true", method = "setSupposedToChangePassword(Boolean)")
 	public void setSupposedToChangePassword_shouldAddForcePasswordPropertyWhenValueIsSetToTrue() throws Exception {
 		User user = new User();
 		UserProperties userProperties = new UserProperties(user.getUserProperties());
@@ -48,7 +46,6 @@ public class UserPropertiesTest {
 	 * @see UserProperties#setSupposedToChangePassword(Boolean)
 	 */
 	@Test
-	@Verifies(value = "do not add forcePassword property in user properties when set to false", method = "setSupposedToChangePassword(Boolean)")
 	public void setSupposedToChangePassword_shouldNotAddForcePasswordToUserPropertyWhenValueIsSetAsFalse() throws Exception {
 		User user = new User();
 		UserProperties userProperties = new UserProperties(user.getUserProperties());
@@ -63,7 +60,6 @@ public class UserPropertiesTest {
 	 * @see UserProperties#setSupposedToChangePassword(Boolean)
 	 */
 	@Test
-	@Verifies(value = "remove forcePassword property from user properties when set to false", method = "setSupposedToChangePassword(Boolean)")
 	public void setSupposedToChangePassword_shouldRemoveForcePasswordFromUserPropertyIfValueIsSetAsFalse() throws Exception {
 		User user = new User();
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, String.valueOf(true));
@@ -80,7 +76,6 @@ public class UserPropertiesTest {
 	 * @see UserProperties#setSupposedToChangePassword(Boolean)
 	 */
 	@Test
-	@Verifies(value = "do not add forcePassword property in user properties when set to null", method = "setSupposedToChangePassword(Boolean)")
 	public void setSupposedToChangePassword_shouldNotAddForcePasswordToUserPropertyWhenValueIsSetAsNull() throws Exception {
 		User user = new User();
 		
@@ -95,7 +90,6 @@ public class UserPropertiesTest {
 	 * @see UserProperties#setSupposedToChangePassword(Boolean)
 	 */
 	@Test
-	@Verifies(value = "remove forcePassword property from user properties when set to null", method = "setSupposedToChangePassword(Boolean)")
 	public void setSupposedToChangePassword_shouldRemoveForcePasswordFromUserPropertyIfValueIsSetAsNull() throws Exception {
 		User user = new User();
 		user.setUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, String.valueOf(true));
@@ -110,8 +104,6 @@ public class UserPropertiesTest {
 	 * @see UserProperties#isSupposedToChangePassword()
 	 */
 	@Test
-	@Verifies(value = "return true or false depending on the presence or absence of forcePassword key in "
-	        + "the user properties", method = "isSupposedToChangePassword()")
 	public void isSupposedToChangePassword_shouldReturnTrueOrFalseBasedOnTheValueInUserProperties() throws Exception {
 		User user = new User();
 		UserProperties userProperties = new UserProperties(user.getUserProperties());

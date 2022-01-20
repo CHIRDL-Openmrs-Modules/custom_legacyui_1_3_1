@@ -22,8 +22,8 @@ import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.module.Extension;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.OpenmrsUtil;
@@ -60,7 +60,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	// general variables
 	public static final long serialVersionUID = 12323003L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ExtensionPointTag.class);
 	
 	// variables for the varStatus map
 	private static final String STATUS_FIRST = "first";
@@ -96,7 +96,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	
 	// methods
 	public int doStartTag() {
-		log.debug("Starting tag for extension point: " + pointId);
+		log.debug("Starting tag for extension point: {}", pointId);
 		
 		// "zero out" the extension list and other variables
 		extensions = null;
@@ -109,19 +109,19 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 		if (type != null && type.length() > 0) {
 			try {
 				Extension.MEDIA_TYPE mediaType = Enum.valueOf(Extension.MEDIA_TYPE.class, type);
-				log.debug("Getting extensions: " + pointId + " : " + mediaType);
+				log.debug("Getting extensions: {} : {}", this.pointId, mediaType);
 				extensionList = ModuleFactory.getExtensions(pointId, mediaType);
 			}
 			catch (IllegalArgumentException e) {
 				log.warn("extension point type: '" + type + "' is invalid. Must be enum of Extension.MEDIA_TYPE", e);
 			}
 		} else {
-			log.debug("Getting extensions: " + pointId);
+			log.debug("Getting extensions: {}", this.pointId);
 			extensionList = ModuleFactory.getExtensions(pointId);
 		}
 		
 		if (extensionList != null) {
-			log.debug("Found " + extensionList.size() + " extensions");
+			log.debug("Found {} extensions", extensionList.size());
 			if (requiredClass == null) {
 				validExtensions = extensionList;
 			} else {
