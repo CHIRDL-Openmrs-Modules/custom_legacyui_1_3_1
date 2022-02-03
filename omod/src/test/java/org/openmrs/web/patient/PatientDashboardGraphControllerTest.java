@@ -57,7 +57,7 @@ public class PatientDashboardGraphControllerTest extends BaseModuleWebContextSen
 		Assertions.assertEquals(expectedJson.size(), actualJson.size());
 		for (Iterator<String> fieldNames = expectedJson.fieldNames(); fieldNames.hasNext();) {
 			String field = fieldNames.next();
-			Assertions.assertEquals(expectedJson.get(field), actualJson.get(field));
+			Assertions.assertIterableEquals(expectedJson.get(field), actualJson.get(field));
 		}
 	}
 	
