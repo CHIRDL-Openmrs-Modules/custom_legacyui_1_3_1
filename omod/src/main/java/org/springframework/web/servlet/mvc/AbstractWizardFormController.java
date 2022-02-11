@@ -29,10 +29,12 @@
  */
 package org.springframework.web.servlet.mvc;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -621,8 +623,34 @@ public abstract class AbstractWizardFormController extends AbstractFormControlle
 	 * @see #PARAM_TARGET
 	 */
 	protected int getTargetPage(HttpServletRequest request, int currentPage) {
-		return getTargetPage(request, currentPage);
+		return getTargetPage(request, PARAM_TARGET, currentPage);
 	}
+	
+	/**
+     * Return the target page specified in the request.
+     * 
+     * @param request current servlet request
+     * @param paramPrefix the parameter prefix to check for (e.g. "_target" for parameters like
+     *            "_target1" or "_target2")
+     * @param currentPage the current page, to be returned as fallback if no target page specified
+     * @return the page specified in the request, or current page if not found
+     */
+    private static int getTargetPage(ServletRequest request, String paramPrefix, int currentPage) {
+        Enumeration<?> paramNames = request.getParameterNames();
+        while (paramNames.hasMoreElements()) {
+            String paramName = paramNames.nextElement().toString();
+            if (paramName.startsWith(paramPrefix)) {
+                for (int i = 0; i < WebUtils.SUBMIT_IMAGE_SUFFIXES.length; i++) {
+                    String suffix = WebUtils.SUBMIT_IMAGE_SUFFIXES[i];
+                    if (paramName.endsWith(suffix)) {
+                        paramName = paramName.substring(0, paramName.length() - suffix.length());
+                    }
+                }
+                return Integer.parseInt(paramName.substring(paramPrefix.length()));
+            }
+        }
+        return currentPage;
+    }
 	
 	/**
 	 * Validate all pages and process finish.

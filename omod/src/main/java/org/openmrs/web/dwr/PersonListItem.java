@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
@@ -31,8 +29,6 @@ import org.openmrs.web.WebUtil;
  * @see DWRPersonService
  */
 public class PersonListItem {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer personId;
 	

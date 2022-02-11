@@ -20,8 +20,8 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.taglib.fieldgen.FieldGenHandler;
@@ -32,7 +32,7 @@ public class FieldGenTag extends TagSupport {
 	
 	public static final long serialVersionUID = 21132L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(FieldGenTag.class);
 	
 	public static final String DEFAULT_INPUT_TEXT_LENGTH = "20";
 	
@@ -225,8 +225,7 @@ public class FieldGenTag extends TagSupport {
 					}
 					catch (Exception e) {
 						cls = null;
-						log.error("Could not instantiate class for this enum of class name [" + className
-						        + "] in FieldGenTag");
+						log.error("Could not instantiate class for this enum of class name [{}] in FieldGenTag", className);
 					}
 					
 					if (cls != null && cls.isEnum()) {
@@ -237,8 +236,8 @@ public class FieldGenTag extends TagSupport {
 							if (val != null) {
 								startVal = val.toString();
 							}
-							log.debug("val is " + val);
-							log.debug("val.toString is " + startVal);
+							log.debug("val is {}", val);
+							log.debug("val.toString is {}", startVal);
 							if (startVal == null) {
 								startVal = "";
 							}
@@ -287,7 +286,7 @@ public class FieldGenTag extends TagSupport {
 					pageContext.getOut().write(output.toString());
 				}
 				catch (IOException e) {
-					log.error(e);
+					log.error("Error generated: ", e);
 				}
 			}
 		}
@@ -454,7 +453,7 @@ public class FieldGenTag extends TagSupport {
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException ae) {
-			log.error("Out of bounds while trying to parse " + parameters + " with delimiter " + delimiter);
+			log.error("Out of bounds while trying to parse {} with delimiter {}", parameters, delimiter);
 		}
 	}
 	
@@ -508,7 +507,7 @@ public class FieldGenTag extends TagSupport {
 		}
 		catch (Exception e) {
 			factory = null;
-			log.error(e);
+			log.error("Error generated: ", e);
 		}
 		
 		if (factory != null) {
@@ -523,7 +522,7 @@ public class FieldGenTag extends TagSupport {
 					return handler;
 				}
 				catch (Exception e) {
-					log.error("Unable to handle type [" + className + "] with handler [" + handlerClassName + "]. " + e);
+					log.error("Unable to handle type [{}] with handler [{}]. ", className, handlerClassName, e);
 					return null;
 				}
 			} else {

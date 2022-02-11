@@ -94,10 +94,10 @@ public class ExtensionPopupMenuTag extends TagSupport {
 				anyExtensionsFound = true;
 				LinkProviderExtension extension = (LinkProviderExtension) e;
 				List<Link> links = extension.getLinks();
-				log.debug("extension of class " + e.getClass() + " provides " + links.size() + " links");
+				log.debug("extension of class {} provides {} links", e.getClass(), links.size());
 				for (Link link : links) {
 					String url = link.getUrl();
-					log.debug("url = " + url);
+					log.debug("url = {}", url);
 					StringBuilder hiddenVars = new StringBuilder();
 					Map<String, String> javascriptSubstitutions = new HashMap<String, String>();
 					for (Map.Entry<String, String> entry : link.getQueryParameters().entrySet()) {

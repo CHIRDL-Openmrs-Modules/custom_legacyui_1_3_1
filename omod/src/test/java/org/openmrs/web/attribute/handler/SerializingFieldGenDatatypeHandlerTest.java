@@ -9,19 +9,16 @@
  */
 package org.openmrs.web.attribute.handler;
 
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.openmrs.Location;
 import org.openmrs.customdatatype.datatype.MockLocationDatatype;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-@RunWith(PowerMockRunner.class)
 public class SerializingFieldGenDatatypeHandlerTest {
 	
 	/**

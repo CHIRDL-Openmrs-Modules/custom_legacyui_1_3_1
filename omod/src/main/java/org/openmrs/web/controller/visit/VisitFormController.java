@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
@@ -54,7 +54,7 @@ import org.springframework.web.context.request.WebRequest;
 @Controller
 public class VisitFormController {
 	
-	private static final Log log = LogFactory.getLog(VisitFormController.class);
+    private static final Logger log = LoggerFactory.getLogger(VisitFormController.class);
 	
 	private static final String VISIT_FORM_URL = "/admin/visits/visit";
 	
@@ -178,7 +178,7 @@ public class VisitFormController {
 			try {
 				Context.getVisitService().saveVisit(visit);
 				if (log.isDebugEnabled()) {
-					log.debug("Saved visit: " + visit.toString());
+					log.debug("Saved visit: {}", visit);
 				}
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Visit.saved");
 				
@@ -248,7 +248,7 @@ public class VisitFormController {
 		try {
 			Context.getVisitService().voidVisit(visit, voidReason);
 			if (log.isDebugEnabled()) {
-				log.debug("Voided visit with id: " + visit.getId());
+				log.debug("Voided visit with id: {}", visit.getId());
 			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 			    Context.getMessageSourceService().getMessage("Visit.voided"), WebRequest.SCOPE_SESSION);
@@ -280,7 +280,7 @@ public class VisitFormController {
 		try {
 			Context.getVisitService().unvoidVisit(visit);
 			if (log.isDebugEnabled()) {
-				log.debug("Unvoided visit with id: " + visit.getId());
+				log.debug("Unvoided visit with id: {}", visit.getId());
 			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "Visit.unvoided"), WebRequest.SCOPE_SESSION);
@@ -313,7 +313,7 @@ public class VisitFormController {
 			Integer patientId = visit.getPatient().getPatientId();
 			Context.getVisitService().purgeVisit(visit);
 			if (log.isDebugEnabled()) {
-				log.debug("Purged visit with id: " + visit.getId());
+				log.debug("Purged visit with id: {}", visit.getId());
 			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 			    Context.getMessageSourceService().getMessage("Visit.purged"), WebRequest.SCOPE_SESSION);

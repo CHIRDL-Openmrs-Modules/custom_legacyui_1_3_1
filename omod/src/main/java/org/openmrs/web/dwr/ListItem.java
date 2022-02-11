@@ -9,12 +9,7 @@
  */
 package org.openmrs.web.dwr;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class ListItem {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer id;
 	

@@ -51,7 +51,7 @@ public class EncounterTypeFormControllerTest extends BaseModuleWebContextSensiti
 		// send the parameters to the controller
 		ModelAndView mav = controller.handleRequest(request, response);
 		
-		Assertions.assertEquals("The purge attempt should have failed!", "EncounterType.form", mav.getViewName());
+		Assertions.assertEquals("EncounterType.form", mav.getViewName(), "The purge attempt should have failed!");
 		Assertions.assertSame(controller.getFormView(), mav.getViewName());
 		Assertions.assertNotNull(es.getEncounterType(1));
 	}

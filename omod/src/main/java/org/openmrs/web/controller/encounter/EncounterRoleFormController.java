@@ -9,8 +9,14 @@
  */
 package org.openmrs.web.controller.encounter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import static org.springframework.util.StringUtils.hasText;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpSession;
+
 import org.openmrs.EncounterRole;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
@@ -26,14 +32,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.springframework.util.StringUtils.hasText;
-
 /**
  * This class controls the encounter.form jsp page. See
  * /web/WEB-INF/view/admin/encounters/encounterForm.jsp
@@ -41,11 +39,6 @@ import static org.springframework.util.StringUtils.hasText;
 
 @Controller
 public class EncounterRoleFormController {
-	
-	/**
-	 * Logger for this class and subclasses
-	 */
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	public static final String MODULE_PATH = "/module/legacyui/";
 	

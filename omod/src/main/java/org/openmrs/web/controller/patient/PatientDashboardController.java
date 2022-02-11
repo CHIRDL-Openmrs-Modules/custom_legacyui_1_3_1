@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
@@ -40,7 +40,7 @@ public class PatientDashboardController {
 	
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(PatientDashboardController.class);
 	
 	/**
 	 * render the patient dashboard model and direct to the view
@@ -64,7 +64,7 @@ public class PatientDashboardController {
 			return "module/legacyui/findPatient";
 		}
 		
-		log.debug("patient: '" + patient + "'");
+		log.debug("patient: '{}'", patient);
 		map.put("patient", patient);
 		
 		// determine cause of death
@@ -84,10 +84,10 @@ public class PatientDashboardController {
 						log.debug("cod is null, so setting to empty string");
 						causeOfDeathOther = "";
 					} else {
-						log.debug("cod is valid: " + causeOfDeathOther);
+						log.debug("cod is valid: {}", causeOfDeathOther);
 					}
 				} else {
-					log.debug("obssDeath is wrong size: " + obssDeath.size());
+					log.debug("obssDeath is wrong size: {}", obssDeath.size());
 				}
 			} else {
 				log.debug("No concept cause found");
@@ -108,7 +108,7 @@ public class PatientDashboardController {
 			List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient,
 			    reasonForExitConcept);
 			if (patientExitObs != null) {
-				log.debug("Exit obs is size " + patientExitObs.size());
+				log.debug("Exit obs is size {}", patientExitObs.size());
 				if (patientExitObs.size() == 1) {
 					Obs exitObs = patientExitObs.iterator().next();
 					Concept exitReason = exitObs.getValueCoded();

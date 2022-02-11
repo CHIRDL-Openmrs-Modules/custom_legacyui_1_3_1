@@ -16,8 +16,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.openmrs.util.MemoryAppender;
@@ -33,8 +31,6 @@ import org.springframework.web.servlet.view.RedirectView;
  * @see org.openmrs.util.MemoryAppender
  */
 public class ServerLogController extends SimpleFormController {
-
-	protected final Log log = LogFactory.getLog(getClass());
 
 	/**
 	 * The onSubmit function receives the form/command object that was modified

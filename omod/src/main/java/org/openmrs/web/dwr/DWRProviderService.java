@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Provider;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
@@ -32,7 +32,7 @@ import org.openmrs.web.WebUtil;
 
 public class DWRProviderService {
 	
-	private final Log log = LogFactory.getLog(DWREncounterService.class);
+    private static final Logger log = LoggerFactory.getLogger(DWRProviderService.class);
 	
 	/**
 	 * Finds providers

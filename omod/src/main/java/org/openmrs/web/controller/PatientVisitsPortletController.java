@@ -15,8 +15,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -26,8 +24,6 @@ import org.openmrs.api.context.Context;
  * and edit links overridden by form entry modules
  */
 public class PatientVisitsPortletController extends PortletController {
-	
-	private static final Log log = LogFactory.getLog(PatientVisitsPortletController.class);
 	
 	/**
 	 * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest,

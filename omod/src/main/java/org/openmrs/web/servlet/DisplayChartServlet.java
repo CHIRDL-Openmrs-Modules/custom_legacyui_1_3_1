@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jfree.chart.JFreeChart;
 
 /**
@@ -26,7 +26,7 @@ public class DisplayChartServlet extends AbstractGraphServlet {
 	
 	public static final long serialVersionUID = 1231232L;
 	
-	private Log log = LogFactory.getLog(DisplayChartServlet.class);
+	private static final Logger log = LoggerFactory.getLogger(DisplayChartServlet.class);
 	
 	public static final String SERVLET_NAME = "displayChartServlet";
 	
@@ -40,7 +40,7 @@ public class DisplayChartServlet extends AbstractGraphServlet {
 		Object o = session.getAttribute(key);
 		
 		if (o == null) {
-			log.error("Unable to find chart in session with key: " + key);
+			log.error("Unable to find chart in session with key: {}", key);
 		}
 		
 		return (JFreeChart) o;

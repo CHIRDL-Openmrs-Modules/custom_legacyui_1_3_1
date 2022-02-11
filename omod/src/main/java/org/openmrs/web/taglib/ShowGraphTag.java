@@ -17,8 +17,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -39,7 +39,7 @@ public class ShowGraphTag extends BodyTagSupport {
 	/**
 	 * Log
 	 */
-	private final Log log = LogFactory.getLog(ShowGraphTag.class);
+	private static final Logger log = LoggerFactory.getLogger(ShowGraphTag.class);
 	
 	/**
 	 * Tag properties
@@ -79,7 +79,7 @@ public class ShowGraphTag extends BodyTagSupport {
 				
 			}
 			catch (IOException e) {
-				log.error(e);
+				log.error("Error generated: ", e);
 			}
 		}
 		

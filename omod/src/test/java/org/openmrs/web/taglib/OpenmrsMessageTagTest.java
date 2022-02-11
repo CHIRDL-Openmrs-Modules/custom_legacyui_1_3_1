@@ -257,9 +257,8 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 	private void checkDoEndTagEvaluationOfVar(String varName, int scope, String expectedOutput) throws Exception {
 		final int tagReturnValue = openmrsMessageTag.doEndTag();
 		final String output = (String) mockPageContext.getAttribute(varName, scope);
-
 		Assertions.assertEquals(TagSupport.EVAL_PAGE, tagReturnValue, "Tag should return 'EVAL_PAGE'");
-		Assertions.assertEquals(String.format("Variable '%s' should be '%s'", varName, expectedOutput), output, expectedOutput);
+		Assertions.assertEquals(expectedOutput, output, String.format("Variable '%s' should be '%s'", varName, expectedOutput));
 	}
 	
 	
@@ -275,7 +274,7 @@ public class OpenmrsMessageTagTest extends BaseModuleWebContextSensitiveTest {
 		String output = ((MockHttpServletResponse) mockPageContext.getResponse()).getContentAsString();
 		
 		Assertions.assertEquals(TagSupport.EVAL_PAGE, tagReturnValue, "Tag should return 'EVAL_PAGE'");
-		Assertions.assertEquals(String.format("Output should be '%s'", expectedOutput), expectedOutput, output);
+		Assertions.assertEquals(String.format(expectedOutput), expectedOutput, output);
 	}
 	
 	/**

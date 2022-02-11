@@ -14,16 +14,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.LayoutSupport;
 import org.openmrs.layout.LayoutTemplate;
 import org.openmrs.web.controller.PortletController;
 
 public abstract class LayoutPortletController extends PortletController {
-	
-	private static Log log = LogFactory.getLog(LayoutPortletController.class);
 	
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		// TODO: this only cached the first name or address template that comes through. I need to cache one of each. 
@@ -34,14 +30,14 @@ public abstract class LayoutPortletController extends PortletController {
 			LayoutTemplate layoutTemplate = layoutSupport.getDefaultLayoutTemplate();
 			
 			if (layoutTemplate == null) {
-				log.debug("Could not get default LayoutTemplate from " + layoutSupport.getClass());
+				log.debug("Could not get default LayoutTemplate from {}", layoutSupport.getClass());
 			}
 			
 			if (templateName != null) {
 				if (layoutSupport.getLayoutTemplateByName(templateName) != null) {
 					layoutTemplate = layoutSupport.getLayoutTemplateByName(templateName);
 				} else {
-					log.debug("unable to get template by the name of " + templateName + ", using default");
+					log.debug("unable to get template by the name of {}, using default", templateName);
 				}
 			}
 			

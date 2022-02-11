@@ -96,7 +96,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	
 	// methods
 	public int doStartTag() {
-		log.debug("Starting tag for extension point: {}", pointId);
+		log.debug("Starting tag for extension point: {}", this.pointId);
 		
 		// "zero out" the extension list and other variables
 		extensions = null;
@@ -113,7 +113,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 				extensionList = ModuleFactory.getExtensions(pointId, mediaType);
 			}
 			catch (IllegalArgumentException e) {
-				log.warn("extension point type: '" + type + "' is invalid. Must be enum of Extension.MEDIA_TYPE", e);
+				log.warn("extension point type: '{}' is invalid. Must be enum of Extension.MEDIA_TYPE", this.type, e);
 			}
 		} else {
 			log.debug("Getting extensions: {}", this.pointId);
@@ -129,8 +129,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 					Class<?> clazz = Class.forName(requiredClass);
 					for (Extension ext : extensionList) {
 						if (!clazz.isAssignableFrom(ext.getClass())) {
-							log.warn("Extensions at this point (" + pointId + ") are " + "required to be of " + clazz
-							        + " or a subclass. " + ext.getClass() + " is not.");
+							log.warn("Extensions at this point ({}) are required to be of {} or a subclass. {} is not.", this.pointId, clazz, ext.getClass());
 						} else {
 							validExtensions.add(ext);
 						}
@@ -186,7 +185,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 		ext.initialize(parameterMap);
 		String overrideContent = ext.getOverrideContent(getBodyContentString());
 		if (overrideContent == null) {
-			log.debug("Adding ext: " + ext.getExtensionId() + " to pageContext class: " + ext.getClass());
+			log.debug("Adding ext: {} to pageContext class: {}", ext.getExtensionId(), ext.getClass());
 			pageContext.setAttribute("extension", ext);
 			
 			// set up and apply the status variable
@@ -199,7 +198,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 				bodyContent.getEnclosingWriter().write(overrideContent);
 			}
 			catch (IOException io) {
-				log.warn("Cannot write override content of extension: " + ext.toString(), io);
+				log.warn("Cannot write override content of extension: {}", ext, io);
 			}
 		}
 	}
@@ -211,27 +210,27 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 		try {
 			if (getBodyContent() != null) {
 				if (log.isDebugEnabled()) {
-					log.debug("Ending tag: " + bodyContent.getString());
+					log.debug("Ending tag: {}", this.bodyContent.getString());
 				}
-				if (extensions != null) {
-					getBodyContent().writeOut(bodyContent.getEnclosingWriter());
+				if (this.extensions != null) {
+					getBodyContent().writeOut(this.bodyContent.getEnclosingWriter());
 				}
-				bodyContent.clearBody();
+				this.bodyContent.clearBody();
 			} else {
 				// the tag doesn't have a body, so initBody and doAfterBody have
 				// not been called. Do iterations now
-				while (extensions != null && extensions.hasNext()) {
-					Extension ext = extensions.next();
-					ext.initialize(parameterMap);
+				while (this.extensions != null && this.extensions.hasNext()) {
+					Extension ext = this.extensions.next();
+					ext.initialize(this.parameterMap);
 					String overrideContent = ext.getOverrideContent("");
 					if (overrideContent != null) {
-						pageContext.getOut().write(overrideContent);
+						this.pageContext.getOut().write(overrideContent);
 					}
 				}
 			}
 		}
 		catch (java.io.IOException e) {
-			throw new JspTagException("IO Error while ending tag for point: " + pointId, e);
+			throw new JspTagException("IO Error while ending tag for point: " + this.pointId, e);
 		}
 		release();
 		return EVAL_PAGE;

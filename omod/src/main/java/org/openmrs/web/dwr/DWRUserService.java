@@ -18,8 +18,8 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.directwebremoting.WebContextFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -33,7 +33,7 @@ import org.openmrs.api.context.Context;
  */
 public class DWRUserService {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(DWRUserService.class);
 	
 	/**
 	 * Find users in the database that match the given search values.

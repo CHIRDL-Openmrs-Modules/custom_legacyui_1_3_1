@@ -11,13 +11,9 @@ package org.openmrs.web.dwr;
 
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Drug;
 
 public class ConceptDrugListItem {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer drugId;
 	

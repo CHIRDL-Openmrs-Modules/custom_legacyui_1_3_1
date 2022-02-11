@@ -16,25 +16,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 /**
  * Tests {@code RegexValidatedTextDatatypeHandler}.
  */
-@RunWith(PowerMockRunner.class)
 public class RegexValidatedTextDatatypeHandlerTest {
-	
-	
-	@Rule
-	ExpectedException expectedException = ExpectedException.none();
 	
 	private RegexValidatedTextDatatypeHandler handler = new RegexValidatedTextDatatypeHandler();
 	
@@ -75,9 +67,11 @@ public class RegexValidatedTextDatatypeHandlerTest {
 		RegexValidatedTextDatatype datatype = new RegexValidatedTextDatatype();
 		datatype.setConfiguration("^[012]$");
 		
-		expectedException.expect(InvalidCustomValueException.class);
-		expectedException.expectMessage("Invalid value: " + invalidFieldValue);
-		handler.getValue(datatype, request, fieldName);
+		Exception exception = Assertions.assertThrows(InvalidCustomValueException.class, () -> {
+            handler.getValue(datatype, request, fieldName);
+        });
+
+        Assertions.assertEquals("Invalid value: " + invalidFieldValue, exception.getMessage());
 	}
 	
 	/**

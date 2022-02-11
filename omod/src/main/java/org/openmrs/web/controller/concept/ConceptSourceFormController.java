@@ -17,8 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptSource;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.ConceptService;
@@ -35,9 +33,6 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class ConceptSourceFormController extends SimpleFormController {
-	
-	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are

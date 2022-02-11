@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -62,7 +62,7 @@ public class ShowGraphServlet extends HttpServlet {
 	
 	public static final long serialVersionUID = 1231231L;
 	
-	private Log log = LogFactory.getLog(ShowGraphServlet.class);
+	private static final Logger log = LoggerFactory.getLogger(ShowGraphServlet.class);
 	
 	// private static final DateFormat Formatter = new SimpleDateFormat("MM/dd/yyyy");
 	
@@ -131,7 +131,7 @@ public class ShowGraphServlet extends HttpServlet {
 				if (e.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
 					// do nothing
 				} else {
-					log.error("Error class name: " + e.getClass().getName());
+					log.error("Error class name: {}", e.getClass().getName());
 					log.error("Unable to write chart", e);
 				}
 			}
@@ -226,8 +226,8 @@ public class ShowGraphServlet extends HttpServlet {
 						minRange = ((ConceptNumeric) concept2).getLowAbsolute();
 					}
 				} else {
-					log.warn("Units for concept id: " + conceptId2 + " don't match units for concept id: " + conceptId1
-					        + ". Only displaying " + conceptId1);
+					log.warn("Units for concept id: {} don't match units for concept id: {}. Only displaying {}", 
+					    conceptId2, conceptId1, conceptId1);
 					concept2 = null; // nullify concept2 so that the legend isn't shown later
 				}
 			}

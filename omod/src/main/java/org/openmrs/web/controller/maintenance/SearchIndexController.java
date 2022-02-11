@@ -12,8 +12,8 @@ package org.openmrs.web.controller.maintenance;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class SearchIndexController {
 
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(SearchIndexController.class);
 
 	/**
 	 * @should return the search index view

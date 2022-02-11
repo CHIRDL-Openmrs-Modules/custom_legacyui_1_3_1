@@ -14,8 +14,8 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.JspAwareRequestContext;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.tags.RequestContextAwareTag;
@@ -36,7 +36,7 @@ public abstract class OpenmrsRequestContextAwareBodyTag extends BodyTagSupport {
 	private static final long serialVersionUID = 1L;
 	
 	/** Logger available to subclasses */
-	protected final Log logger = LogFactory.getLog(getClass());
+	protected static final Logger logger = LoggerFactory.getLogger(OpenmrsRequestContextAwareBodyTag.class);
 	
 	private RequestContext requestContext;
 	

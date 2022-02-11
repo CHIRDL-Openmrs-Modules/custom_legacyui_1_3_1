@@ -51,7 +51,7 @@ public class PatientIdentifierTypeFormControllerTest extends BaseModuleWebContex
 		request.addParameter("save", "Save Identifier Type");
 		
 		ModelAndView mav = controller.handleRequest(request, response);
-		Assertions.assertEquals("The save attempt should have failed!", "index.htm", mav.getViewName());
+		Assertions.assertEquals("index.htm", mav.getViewName(), "The save attempt should have failed!");
 		Assertions.assertNotEquals("patientIdentifierType.form", mav.getViewName());
 		Assertions.assertNotNull(Context.getPersonService().getPersonAttributeType(1));
 	}
@@ -62,7 +62,7 @@ public class PatientIdentifierTypeFormControllerTest extends BaseModuleWebContex
 		request.addParameter("retireReason", "Same reason");
 		
 		ModelAndView mav = controller.handleRequest(request, response);
-		Assertions.assertEquals("The retire attempt should have failed!", "index.htm", mav.getViewName());
+		Assertions.assertEquals("index.htm", mav.getViewName(), "The retire attempt should have failed!");
 		Assertions.assertNotEquals("patientIdentifierType.form", mav.getViewName());
 		Assertions.assertNotNull(Context.getPersonService().getPersonAttributeType(1));
 	}
@@ -72,7 +72,7 @@ public class PatientIdentifierTypeFormControllerTest extends BaseModuleWebContex
 		request.addParameter("unretire", "Unretire Identifier Type");
 		
 		ModelAndView mav = controller.handleRequest(request, response);
-		Assertions.assertEquals("The unretire attempt should have failed!", "index.htm", mav.getViewName());
+		Assertions.assertEquals("index.htm", mav.getViewName(), "The unretire attempt should have failed!");
 		Assertions.assertNotEquals("patientIdentifierType.form", mav.getViewName());
 		Assertions.assertNotNull(Context.getPersonService().getPersonAttributeType(1));
 	}
@@ -82,7 +82,7 @@ public class PatientIdentifierTypeFormControllerTest extends BaseModuleWebContex
 		request.addParameter("purge", "Delete Identifier Type");
 		
 		ModelAndView mav = controller.handleRequest(request, response);
-		Assertions.assertEquals("The delete attempt should have failed!", "index.htm", mav.getViewName());
+		Assertions.assertEquals("index.htm", mav.getViewName(), "The delete attempt should have failed!");
 		Assertions.assertNotEquals("patientIdentifierType.form", mav.getViewName());
 		Assertions.assertNotNull(Context.getPersonService().getPersonAttributeType(1));
 	}

@@ -9,16 +9,10 @@
  */
 package org.openmrs.web.dwr;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 
-import java.util.Set;
-
 public class PatientListItem extends PersonListItem {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer patientId;
 	

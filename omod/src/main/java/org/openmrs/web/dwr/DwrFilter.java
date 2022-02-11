@@ -19,16 +19,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.web.WebConstants;
 
 /**
  * Filters dwr requests and forwards them to the legacyui module dwr servlet
  */
 public class DwrFilter implements Filter {
-
-	protected final Log log = LogFactory.getLog(getClass());
 
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 		

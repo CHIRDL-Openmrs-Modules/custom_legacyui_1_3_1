@@ -22,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.EmailValidator;
 import org.openmrs.PersonName;
 import org.openmrs.User;
@@ -56,9 +54,6 @@ import org.springframework.web.servlet.view.RedirectView;
  * @see OptionsForm
  */
 public class OptionsFormController extends SimpleFormController {
-	
-	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest,

@@ -12,15 +12,11 @@ package org.openmrs.web.dwr;
 import java.util.Date;
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 import org.openmrs.util.Format;
 import org.openmrs.util.Format.FORMAT_TYPE;
 
 public class ObsListItem {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer obsId;
 	

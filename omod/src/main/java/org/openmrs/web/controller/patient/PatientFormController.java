@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
@@ -73,7 +73,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class PatientFormController extends PersonFormController {
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(PatientFormController.class);
 	
 	@Autowired
 	PatientValidator patientValidator;
@@ -203,13 +203,13 @@ public class PatientFormController extends PersonFormController {
 					String[] args = { identifier, formatStr };
 					try {
 						if (format != null && format.length() > 0 && !identifier.matches(format)) {
-							log.error("Identifier format is not valid: (" + format + ") " + identifier);
+							log.error("Identifier format is not valid: ({}) {}",format, identifier);
 							String msg = getMessageSourceAccessor().getMessage("error.identifier.formatInvalid", args);
 							errors.rejectValue("identifiers", msg);
 						}
 					}
 					catch (Exception e) {
-						log.error("exception thrown with: " + pit.getName() + " " + identifier);
+						log.error("exception thrown with: {} {}", pit.getName(), identifier);
 						log.error("Error while adding patient identifiers to savedIdentifier list", e);
 						String msg = getMessageSourceAccessor().getMessage("error.identifier.formatInvalid", args);
 						errors.rejectValue("identifiers", msg);
@@ -257,7 +257,7 @@ public class PatientFormController extends PersonFormController {
 					return new ModelAndView(new RedirectView("index.htm"));
 				}
 				catch (DataIntegrityViolationException e) {
-					log.error("Unable to delete patient because of database FK errors: " + patient, e);
+					log.error("Unable to delete patient because of database FK errors: {}", patient, e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.cannot.delete");
 					return new ModelAndView(new RedirectView(getSuccessView() + "?patientId="
 					        + patient.getPatientId().toString()));
@@ -283,37 +283,37 @@ public class PatientFormController extends PersonFormController {
 					Context.getPatientService().savePatient(patient);
 				}
 				catch (ValidationException ve) {
-					log.error(ve);
+					log.error("Error saving patient to PatientService: ", ve);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, ve.getMessage());
 					isError = true;
 				}
 				catch (InvalidIdentifierFormatException iife) {
-					log.error(iife);
+					log.error("Error saving patient to PatientService: ", iife);
 					patient.removeIdentifier(iife.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
 					isError = true;
 				}
 				catch (IdentifierNotUniqueException inue) {
-					log.error(inue);
+					log.error("Error saving patient to PatientService: ", inue);
 					patient.removeIdentifier(inue.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.notUnique");
 					isError = true;
 				}
 				catch (DuplicateIdentifierException die) {
-					log.error(die);
+					log.error("Error saving patient to PatientService: ", die);
 					patient.removeIdentifier(die.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.duplicate");
 					isError = true;
 				}
 				catch (InsufficientIdentifiersException iie) {
-					log.error(iie);
+					log.error("Error saving patient to PatientService: ", iie);
 					patient.removeIdentifier(iie.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
 					    "PatientIdentifier.error.insufficientIdentifiers");
 					isError = true;
 				}
 				catch (PatientIdentifierException pie) {
-					log.error(pie);
+					log.error("Error saving patient to PatientService: ", pie);
 					patient.removeIdentifier(pie.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.general");
 					isError = true;
@@ -333,7 +333,7 @@ public class PatientFormController extends PersonFormController {
 						    causeOfDeath);
 						if (obssDeath != null) {
 							if (obssDeath.size() > 1) {
-								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
+								log.error("Multiple causes of death ({})?  Shouldn't be...", obssDeath.size());
 							} else {
 								Obs obsDeath = null;
 								if (obssDeath.size() == 1) {
@@ -390,7 +390,7 @@ public class PatientFormController extends PersonFormController {
 										if (conceptOther.equals(currCause)) {
 											// seems like this is an other concept - let's try to get the "other" field info
 											deathReasonChanged = !otherInfo.equals(obsDeath.getValueText());
-											log.debug("Setting value_text as " + otherInfo);
+											log.debug("Setting value_text as {}", otherInfo);
 											obsDeath.setValueText(otherInfo);
 										} else {
 											// non empty text value implies concept changed from OTHER NON CODED to NONE
@@ -463,7 +463,7 @@ public class PatientFormController extends PersonFormController {
 					}
 				}
 				catch (NumberFormatException numberError) {
-					log.warn("Invalid patientId supplied: '" + patientId + "'", numberError);
+					log.warn("Invalid patientId supplied: '{}' {}", patientId, numberError);
 				}
 			}
 		}
@@ -541,7 +541,7 @@ public class PatientFormController extends PersonFormController {
 			List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient,
 			    reasonForExitConcept);
 			if (patientExitObs != null && patientExitObs.size() > 0) {
-				log.debug("Exit obs is size " + patientExitObs.size());
+				log.debug("Exit obs is size {}", patientExitObs.size());
 				if (patientExitObs.size() == 1) {
 					Obs exitObs = patientExitObs.iterator().next();
 					Concept exitReason = exitObs.getValueCoded();

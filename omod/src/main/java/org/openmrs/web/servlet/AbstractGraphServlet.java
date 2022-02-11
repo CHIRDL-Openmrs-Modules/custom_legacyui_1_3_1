@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
@@ -25,7 +25,7 @@ public abstract class AbstractGraphServlet extends HttpServlet {
 	
 	public static final long serialVersionUID = 1231231L;
 	
-	private Log log = LogFactory.getLog(AbstractGraphServlet.class);
+	private static final Logger log = LoggerFactory.getLogger(AbstractGraphServlet.class);
 	
 	// Supported mime types
 	public static final String PNG_MIME_TYPE = "image/png";
@@ -79,13 +79,13 @@ public abstract class AbstractGraphServlet extends HttpServlet {
 				}
 			}
 			catch (IOException e) {
-				log.error(e);
+				log.error("Unsupported mime type: ", e);
 			}
 			
 		}
 		// Add error handling above and remove this try/catch 
 		catch (Exception e) {
-			log.error(e);
+			log.error("Error generated: ", e);
 		}
 	}
 	

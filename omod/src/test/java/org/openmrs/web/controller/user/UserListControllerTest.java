@@ -31,7 +31,7 @@ public class UserListControllerTest extends BaseModuleWebContextSensitiveTest {
 	public void displayUsers_shouldGetAllUsersIfNoNameGiven() throws Exception {
 		UserListController controller = new UserListController();
 		List<User> users = controller.getUsers("Search", "", null, false);
-		Assertions.assertEquals(3, users.size());
+		Assertions.assertEquals(2, users.size());
 	}
 	
 	/**
@@ -42,7 +42,7 @@ public class UserListControllerTest extends BaseModuleWebContextSensitiveTest {
 	public void displayUsers_shouldGetUsersJustGivenActionParameter() throws Exception {
 		UserListController controller = new UserListController();
 		List<User> users = controller.getUsers("Search", null, null, null);
-		Assertions.assertEquals(3, users.size());
+		Assertions.assertEquals(2, users.size());
 	}
 	
 	/**
@@ -64,6 +64,6 @@ public class UserListControllerTest extends BaseModuleWebContextSensitiveTest {
 	public void displayUsers_shouldIncludeDisabledUsersIfRequested() throws Exception {
 		UserListController controller = new UserListController();
 		List<User> users = controller.getUsers("Search", "", new Role(""), true);
-		Assertions.assertEquals(4, users.size());
+		Assertions.assertEquals(3, users.size());
 	}
 }

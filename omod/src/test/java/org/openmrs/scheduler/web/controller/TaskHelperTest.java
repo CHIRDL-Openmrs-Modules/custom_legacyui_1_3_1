@@ -105,6 +105,9 @@ public class TaskHelperTest extends BaseModuleWebContextSensitiveTest {
 	        TimeoutException, InterruptedException {
 		Date time = taskHelper.getTime(Calendar.MINUTE, 1);
 		TaskDefinition task = taskHelper.getScheduledTaskDefinition(time);
-		taskHelper.waitUntilTaskIsExecuting(task, 10);
+		
+		Exception exception = Assertions.assertThrows(TimeoutException.class, () -> {
+		    taskHelper.waitUntilTaskIsExecuting(task, 10);
+	    });
 	}
 }

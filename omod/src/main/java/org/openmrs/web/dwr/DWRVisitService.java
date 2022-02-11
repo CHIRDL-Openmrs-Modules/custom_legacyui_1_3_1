@@ -12,8 +12,8 @@ package org.openmrs.web.dwr;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
@@ -28,7 +28,7 @@ import org.openmrs.messagesource.MessageSourceService;
  */
 public class DWRVisitService {
 	
-	private static final Log log = LogFactory.getLog(DWRVisitService.class);
+    private static final Logger log = LoggerFactory.getLogger(DWRVisitService.class);
 	
 	/**
 	 * Gets all visits for the patient matching the given patientId
@@ -115,7 +115,7 @@ public class DWRVisitService {
 			}
 		}
 		catch (Exception e) {
-			log.warn("Error while finding encounters for the visit with id:" + visitId, e);
+			log.warn("Error while finding encounters for the visit with id:{}", visitId, e);
 			objectList.add(Context.getMessageSourceService().getMessage("Visit.find.encounters.error"));
 		}
 		return objectList;

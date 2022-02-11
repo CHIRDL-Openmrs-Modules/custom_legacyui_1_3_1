@@ -18,8 +18,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
@@ -35,7 +35,7 @@ public class HtmlIncludeTag extends TagSupport {
 	
 	public static final long serialVersionUID = 13472382823L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(HtmlIncludeTag.class);
 	
 	private static final String POSSIBLE_TYPES_JS = ".js,javascript,jscript";
 	
@@ -97,10 +97,8 @@ public class HtmlIncludeTag extends TagSupport {
 			String initialRequestId = getInitialRequestUniqueId();
 			HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
 			if (log.isDebugEnabled()) {
-				log.debug("initialRequest id: [" + initialRequestId + "]");
-				log.debug("Object at pageContext." + HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY + " is "
-				        + pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY, PageContext.SESSION_SCOPE)
-				        + "");
+				log.debug("initialRequest id: [{}]", initialRequestId);
+				log.debug("Object at pageContext.{} is {} ", HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY, pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY, PageContext.SESSION_SCOPE));
 			}
 			
 			if (!isAlreadyUsed(file, initialRequestId)) {
@@ -134,7 +132,7 @@ public class HtmlIncludeTag extends TagSupport {
 				}
 				
 				if (log.isDebugEnabled()) {
-					log.debug("isAlreadyUsed() is FALSE - printing " + this.file + " to output.");
+					log.debug("isAlreadyUsed() is FALSE - printing {} to output.", this.file);
 				}
 				
 				try {
@@ -145,7 +143,7 @@ public class HtmlIncludeTag extends TagSupport {
 				}
 			} else {
 				if (log.isDebugEnabled()) {
-					log.debug("isAlreadyUsed() is TRUE - suppressing file print for " + this.file + "");
+					log.debug("isAlreadyUsed() is TRUE - suppressing file print for {}", this.file);
 				}
 			}
 		}
@@ -161,11 +159,11 @@ public class HtmlIncludeTag extends TagSupport {
 		if (attr != null) {
 			String uniqueId = (String) attr;
 			if (log.isDebugEnabled()) {
-				log.debug("Returning initial request: " + uniqueId);
+				log.debug("Returning initial request: {}", uniqueId);
 			}
 			return uniqueId;
 		} else {
-			log.error("Could not find value for " + WebConstants.INIT_REQ_UNIQUE_ID + " in pageContext");
+			log.error("Could not find value for {} in pageContext", WebConstants.INIT_REQ_UNIQUE_ID);
 			return "";
 		}
 	}
@@ -175,7 +173,7 @@ public class HtmlIncludeTag extends TagSupport {
 		boolean isUsed = false;
 		
 		if (fileName != null) {
-			log.debug("initialRequestId: " + initialRequestId);
+			log.debug("initialRequestId: {}", initialRequestId);
 			
 			// retrieve the request id that the last mapping was added for
 			String lastRequestId = (String) pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_REQUEST_ID_KEY,
@@ -195,11 +193,11 @@ public class HtmlIncludeTag extends TagSupport {
 			}
 			
 			if (hmIncludeMap.containsKey(fileName)) {
-				log.debug("HTMLINCLUDETAG HAS ALREADY INCLUDED FILE " + fileName);
+				log.debug("HTMLINCLUDETAG HAS ALREADY INCLUDED FILE {}", fileName);
 				isUsed = true;
 			} else {
-				log.debug("HTMLINCLUDETAG IS WRITING HTML TO INCLUDE FILE " + fileName);
-				log.debug("HashCode for file is " + fileName.hashCode());
+				log.debug("HTMLINCLUDETAG IS WRITING HTML TO INCLUDE FILE {}", fileName);
+				log.debug("HashCode for file is {}", fileName.hashCode());
 				
 				hmIncludeMap.put(fileName, "true");
 				

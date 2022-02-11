@@ -59,7 +59,7 @@ public class FormFormControllerTest extends BaseModuleWebContextSensitiveTest {
 		request.setContentType("application/x-www-form-urlencoded");
 		
 		ModelAndView mav = controller.handleRequest(request, response);
-		Assertions.assertEquals("The save attempt should have failed!", "index.htm", mav.getViewName());
+		Assertions.assertEquals("index.htm", mav.getViewName(), "The save attempt should have failed!");
 		Assertions.assertNotEquals("formEdit.form", mav.getViewName());
 		Assertions.assertSame(controller.getFormView(), mav.getViewName());
 		Assertions.assertNotNull(formService.getForm(1));
@@ -79,7 +79,7 @@ public class FormFormControllerTest extends BaseModuleWebContextSensitiveTest {
 		request.setContentType("application/x-www-form-urlencoded");
 		
 		ModelAndView mav = controller.handleRequest(request, response);
-		Assertions.assertEquals("The duplicate attempt should have failed!", "index.htm", mav.getViewName());
+		Assertions.assertEquals("index.htm", mav.getViewName(), "The duplicate attempt should have failed!");
 		Assertions.assertNotEquals("formEdit.form", mav.getViewName());
 		Assertions.assertSame(controller.getFormView(), mav.getViewName());
 		Assertions.assertNotNull(formService.getForm(1));

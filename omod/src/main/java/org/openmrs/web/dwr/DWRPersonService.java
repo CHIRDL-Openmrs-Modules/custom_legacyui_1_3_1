@@ -20,8 +20,8 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -38,7 +38,7 @@ import org.openmrs.api.context.Context;
  */
 public class DWRPersonService {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(DWRPersonService.class);
 	
 	/**
 	 * Searches for Person records that have a name similar to the given name, a birthdate that is
@@ -57,7 +57,7 @@ public class DWRPersonService {
 		Vector<Object> personList;
 		
 		Integer userId = Context.getAuthenticatedUser().getUserId();
-		log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
+		log.info("{}|{}|{}|{}|{}", userId, name, birthdate, age, gender);
 		
 		PersonService ps = Context.getPersonService();
 		
@@ -143,7 +143,7 @@ public class DWRPersonService {
 	 */
 	public Object createPerson(String given, String middle, String family, String birthdate, String dateformat, String age,
 	        String gender) {
-		log.error(given + " " + middle + " " + family + " " + birthdate + " " + dateformat + " " + age + " " + gender);
+		log.error("{} {} {} {} {} {} {}", given, middle, family, birthdate, dateformat, age, gender);
 		User user = Context.getAuthenticatedUser();
 		Person p = new Person();
 		p.setPersonCreator(user);
@@ -176,7 +176,7 @@ public class DWRPersonService {
 			p.setBirthdate(d);
 		}
 		catch (java.text.ParseException pe) {
-			log.error(pe);
+			log.error("Error parsing date: ", pe);
 			return new String("Birthdate cannot be parsed.");
 		}
 		p.setGender(gender);

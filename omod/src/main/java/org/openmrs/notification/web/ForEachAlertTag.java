@@ -15,8 +15,8 @@ import java.util.List;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.jstl.core.LoopTagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
@@ -26,7 +26,7 @@ public class ForEachAlertTag extends LoopTagSupport {
 	
 	public static final long serialVersionUID = 1232300L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ForEachAlertTag.class);
 	
 	private User user = null;
 	
@@ -44,11 +44,11 @@ public class ForEachAlertTag extends LoopTagSupport {
 			AlertService as = Context.getAlertService();
 			if (user == null) {
 				List<Alert> alertList = as.getAlertsByUser(null);
-				log.debug("alertList.size: " + alertList.size());
+				log.debug("alertList.size: {}", alertList.size());
 				alerts = alertList.iterator();
 			} else {
 				List<Alert> alertList = as.getAlerts(user, includeRead, includeExpired);
-				log.debug("alertList.size: " + alertList.size());
+				log.debug("alertList.size: {}", alertList.size());
 				alerts = alertList.iterator();
 			}
 			
@@ -57,7 +57,7 @@ public class ForEachAlertTag extends LoopTagSupport {
 			
 		}
 		catch (Exception e) {
-			log.error(e);
+			log.error("Error preparing alert:", e);
 		}
 	}
 	

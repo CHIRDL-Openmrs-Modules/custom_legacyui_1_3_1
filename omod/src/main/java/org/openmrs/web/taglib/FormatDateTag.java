@@ -20,8 +20,8 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.servlet.support.BindStatus;
@@ -52,7 +52,7 @@ public class FormatDateTag extends TagSupport {
 	
 	public static final long serialVersionUID = 121341222L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(FormatDateTag.class);
 	
 	private Date date;
 	
@@ -81,10 +81,10 @@ public class FormatDateTag extends TagSupport {
 				}
 				
 				BindStatus status = new BindStatus(requestContext, resolvedPath, false);
-				log.debug("status: " + status);
+				log.debug("status: {}", status);
 				
 				if (status.getValue() != null) {
-					log.debug("status.value: " + status.getValue());
+					log.debug("status.value: {}", status.getValue());
 					if (status.getValue().getClass() == Date.class) {
 						// if no editor was registered all will go well here
 						date = (Date) status.getValue();
@@ -92,21 +92,21 @@ public class FormatDateTag extends TagSupport {
 						// if a "Date" property editor was registerd for the form, the status.getValue()
 						// object will be a java.lang.String.  This is useless.  Try getting the original
 						// value from the troublesome editor
-						log.debug("status.valueType: " + status.getValueType());
+						log.debug("status.valueType: {}", status.getValueType());
 						Timestamp timestamp = (Timestamp) status.getEditor().getValue();
 						date = new Date(timestamp.getTime());
 					}
 				}
 			}
 			catch (Exception e) {
-				log.warn("Unable to get a date object from path: " + getPath(), e);
+				log.warn("Unable to get a date object from path: {}", getPath(), e);
 				return SKIP_BODY;
 			}
 		}
 		
 		if (!dateWasSet && date == null) {
-			log.warn("Both 'date' and 'path' cannot be null.  Page: " + pageContext.getPage() + " localname:"
-			        + pageContext.getRequest().getLocalName() + " rd:" + pageContext.getRequest().getRequestDispatcher(""));
+			log.warn("Both 'date' and 'path' cannot be null. Page: {} localname:{} rd:{}", 
+			        this.pageContext.getPage(), this.pageContext.getRequest().getLocalName(), this.pageContext.getRequest().getRequestDispatcher(""));
 			return SKIP_BODY;
 		}
 		
@@ -121,7 +121,7 @@ public class FormatDateTag extends TagSupport {
 		} else if (type.equals("xml")) {
 			dateFormat = new SimpleDateFormat("dd-MMM-yyyy", Context.getLocale());
 		} else {
-			log.debug("context locale: " + Context.getLocale());
+			log.debug("context locale: {}", Context.getLocale());
 			
 			if (type.equals("long")) {
 				dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Context.getLocale());
@@ -163,9 +163,9 @@ public class FormatDateTag extends TagSupport {
 		}
 		catch (IllegalArgumentException e) {
 			//format or date is invalid
-			log.error("date: " + date);
-			log.error("format: " + format);
-			log.error(e);
+			log.error("date: {}", this.date);
+			log.error("format: {}", this.format);
+			log.error("Invalid format or date: ", e);
 			datestr = date.toString();
 		}
 		
@@ -173,7 +173,7 @@ public class FormatDateTag extends TagSupport {
 			pageContext.getOut().write(datestr);
 		}
 		catch (IOException e) {
-			log.error(e);
+			log.error("Error generated: ", e);
 		}
 		
 		// reset the objects to null because taglibs are reused

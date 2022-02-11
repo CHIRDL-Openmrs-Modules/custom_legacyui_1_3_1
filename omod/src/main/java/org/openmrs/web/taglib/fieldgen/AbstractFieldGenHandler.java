@@ -15,14 +15,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.web.taglib.FieldGenTag;
 import org.openmrs.web.taglib.HtmlIncludeTag;
 
 public abstract class AbstractFieldGenHandler implements FieldGenHandler {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+    protected static final Logger log = LoggerFactory.getLogger(AbstractFieldGenHandler.class);
 	
 	protected FieldGenTag fieldGenTag;
 	
