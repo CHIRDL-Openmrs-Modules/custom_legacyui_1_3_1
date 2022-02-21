@@ -29,15 +29,17 @@ import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class PatientProgramFormController implements Controller {
+@Controller
+public class PatientProgramFormController {
 	
 	private static final Logger log = LoggerFactory.getLogger(PatientProgramFormController.class);
 	
@@ -46,6 +48,7 @@ public class PatientProgramFormController implements Controller {
 		return null;
 	}
 	
+	@RequestMapping("/admin/programs/patientProgram.form")
 	public ModelAndView enroll(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 	        IOException {
 		

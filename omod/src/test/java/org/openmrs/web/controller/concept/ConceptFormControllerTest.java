@@ -25,6 +25,7 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 	@Test
 	public void ConceptFormBackingObject_shouldCopyNumericAttributes() {
 		ConceptNumeric concept = Mockito.mock(ConceptNumeric.class);
+		Mockito.when(concept.isNumeric()).thenReturn(Boolean.TRUE);
 		Mockito.when(concept.getHiAbsolute()).thenReturn(5.2);
 		Mockito.when(concept.getLowAbsolute()).thenReturn(1.0);
 		
@@ -43,7 +44,7 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		ConceptFormController controller = new ConceptFormController();
 		ConceptFormController.ConceptFormBackingObject conceptFormBackingObject = controller.new ConceptFormBackingObject(
 		                                                                                                                  concept);
-		
+		assertEquals(true, concept.isNumeric());
 		assertEquals(Double.valueOf(5.2), conceptFormBackingObject.getHiAbsolute());
 		assertEquals(Double.valueOf(1.0), conceptFormBackingObject.getLowAbsolute());
 		

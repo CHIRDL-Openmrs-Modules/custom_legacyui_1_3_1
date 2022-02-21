@@ -463,7 +463,7 @@ public class PatientFormController extends PersonFormController {
 					}
 				}
 				catch (NumberFormatException numberError) {
-					log.warn("Invalid patientId supplied: '{}' {}", patientId, numberError);
+					log.warn("Invalid patientId supplied: '{}'", patientId, numberError);
 				}
 			}
 		}
