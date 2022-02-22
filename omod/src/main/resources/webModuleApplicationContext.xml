@@ -1033,4 +1033,6 @@
 	
 	<bean class="org.openmrs.web.CopyLegacyUiContentToWebInf" />
 	
+	<context:component-scan base-package="org.openmrs.web.controller.program" />
+	
 </beans>
