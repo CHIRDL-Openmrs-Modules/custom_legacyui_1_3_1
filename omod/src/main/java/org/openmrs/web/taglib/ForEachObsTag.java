@@ -24,15 +24,15 @@ import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.ReverseComparator;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Obs;
 
 public class ForEachObsTag extends BodyTagSupport {
 	
 	public static final long serialVersionUID = 1L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ForEachObsTag.class);
 	
 	int count = 0;
 	
@@ -54,7 +54,7 @@ public class ForEachObsTag extends BodyTagSupport {
 	public int doStartTag() {
 		
 		if (obs == null || obs.isEmpty()) {
-			log.error("ForEachObsTag skipping body due to obs param = " + obs);
+			log.error("ForEachObsTag skipping body due to obs param = {}", obs);
 			return SKIP_BODY;
 		}
 		// First retrieve all observations matching the passed concept id, if provided.
@@ -67,7 +67,7 @@ public class ForEachObsTag extends BodyTagSupport {
 				matchingObs.add(o);
 			}
 		}
-		log.debug("ForEachObsTag found " + matchingObs.size() + " observations matching conceptId = " + conceptId);
+		log.debug("ForEachObsTag found {} observations matching conceptId = {}", this.matchingObs.size(), this.conceptId);
 		
 		// Next, sort these observations
 		if (StringUtils.isEmpty(sortBy)) {

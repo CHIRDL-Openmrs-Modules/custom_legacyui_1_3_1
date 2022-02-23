@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
@@ -49,7 +49,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class FormFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(FormFormController.class);
 	
 	@Override
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
@@ -89,7 +89,7 @@ public class FormFormController extends SimpleFormController {
 							httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
 						}
 						catch (Exception e) {
-							log.error("Error while saving form " + form.getFormId(), e);
+							log.error("Error while saving form {}", form.getFormId(), e);
 							errors.reject(e.getMessage());
 							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
 							return showForm(request, response, errors);
@@ -104,7 +104,7 @@ public class FormFormController extends SimpleFormController {
 							return new ModelAndView(new RedirectView("formEdit.form?formId=" + form.getFormId()));
 						}
 						catch (Exception e) {
-							log.error("Error while deleting form " + form.getFormId(), e);
+							log.error("Error while deleting form {}", form.getFormId(), e);
 							errors.reject(e.getMessage());
 							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
 							return showForm(request, response, errors);
@@ -130,7 +130,7 @@ public class FormFormController extends SimpleFormController {
 							httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.duplicated");
 						}
 						catch (Exception e) {
-							log.error("Error while duplicating form " + form.getFormId(), e);
+							log.error("Error while duplicating form {}", form.getFormId(), e);
 							errors.reject(e.getMessage());
 							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.duplicate");
 							return showForm(request, response, errors);

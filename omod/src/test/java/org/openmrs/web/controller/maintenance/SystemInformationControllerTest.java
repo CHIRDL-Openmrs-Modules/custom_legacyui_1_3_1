@@ -11,12 +11,11 @@ package org.openmrs.web.controller.maintenance;
 
 import java.util.Map;
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Assertions;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.ui.ModelMap;
 
 /**
@@ -26,7 +25,7 @@ public class SystemInformationControllerTest extends BaseModuleWebContextSensiti
 	
 	private ModelMap model = null;
 	
-	@Before
+	@BeforeEach
 	public void before() throws Exception {
 		createController();
 	}
@@ -45,9 +44,8 @@ public class SystemInformationControllerTest extends BaseModuleWebContextSensiti
 	 * @see SystemInformationController#showPage(ModelMap)
 	 */
 	@Test
-	@Verifies(value = "should add openmrs information attribute to the model map", method = "showPage()")
 	public void showPage_shouldReturnOpenmrsInformation() {
-		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
+	    Assertions.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
 		        .containsKey("SystemInfo.title.openmrsInformation"));
 	}
 	
@@ -55,9 +53,8 @@ public class SystemInformationControllerTest extends BaseModuleWebContextSensiti
 	 * @see SystemInformationController#showPage(ModelMap)
 	 */
 	@Test
-	@Verifies(value = "should add java runtime information attribute to the model map", method = "showPage()")
 	public void showPage_shouldReturnUserInformation() {
-		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
+	    Assertions.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
 		        .containsKey("SystemInfo.title.javaRuntimeEnvironmentInformation"));
 	}
 	
@@ -65,9 +62,8 @@ public class SystemInformationControllerTest extends BaseModuleWebContextSensiti
 	 * @see SystemInformationController#showPage(ModelMap)
 	 */
 	@Test
-	@Verifies(value = "should add module information attribute to the model map", method = "showPage()")
 	public void showPage_shouldReturnAllJavaRuntimeInformation() {
-		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
+	    Assertions.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
 		        .containsKey("SystemInfo.title.moduleInformation"));
 	}
 	
@@ -75,9 +71,8 @@ public class SystemInformationControllerTest extends BaseModuleWebContextSensiti
 	 * @see SystemInformationController#showPage(ModelMap)
 	 */
 	@Test
-	@Verifies(value = "should add database information attribute to the model map", method = "showPage()")
 	public void showPage_shouldReturnAllDatabaseInformation() {
-		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
+	    Assertions.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
 		        .containsKey("SystemInfo.title.dataBaseInformation"));
 	}
 	
@@ -85,9 +80,8 @@ public class SystemInformationControllerTest extends BaseModuleWebContextSensiti
 	 * @see SystemInformationController#showPage(ModelMap)
 	 */
 	@Test
-	@Verifies(value = "should add memory information attribute to the model map", method = "getMemoryInformation()")
 	public void getMemoryInformation_shouldReturnMemoryInformation() {
-		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
+	    Assertions.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
 		        .containsKey("SystemInfo.title.memoryInformation"));
 	}
 	

@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Encounter;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
@@ -45,7 +45,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class MergePatientsFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(MergePatientsFormController.class);
 	
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
 	        BindException errors) throws Exception {
@@ -55,11 +55,11 @@ public class MergePatientsFormController extends SimpleFormController {
 		
 		for (Object o : errors.getAllErrors()) {
 			ObjectError e = (ObjectError) o;
-			log.debug("Error name: " + e.getObjectName());
-			log.debug("Error code: " + e.getCode());
-			log.debug("Error message: " + e.getDefaultMessage());
-			log.debug("Error args: " + Arrays.toString(e.getArguments()));
-			log.debug("Error codes: " + e.getCodes());
+			log.debug("Error name: {}", e.getObjectName());
+			log.debug("Error code: {}", e.getCode());
+			log.debug("Error message: {}", e.getDefaultMessage());
+			log.debug("Error args: {}", Arrays.toString(e.getArguments()));
+			log.debug("Error codes: {}", (Object[])e.getCodes());
 		}
 		
 		// call onSubmit manually so that we don't have to call

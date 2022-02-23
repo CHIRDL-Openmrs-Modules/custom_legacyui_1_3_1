@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Program;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
@@ -33,7 +33,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class ProgramListController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(ProgramListController.class);
 	
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the

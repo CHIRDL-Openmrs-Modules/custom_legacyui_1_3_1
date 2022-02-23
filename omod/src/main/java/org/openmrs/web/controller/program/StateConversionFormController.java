@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.ProgramWorkflow;
@@ -38,7 +38,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class StateConversionFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(StateConversionFormController.class);
 	
 	public void setStateConversionValidator(StateConversionValidator stateConversionValidator) {
 		super.setValidator(stateConversionValidator);
@@ -67,10 +67,10 @@ public class StateConversionFormController extends SimpleFormController {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
 			String conversionId = ServletRequestUtils.getStringParameter(request, "conceptStateConversionId");
 			if (conversionId != null) {
-				log.debug("conversion ID is " + conversionId);
+				log.debug("conversion ID is {}", conversionId);
 				try {
 					conversion = ps.getConceptStateConversion(Integer.valueOf(conversionId));
-					log.debug("Csc is now " + conversion);
+					log.debug("Csc is now {}", conversion);
 				}
 				catch (NumberFormatException nfe) {
 					log.error("conversionId passed is not a valid number");
@@ -101,7 +101,7 @@ public class StateConversionFormController extends SimpleFormController {
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	        BindException errors) throws Exception {
-		log.debug("about to save " + obj);
+		log.debug("about to save {}", obj);
 		
 		HttpSession httpSession = request.getSession();
 		

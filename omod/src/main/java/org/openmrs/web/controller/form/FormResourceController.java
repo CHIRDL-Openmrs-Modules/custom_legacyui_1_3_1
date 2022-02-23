@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Form;
 import org.openmrs.FormResource;
 import org.openmrs.api.InvalidFileTypeException;
@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class FormResourceController {
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(FormResourceController.class);
 	
 	@RequestMapping(method = RequestMethod.GET, value = "admin/forms/formResources")
 	public void manageFormResources(@RequestParam("formId") Form form, Model model) {
@@ -92,9 +92,9 @@ public class FormResourceController {
 			Context.getFormService().saveFormResource(resource);
 		    }
 		    catch (InvalidFileTypeException ex) {
-			log.error(ex.getMessage(), ex);
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.file.upload.expected.text.file");
-			return "redirect:addFormResource.form?formId=" + resource.getForm().getId() + "&datatype=" + resource.getDatatypeClassname() + "&handler=" + resource.getPreferredHandlerClassname();
+    			log.error(ex.getMessage(), ex);
+    			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.file.upload.expected.text.file");
+    			return "redirect:addFormResource.form?formId=" + resource.getForm().getId() + "&datatype=" + resource.getDatatypeClassname() + "&handler=" + resource.getPreferredHandlerClassname();
 		    }
 		    return "redirect:formResources.form?formId=" + resource.getForm().getId();
 		}

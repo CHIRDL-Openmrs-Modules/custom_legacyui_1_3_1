@@ -9,8 +9,8 @@
  */
 package org.openmrs.web.controller.user;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Role;
 import org.openmrs.api.APIException;
 import org.openmrs.api.CannotDeleteRoleWithChildrenException;
@@ -40,7 +40,7 @@ import java.util.Map;
 public class RoleListController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(RoleListController.class);
 	
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are

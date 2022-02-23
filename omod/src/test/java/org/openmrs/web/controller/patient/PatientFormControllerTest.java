@@ -9,21 +9,18 @@
  */
 package org.openmrs.web.controller.patient;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.Patient;
+import javax.servlet.http.HttpServletResponse;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
-import org.openmrs.web.test.BaseWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Consists of unit tests for the PatientFormController
@@ -36,7 +33,6 @@ public class PatientFormControllerTest extends BaseModuleWebContextSensitiveTest
 	 * @see PatientFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, Object, org.springframework.validation.BindException)
 	 */
 	@Test
-	@Verifies(value = "void patient when void reason is not empty", method = "onSubmit(HttpServletRequest, HttpServletResponse, Object, BindException)")
 	public void onSubmit_shouldVoidPatientWhenVoidReasonIsNotEmpty() throws Exception {
 		
 		Patient p = Context.getPatientService().getPatient(2);
@@ -52,14 +48,13 @@ public class PatientFormControllerTest extends BaseModuleWebContextSensitiveTest
 		BindException errors = new BindException(p, "patient");
 		ModelAndView modelAndview = controller.onSubmit(request, response, p, errors);
 		
-		Assert.assertTrue(p.isVoided());
+		Assertions.assertTrue(p.isVoided());
 	}
 	
 	/**
 	 * @see PatientFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, Object, org.springframework.validation.BindException)
 	 */
 	@Test
-	@Verifies(value = "not void patient when void reason is empty", method = "onSubmit(HttpServletRequest, HttpServletResponse, Object, BindException)")
 	public void onSubmit_shouldNotVoidPatientWhenVoidReasonIsEmpty() throws Exception {
 		Patient p = Context.getPatientService().getPatient(2);
 		
@@ -74,8 +69,8 @@ public class PatientFormControllerTest extends BaseModuleWebContextSensitiveTest
 		BindException errors = new BindException(p, "patient");
 		ModelAndView modelAndview = controller.onSubmit(request, response, p, errors);
 		
-		Assert.assertTrue(!p.isVoided());
+		Assertions.assertTrue(!p.isVoided());
 		String tmp = request.getSession().getAttribute(WebConstants.OPENMRS_ERROR_ATTR).toString();
-		Assert.assertEquals(tmp, "Patient.error.void.reasonEmpty");
+		Assertions.assertEquals(tmp, "Patient.error.void.reasonEmpty");
 	}
 }

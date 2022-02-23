@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
@@ -33,8 +31,6 @@ import org.openmrs.web.WebConstants;
 public class ComplexObsServlet extends HttpServlet {
 	
 	public static final long serialVersionUID = 1234432L;
-	
-	private static final Log log = LogFactory.getLog(ComplexObsServlet.class);
 	
 	/**
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,

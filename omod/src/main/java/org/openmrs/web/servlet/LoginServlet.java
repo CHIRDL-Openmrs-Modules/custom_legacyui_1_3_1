@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -49,7 +49,7 @@ public class LoginServlet extends HttpServlet {
 	
 	public static final long serialVersionUID = 134231247523L;
 	
-	protected static final Log log = LogFactory.getLog(LoginServlet.class);
+	private static final Logger log = LoggerFactory.getLogger(LoginServlet.class);
 	
 	/**
 	 * The mapping from user's IP address to the number of attempts at logging in from that IP
@@ -87,8 +87,8 @@ public class LoginServlet extends HttpServlet {
 			allowedLockoutAttempts = Integer.valueOf(allowedLockoutAttemptsGP.trim());
 		}
 		catch (NumberFormatException nfe) {
-			log.error("Unable to format '" + allowedLockoutAttemptsGP + "' from global property "
-			        + GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP + " as an integer");
+			log.error("Unable to format '{}' from global property {} as an integer", 
+			    allowedLockoutAttemptsGP, GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP);
 		}
 		
 		// allowing for configurable login attempts here in case network setups are such that all users have the same IP address. 
@@ -158,8 +158,8 @@ public class LoginServlet extends HttpServlet {
 					CurrentUsers.addUser(httpSession, user);
 					
 					if (log.isDebugEnabled()) {
-						log.debug("Redirecting after login to: " + redirect);
-						log.debug("Locale address: " + request.getLocalAddr());
+						log.debug("Redirecting after login to: {}", redirect);
+						log.debug("Locale address: {}", request.getLocalAddr());
 					}
 					
 					response.sendRedirect(redirect);
@@ -246,7 +246,7 @@ public class LoginServlet extends HttpServlet {
 			redirect = request.getContextPath();
 		}
 		
-		log.debug("Going to use redirect: '" + redirect + "'");
+		log.debug("Going to use redirect: '{}'", redirect);
 		
 		return redirect;
 	}

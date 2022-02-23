@@ -23,8 +23,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
@@ -68,7 +68,7 @@ public class FormatTag extends TagSupport {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(FormatTag.class);
 	
 	private String var;
 	

@@ -12,12 +12,11 @@ package org.openmrs.web.controller.form;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Field;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +34,6 @@ public class FieldFormControllerTest extends BaseModuleWebContextSensitiveTest {
 	// @Transactional annotation needed because the parent class is @Transactional and so screws propagates to this readOnly test
 	@Transactional(readOnly = true)
 	@Test
-	@Verifies(value = "should get field", method = "formBackingObject(HttpServletRequest)")
 	public void formBackingObject_shouldGetField() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "");
 		request.setParameter("fieldId", "1");
@@ -48,14 +46,13 @@ public class FieldFormControllerTest extends BaseModuleWebContextSensitiveTest {
 		
 		// make sure there is a "userId" filled in on the concept
 		Field command = (Field) modelAndView.getModel().get("field");
-		Assert.assertNotNull(command.getFieldId());
+		Assertions.assertNotNull(command.getFieldId());
 	}
 	
 	/**
 	 * @see FieldFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should not fail on field answers", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldNotFailOnFieldAnswers() throws Exception {
 		final String FIELD_ID = "1";
 		
@@ -84,7 +81,6 @@ public class FieldFormControllerTest extends BaseModuleWebContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should purge field", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldPurgeField() throws Exception {
 		final String FIELD_ID = "1";
 		
@@ -103,6 +99,6 @@ public class FieldFormControllerTest extends BaseModuleWebContextSensitiveTest {
 		
 		controller.handleRequest(request, response);
 		
-		Assert.assertNull(Context.getFormService().getField(Integer.valueOf(FIELD_ID)));
+		Assertions.assertNull(Context.getFormService().getField(Integer.valueOf(FIELD_ID)));
 	}
 }

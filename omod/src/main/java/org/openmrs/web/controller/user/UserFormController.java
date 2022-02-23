@@ -16,8 +16,8 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
@@ -53,7 +53,7 @@ import org.springframework.web.context.request.WebRequest;
 @Controller
 public class UserFormController {
 	
-	protected static final Log log = LogFactory.getLog(UserFormController.class);
+    private static final Logger log = LoggerFactory.getLogger(UserFormController.class);
 	
 	@Autowired
 	private UserValidator userValidator;
@@ -280,7 +280,7 @@ public class UserFormController {
 				
 				if (!"".equals(password) && Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
 					if (log.isDebugEnabled()) {
-						log.debug("calling changePassword for user " + user + " by user " + Context.getAuthenticatedUser());
+						log.debug("calling changePassword for user {} by user {}", user, Context.getAuthenticatedUser());
 					}
 					us.changePassword(user, oldPassword, password);
 				}

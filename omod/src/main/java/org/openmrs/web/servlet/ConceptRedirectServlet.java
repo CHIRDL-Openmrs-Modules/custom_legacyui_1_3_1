@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class simply creates a shortened URL for concept links /concept/### to
@@ -28,21 +28,21 @@ public class ConceptRedirectServlet extends HttpServlet {
 	
 	public static final long serialVersionUID = 1231231123454545L;
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(ConceptRedirectServlet.class);
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String contextPath = request.getContextPath();
 		String path = request.getPathInfo();
 		
-		log.debug("path info: " + path);
+		log.debug("path info: {}", path);
 		if (path != null) {
 			path = path.substring(1); // remove first slash
 			Integer nextSlash = path.indexOf("/");
 			if (nextSlash != -1) {
 				path = path.substring(0, nextSlash);
 			}
-			log.debug("new concept id: " + path);
+			log.debug("new concept id: {}", path);
 			try {
 				Integer i = Integer.valueOf(path);
 				// view the concept if the path info was an integer 

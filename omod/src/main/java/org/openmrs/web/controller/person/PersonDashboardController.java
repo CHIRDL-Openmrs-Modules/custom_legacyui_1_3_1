@@ -12,8 +12,6 @@ package org.openmrs.web.controller.person;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -22,8 +20,6 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  *
  */
 public class PersonDashboardController extends SimpleFormController {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		if (!Context.isAuthenticated()) {

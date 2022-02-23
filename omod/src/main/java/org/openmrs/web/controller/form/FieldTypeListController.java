@@ -9,8 +9,8 @@
  */
 package org.openmrs.web.controller.form;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.FieldType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
@@ -33,7 +33,7 @@ import java.util.Vector;
 public class FieldTypeListController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(FieldTypeListController.class);
 	
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
@@ -82,7 +82,7 @@ public class FieldTypeListController extends SimpleFormController {
 						error += textFieldType + " " + fieldTypeId + " " + notDeleted;
 					}
 					catch (DataIntegrityViolationException e) {
-						log.error("Unable to delete a field type because it is in use. fieldTypeId: " + fieldTypeId, e);
+						log.error("Unable to delete a field type because it is in use. fieldTypeId: {}", fieldTypeId, e);
 						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "FieldType.cannot.delete");
 						return new ModelAndView(new RedirectView(getSuccessView()));
 					}

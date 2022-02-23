@@ -11,13 +11,9 @@ package org.openmrs.notification.web.dwr;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.notification.Alert;
 
 public class AlertListItem {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer alertId;
 	

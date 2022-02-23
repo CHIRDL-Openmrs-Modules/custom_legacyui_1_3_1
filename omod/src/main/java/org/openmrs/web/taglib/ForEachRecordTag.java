@@ -22,8 +22,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -40,13 +38,14 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ForEachRecordTag extends BodyTagSupport {
 	
 	public static final long serialVersionUID = 1232300L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ForEachRecordTag.class);
 	
 	private String name;
 	
@@ -147,7 +146,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 			}
 			Concept c = Context.getConceptService().getConcept(concept);
 			if (c == null) {
-				log.error("Can't find concept with name or id of: " + concept + " and so no answers will be returned");
+				log.error("Can't find concept with name or id of: {} and so no answers will be returned", this.concept);
 				records = null;
 			} else if (c.getAnswers(false) != null) {
 				records = c.getAnswers(false).iterator();
@@ -163,7 +162,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 				
 			}
 			catch (Exception e) {
-				log.error(name + " not found in ForEachRecord list " + e);
+				log.error("{} not found in ForEachRecord list ", this.name, e);
 			}
 		}
 		

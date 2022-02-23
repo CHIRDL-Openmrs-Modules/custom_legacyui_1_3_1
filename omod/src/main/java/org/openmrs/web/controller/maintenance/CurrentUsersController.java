@@ -11,8 +11,8 @@ package org.openmrs.web.controller.maintenance;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.PrivilegeConstants;
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class CurrentUsersController {
 
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(CurrentUsersController.class);
 
 	/**
 	 * Lists current users.

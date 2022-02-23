@@ -29,8 +29,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.ListUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptAttribute;
@@ -92,7 +92,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class ConceptFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	private static final Log log = LogFactory.getLog(ConceptFormController.class);
+    private static final Logger log = LoggerFactory.getLogger(ConceptFormController.class);
 	
 	/**
 	 * Allows for other Objects to be used as values in input tags. Normally, only strings and lists
@@ -202,7 +202,7 @@ public class ConceptFormController extends SimpleFormController {
 					return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 				}
 				catch (APIException e) {
-					log.error("Unable to Retire concept because an error occurred: " + concept, e);
+					log.error("Unable to Retire concept because an error occurred: {}", concept, e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "general.cannot.retire");
 				}
 				// return to the edit screen because an error was thrown
@@ -243,11 +243,11 @@ public class ConceptFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.concepts.locked");
 				}
 				catch (DataIntegrityViolationException e) {
-					log.error("Unable to delete a concept because it is in use: " + concept, e);
+					log.error("Unable to delete a concept because it is in use: {}", concept, e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.delete");
 				}
 				catch (Exception e) {
-					log.error("Unable to delete concept because an error occurred: " + concept, e);
+					log.error("Unable to delete concept because an error occurred: {}", concept, e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.delete");
 				}
 				// return to the edit screen because an error was thrown

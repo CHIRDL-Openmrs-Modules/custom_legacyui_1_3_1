@@ -22,8 +22,8 @@ import java.util.StringTokenizer;
 
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
@@ -35,7 +35,7 @@ public class SummaryTest extends TagSupport {
 	
 	private static final long serialVersionUID = 102731753333L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(SummaryTest.class);
 	
 	private Collection<Obs> observations;
 	
@@ -74,7 +74,7 @@ public class SummaryTest extends TagSupport {
 	
 	private boolean evaluate(String expr) {
 		expr = expr.trim();
-		log.debug("evaluate " + expr);
+		log.debug("evaluate {}", expr);
 		List<String> commands = new ArrayList<String>();
 		{
 			StringBuilder command = new StringBuilder();
@@ -119,7 +119,7 @@ public class SummaryTest extends TagSupport {
 	}
 	
 	private boolean handleObsCheck(String expr) {
-		log.debug("handleObsCheck(" + expr + ")");
+		log.debug("handleObsCheck({})", expr);
 		expr = expr.trim();
 		if (expr.length() == 0) {
 			return true;
@@ -155,7 +155,7 @@ public class SummaryTest extends TagSupport {
 			}
 			Concept c = cs.getConceptByName(conceptName);
 			if (c == null) {
-				log.warn("Can't find concept " + conceptName);
+				log.warn("Can't find concept {}", conceptName);
 			} else {
 				if (isSet) {
 					conceptsOfInterest.addAll(cs.getConceptsByConceptSet(c));
@@ -199,10 +199,10 @@ public class SummaryTest extends TagSupport {
 			}
 		}
 		
-		log.debug("test:" + test);
-		log.debug("concepts of interest:" + conceptsOfInterest);
-		log.debug("fromDate:" + fromDate);
-		log.debug("toDate:" + toDate);
+		log.debug("test:{}", test);
+		log.debug("concepts of interest:{}", conceptsOfInterest);
+		log.debug("fromDate:{}", fromDate);
+		log.debug("toDate:{}", toDate);
 		
 		List<Obs> obsThatMatter = new ArrayList<Obs>();
 		for (Obs o : observations) {
@@ -212,7 +212,7 @@ public class SummaryTest extends TagSupport {
 				obsThatMatter.add(o);
 			}
 		}
-		log.debug("obsThatMatter (" + obsThatMatter.size() + "): " + obsThatMatter);
+		log.debug("obsThatMatter ({}): {}", obsThatMatter.size(), obsThatMatter);
 		if (test == TimeModifier.ANY) {
 			return obsThatMatter.size() > 0;
 		} else if (test == TimeModifier.NO) {

@@ -17,8 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleConstants;
@@ -33,10 +31,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class ModulePropertiesFormController extends SimpleFormController {
 	
-	/**
-	 * Logger for this class and subclasses
-	 */
-	protected static final Log log = LogFactory.getLog(ModulePropertiesFormController.class);
 	
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form

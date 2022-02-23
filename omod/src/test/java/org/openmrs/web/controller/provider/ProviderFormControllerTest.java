@@ -11,15 +11,13 @@ package org.openmrs.web.controller.provider;
 
 import java.util.Arrays;
 
-import junit.framework.Assert;
-
-import org.hibernate.ObjectNotFoundException;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
@@ -52,8 +50,8 @@ public class ProviderFormControllerTest extends BaseModuleWebContextSensitiveTes
 		        .getBean("providerFormController");
 		providerFormController.onSubmit(mockHttpServletRequest, "save", null, null, null, provider, errors,
 		    createModelMap(providerAttributeType));
-		Assert.assertFalse(((ProviderAttribute) (provider.getAttributes().toArray()[0])).getVoided());
-		Assert.assertEquals(1, provider.getAttributes().size());
+		Assertions.assertFalse(((ProviderAttribute) (provider.getAttributes().toArray()[0])).getVoided());
+		Assertions.assertEquals(1, provider.getAttributes().size());
 		
 	}
 	
@@ -77,8 +75,8 @@ public class ProviderFormControllerTest extends BaseModuleWebContextSensitiveTes
 		        .getBean("providerFormController");
 		providerFormController.onSubmit(mockHttpServletRequest, "save", null, null, null, provider, errors,
 		    createModelMap(providerAttributeType));
-		Assert.assertEquals(1, provider.getAttributes().size());
-		Assert.assertTrue(((ProviderAttribute) (provider.getAttributes().toArray()[0])).isVoided());
+		Assertions.assertEquals(1, provider.getAttributes().size());
+		Assertions.assertTrue(((ProviderAttribute) (provider.getAttributes().toArray()[0])).isVoided());
 		
 	}
 	
@@ -88,7 +86,7 @@ public class ProviderFormControllerTest extends BaseModuleWebContextSensitiveTes
 	 *      String, String, String, String, org.openmrs.Provider,
 	 *      org.springframework.validation.BindingResult, org.springframework.ui.ModelMap)
 	 */
-	@Test(expected = ObjectNotFoundException.class)
+	@Test
 	public void onSubmit_shouldPurgeTheProvider() throws Exception {
 		executeDataSet(PROVIDERS_ATTRIBUTES_XML);
 		executeDataSet(PROVIDERS_XML);
@@ -101,7 +99,7 @@ public class ProviderFormControllerTest extends BaseModuleWebContextSensitiveTes
 		providerFormController.onSubmit(mockHttpServletRequest, null, null, null, "purge", provider, errors,
 		    createModelMap(providerAttributeType));
 		Context.flushSession();
-		Assert.assertNull(Context.getProviderService().getProvider(2));
+		Assertions.assertNull(Context.getProviderService().getProvider(2));
 	}
 	
 	private ModelMap createModelMap(ProviderAttributeType providerAttributeType) {

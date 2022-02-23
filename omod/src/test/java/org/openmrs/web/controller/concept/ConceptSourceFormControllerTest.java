@@ -14,13 +14,12 @@ import java.net.BindException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptSource;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -33,7 +32,6 @@ public class ConceptSourceFormControllerTest extends BaseModuleWebContextSensiti
 	 * @see ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should retire concept source", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldRetireConceptSource() throws Exception {
 		ConceptService cs = Context.getConceptService();
 		ConceptSourceFormController controller = (ConceptSourceFormController) applicationContext
@@ -48,15 +46,14 @@ public class ConceptSourceFormControllerTest extends BaseModuleWebContextSensiti
 		controller.handleRequest(mockRequest, new MockHttpServletResponse());
 		
 		ConceptSource conceptSource = cs.getConceptSource(3);
-		Assert.assertTrue(conceptSource.isRetired());
-		Assert.assertEquals("dummy reason for retirement", conceptSource.getRetireReason());
+		Assertions.assertTrue(conceptSource.isRetired());
+		Assertions.assertEquals("dummy reason for retirement", conceptSource.getRetireReason());
 	}
 	
 	/**
 	 * @see ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should delete concept source", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldDeleteConceptSource() throws Exception {
 		ConceptService cs = Context.getConceptService();
 		ConceptSourceFormController controller = (ConceptSourceFormController) applicationContext
@@ -70,14 +67,13 @@ public class ConceptSourceFormControllerTest extends BaseModuleWebContextSensiti
 		controller.handleRequest(mockRequest, new MockHttpServletResponse());
 		
 		ConceptSource nullConceptSource = cs.getConceptSource(3);
-		Assert.assertNull(nullConceptSource);
+		Assertions.assertNull(nullConceptSource);
 	}
 	
 	/**
 	 * @see ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should restore retired concept source", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldRestoreRetiredConceptSource() throws Exception {
 		ConceptService cs = Context.getConceptService();
 		ConceptSourceFormController controller = (ConceptSourceFormController) applicationContext
@@ -92,8 +88,8 @@ public class ConceptSourceFormControllerTest extends BaseModuleWebContextSensiti
 		controller.handleRequest(mockRequest, new MockHttpServletResponse());
 		
 		ConceptSource conceptSource = cs.getConceptSource(3);
-		Assert.assertTrue(conceptSource.isRetired());
-		Assert.assertEquals("dummy reason for retirement", conceptSource.getRetireReason());
+		Assertions.assertTrue(conceptSource.isRetired());
+		Assertions.assertEquals("dummy reason for retirement", conceptSource.getRetireReason());
 		
 		MockHttpServletRequest restoreMockRequest = new MockHttpServletRequest();
 		restoreMockRequest.setMethod("POST");
@@ -103,7 +99,7 @@ public class ConceptSourceFormControllerTest extends BaseModuleWebContextSensiti
 		controller.handleRequest(restoreMockRequest, new MockHttpServletResponse());
 		
 		ConceptSource newConceptSource = cs.getConceptSource(3);
-		Assert.assertNotNull("Error, Object is null", newConceptSource);
-		Assert.assertTrue(!newConceptSource.isRetired());
+		Assertions.assertNotNull(newConceptSource, "Error, Object is null");
+		Assertions.assertTrue(!newConceptSource.isRetired());
 	}
 }

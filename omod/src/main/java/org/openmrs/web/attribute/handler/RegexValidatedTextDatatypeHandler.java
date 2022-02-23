@@ -13,9 +13,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatype;
 import org.openmrs.customdatatype.InvalidCustomValueException;
 import org.openmrs.customdatatype.datatype.RegexValidatedTextDatatype;
@@ -26,9 +23,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class RegexValidatedTextDatatypeHandler implements FieldGenDatatypeHandler<RegexValidatedTextDatatype, java.lang.String> {
-	
-	
-	private static final Log log = LogFactory.getLog(RegexValidatedTextDatatypeHandler.class);
 	
 	/**
 	 * @see org.openmrs.customdatatype.CustomDatatypeHandler#setHandlerConfiguration(String)

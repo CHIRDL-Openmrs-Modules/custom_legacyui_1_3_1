@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7Constants;
@@ -36,7 +36,7 @@ public class Hl7InQueueListController {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	private static final Log log = LogFactory.getLog(Hl7InQueueListController.class);
+    private static final Logger log = LoggerFactory.getLogger(Hl7InQueueListController.class);
 	
 	/**
 	 * Render the pending HL7 queue messages page

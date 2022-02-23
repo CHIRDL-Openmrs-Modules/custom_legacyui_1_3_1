@@ -17,8 +17,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jfree.chart.JFreeChart;
 
 public class DisplayChartTag extends BodyTagSupport {
@@ -31,7 +31,7 @@ public class DisplayChartTag extends BodyTagSupport {
 	/**
 	 * Log
 	 */
-	private final Log log = LogFactory.getLog(DisplayChartTag.class);
+	private static final Logger log = LoggerFactory.getLogger(DisplayChartTag.class);
 	
 	public static final String SERVLET_NAME = "ms/legacyui/displayChartServlet";
 	

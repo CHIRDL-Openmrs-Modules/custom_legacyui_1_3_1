@@ -19,8 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
@@ -61,9 +59,6 @@ import org.springframework.web.servlet.view.RedirectView;
  * this page is located in /web/WEB-INF/view/admin/observations/obsForm.jsp
  */
 public class ObsFormController extends SimpleFormController {
-	
-	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are

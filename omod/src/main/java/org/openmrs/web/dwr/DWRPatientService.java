@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -52,7 +52,7 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class DWRPatientService implements GlobalPropertyListener {
 	
-	private static final Log log = LogFactory.getLog(DWRPatientService.class);
+    private static final Logger log = LoggerFactory.getLogger(DWRPatientService.class);
 	
 	private static Integer maximumResults;
 
@@ -268,7 +268,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 					if (patientCount > maximumResults) {
 						patientCount = maximumResults;
 						if (log.isDebugEnabled()) {
-							log.debug("Limitng the size of matching patients to " + maximumResults);
+							log.debug("Limitng the size of matching patients to {}", maximumResults);
 						}
 					}
 				}
@@ -379,7 +379,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 			}
 		}
 		catch (Exception e) {
-			log.error(e);
+			log.error("Error while attempting to find duplicate patients:", e);
 			patientList.add("Error while attempting to find duplicate patients - " + e.getMessage());
 		}
 		
@@ -406,8 +406,8 @@ public class DWRPatientService implements GlobalPropertyListener {
 		PatientIdentifierType idType = ps.getPatientIdentifierTypeByName(identifierType);
 		//ps.updatePatientIdentifier(pi);
 		Location location = ls.getLocation(identifierLocationId);
-		log.debug("idType=" + identifierType + "->" + idType + " , location=" + identifierLocationId + "->" + location
-		        + " identifier=" + identifier);
+		log.debug("idType={}->{} , location={}->{} identifier={}", 
+		        identifierType, idType, identifierLocationId, location, identifier);
 		PatientIdentifier id = new PatientIdentifier();
 		id.setIdentifierType(idType);
 		id.setIdentifier(identifier);
@@ -416,17 +416,17 @@ public class DWRPatientService implements GlobalPropertyListener {
 		// in case we are editing, check to see if there is already an ID of this type and location
 		for (PatientIdentifier previousId : p.getActiveIdentifiers()) {
 			if (previousId.getIdentifierType().equals(idType) && previousId.getLocation().equals(location)) {
-				log.debug("Found equivalent ID: [" + idType + "][" + location + "][" + previousId.getIdentifier()
-				        + "], about to remove");
+				log.debug("Found equivalent ID: [{}][{}][{}], about to remove", 
+				    idType, location, previousId.getIdentifier());
 				p.removeIdentifier(previousId);
 			} else {
 				if (!previousId.getIdentifierType().equals(idType)) {
-					log.debug("Previous ID id type does not match: [" + previousId.getIdentifierType().getName() + "]["
-					        + previousId.getIdentifier() + "]");
+					log.debug("Previous ID id type does not match: [{}][{}]", 
+					    previousId.getIdentifierType().getName(), previousId.getIdentifier());
 				}
 				if (!previousId.getLocation().equals(location)) {
-					log.debug("Previous ID location is: " + previousId.getLocation());
-					log.debug("New location is: " + location);
+					log.debug("Previous ID location is: {}", previousId.getLocation());
+					log.debug("New location is: {}", location);
 				}
 			}
 		}
@@ -437,27 +437,27 @@ public class DWRPatientService implements GlobalPropertyListener {
 			ps.savePatient(p);
 		}
 		catch (InvalidIdentifierFormatException iife) {
-			log.error(iife);
+			log.error("Error saving patient to PatientService: ", iife);
 			ret = "PatientIdentifier.error.formatInvalid";
 		}
 		catch (InvalidCheckDigitException icde) {
-			log.error(icde);
+			log.error("Error saving patient to PatientService: ", icde);
 			ret = "PatientIdentifier.error.checkDigit";
 		}
 		catch (IdentifierNotUniqueException inue) {
-			log.error(inue);
+			log.error("Error saving patient to PatientService: ", inue);
 			ret = "PatientIdentifier.error.notUnique";
 		}
 		catch (DuplicateIdentifierException die) {
-			log.error(die);
+			log.error("Error saving patient to PatientService: ", die);
 			ret = "PatientIdentifier.error.duplicate";
 		}
 		catch (InsufficientIdentifiersException iie) {
-			log.error(iie);
+			log.error("Error saving patient to PatientService: ", iie);
 			ret = "PatientIdentifier.error.insufficientIdentifiers";
 		}
 		catch (PatientIdentifierException pie) {
-			log.error(pie);
+			log.error("Error saving patient to PatientService: ", pie);
 			ret = "PatientIdentifier.error.general";
 		}
 		
@@ -474,7 +474,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 */
 	public String exitPatientFromCare(Integer patientId, Integer exitReasonId, String exitDateStr,
 	        Integer causeOfDeathConceptId, String otherReason) {
-		log.debug("Entering exitfromcare with [" + patientId + "] [" + exitReasonId + "] [" + exitDateStr + "]");
+		log.debug("Entering exitfromcare with [{}] [{}] [{}]", patientId, exitReasonId, exitDateStr);
 		String ret = "";
 		
 		PatientService ps = Context.getPatientService();
@@ -628,9 +628,8 @@ public class DWRPatientService implements GlobalPropertyListener {
 			    String.valueOf(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE)));
 		}
 		catch (Exception e) {
-			log.warn("Unable to convert the global property " + OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS
-			        + "to a valid integer. Returning the default "
-			        + OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE);
+			log.warn("Unable to convert the global property {} to a valid integer. Returning the default {}", 
+			    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS, OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE);
 		}
 		
 		return OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE;

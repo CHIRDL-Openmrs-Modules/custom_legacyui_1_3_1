@@ -11,8 +11,8 @@ package org.openmrs.web.controller.concept;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.ConceptMapType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
@@ -38,7 +38,7 @@ public class ConceptMapTypeFormController {
 	/**
 	 * Logger for this class
 	 */
-	private static final Log log = LogFactory.getLog(ConceptMapTypeFormController.class);
+    private static final Logger log = LoggerFactory.getLogger(ConceptMapTypeFormController.class);
 	
 	private static final String CONCEPT_MAP_TYPE_LIST_URL = "/admin/concepts/conceptMapTypeList";
 	
@@ -99,7 +99,7 @@ public class ConceptMapTypeFormController {
 			try {
 				Context.getConceptService().saveConceptMapType(conceptMapType);
 				if (log.isDebugEnabled()) {
-					log.debug("Saved concept map type: " + conceptMapType.toString());
+					log.debug("Saved concept map type: {}", conceptMapType);
 				}
 				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptMapType.saved", WebRequest.SCOPE_SESSION);
 				
@@ -135,7 +135,7 @@ public class ConceptMapTypeFormController {
 		try {
 			Context.getConceptService().retireConceptMapType(conceptMapType, retireReason);
 			if (log.isDebugEnabled()) {
-				log.debug("Retired concept map type with id: " + conceptMapType.getId());
+				log.debug("Retired concept map type with id: {}", conceptMapType.getId());
 			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptMapType.retired"), WebRequest.SCOPE_SESSION);
@@ -166,7 +166,7 @@ public class ConceptMapTypeFormController {
 		try {
 			Context.getConceptService().unretireConceptMapType(conceptMapType);
 			if (log.isDebugEnabled()) {
-				log.debug("Unretired concept map type with id: " + conceptMapType.getId());
+				log.debug("Unretired concept map type with id: {}", conceptMapType.getId());
 			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptMapType.unretired"), WebRequest.SCOPE_SESSION);
@@ -196,7 +196,7 @@ public class ConceptMapTypeFormController {
 		try {
 			Context.getConceptService().purgeConceptMapType(conceptMapType);
 			if (log.isDebugEnabled()) {
-				log.debug("Purged concept map type with id: " + id);
+				log.debug("Purged concept map type with id: {}", id);
 			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "ConceptMapType.purged"), WebRequest.SCOPE_SESSION);

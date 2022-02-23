@@ -18,8 +18,8 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.directwebremoting.WebContextFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -29,14 +29,13 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  *
  */
 public class DWRObsService {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(DWRObsService.class);
 	
 	/**
 	 * Void the given observation
@@ -64,7 +63,7 @@ public class DWRObsService {
 	 */
 	public Vector<Object> getObservations(Integer encounterId) {
 		
-		log.info("Get observations for encounter " + encounterId);
+		log.info("Get observations for encounter {}", encounterId);
 		Vector<Object> obsList = new Vector<Object>();
 		
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
@@ -81,7 +80,7 @@ public class DWRObsService {
 			
 		}
 		catch (Exception e) {
-			log.error(e);
+			log.error("Error getting observations: ", e);
 			obsList.add("Error while attempting to find obs - " + e.getMessage());
 		}
 		
@@ -125,7 +124,7 @@ public class DWRObsService {
 				obsDate = sdf.parse(obsDateStr);
 			}
 			catch (ParseException e) {
-				log.error("Error parsing date ... " + obsDate);
+				log.error("Error parsing date ... {}", obsDate);
 				throw e;
 			}
 		}
@@ -171,7 +170,7 @@ public class DWRObsService {
 					obsDateValue = sdft.parse(valueText);
 				}
 				catch (ParseException e) {
-					log.warn("Date value has format error: " + obsDateValue, e);
+					log.warn("Date value has format error: {}", obsDateValue, e);
 					throw e;
 				}
 			}
@@ -184,7 +183,7 @@ public class DWRObsService {
 					conceptIdFromValueTest = Integer.parseInt(valueText);
 				}
 				catch (NumberFormatException e) {
-					log.error("Unable to parse given value text to integer while resolving concept id" + valueText, e);
+					log.error("Unable to parse given value text to integer while resolving concept id {}", valueText, e);
 					throw new Exception("Can't resolve concept id. Please specify valid id" + valueText);
 				}
 				for (ConceptAnswer answer : conceptAnswers) {
@@ -207,7 +206,7 @@ public class DWRObsService {
 					booleanConcept = Context.getConceptService().getConcept(Integer.parseInt(booleanConceptId));
 				}
 				catch (NumberFormatException e) {
-					log.error("Unable to parse concept id string to integer to resolve concept" + booleanConceptId, e);
+					log.error("Unable to parse concept id string to integer to resolve concept {}", booleanConceptId, e);
 					throw new Exception("No boolean concept found in the system");
 				}
 			}
@@ -272,7 +271,7 @@ public class DWRObsService {
 	 * @return list of obs items
 	 */
 	public Vector<ObsListItem> getObsByPatientConceptEncounter(String personId, String conceptId, String encounterId) {
-		log.debug("Started with: [" + personId + "] [" + conceptId + "] [" + encounterId + "]");
+		log.debug("Started with: [{}] [{}] [{}]", personId, conceptId, encounterId);
 		
 		Vector<ObsListItem> ret = new Vector<ObsListItem>();
 		
@@ -324,7 +323,7 @@ public class DWRObsService {
 				ObsListItem newItem = new ObsListItem(obs, Context.getLocale());
 				ret.add(newItem);
 			}
-			log.debug("obss was size " + obss.size());
+			log.debug("obss was size {}", obss.size());
 		}
 		
 		return ret;

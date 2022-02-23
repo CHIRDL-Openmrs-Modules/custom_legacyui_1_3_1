@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -46,7 +46,7 @@ public class RequireTag extends TagSupport {
 	
 	public static final long serialVersionUID = 122998L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(RequireTag.class);
 	
 	private String privilege;
 	
@@ -119,16 +119,15 @@ public class RequireTag extends TagSupport {
 					httpSession.setAttribute(WebConstants.DENIED_PAGE, referer);
 				}
 				
-				log.warn("The user: '" + Context.getAuthenticatedUser() + "' has attempted to access: " + redirect
-				        + " which requires privilege: " + privilege + " or one of: " + allPrivileges + " or any of "
-				        + anyPrivilege);
+				log.warn("The user: '{}' has attempted to access: {} which requires privilege: {} or one of: {} or any of {}",
+				        Context.getAuthenticatedUser(), this.redirect, this.privilege, this.allPrivileges, this.anyPrivilege);
 			} else {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "require.login");
 			}
 		} else if (hasPrivilege && userContext.isAuthenticated()) {
 			// redirect users to password change form
 			User user = userContext.getAuthenticatedUser();
-			log.debug("Login redirect: " + redirect);
+			log.debug("Login redirect: {}", this.redirect);
 			if (new UserProperties(user.getUserProperties()).isSupposedToChangePassword()
 			        && !redirect.contains("options.form")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.password.change");
@@ -141,7 +140,7 @@ public class RequireTag extends TagSupport {
 				}
 				catch (IOException e) {
 					// oops, cannot redirect
-					log.error("Unable to redirect for password change: " + redirect, e);
+					log.error("Unable to redirect for password change: {}", this.redirect, e);
 					throw new APIException(e);
 				}
 			}
@@ -151,12 +150,12 @@ public class RequireTag extends TagSupport {
 			errorOccurred = true;
 			// stops warning message in IE when refreshing repeatedly
 			if (!"0.0.0.0".equals(request_ip_addr)) {
-				log.warn("Invalid ip addr: expected " + session_ip_addr + ", but found: " + request_ip_addr);
+				log.warn("Invalid ip addr: expected {}, but found: {}", session_ip_addr, request_ip_addr);
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.ip_addr");
 			}
 		}
 		
-		log.debug("session ip addr: " + session_ip_addr);
+		log.debug("session ip addr: {}", session_ip_addr);
 		
 		if (errorOccurred) {
 			String url = "";

@@ -24,15 +24,15 @@ import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.ReverseComparator;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Encounter;
 
 public class ForEachEncounterTag extends BodyTagSupport {
 	
 	public static final long serialVersionUID = 1L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ForEachEncounterTag.class);
 	
 	int count = 0;
 	
@@ -60,7 +60,7 @@ public class ForEachEncounterTag extends BodyTagSupport {
 	@Override
 	public int doStartTag() {
 		if (encounters == null || encounters.isEmpty()) {
-			log.debug("ForEachEncounterTag skipping body due to 'encounters' param = " + encounters);
+			log.debug("ForEachEncounterTag skipping body due to 'encounters' param = {}", this.encounters);
 			return SKIP_BODY;
 		}
 		
@@ -85,7 +85,7 @@ public class ForEachEncounterTag extends BodyTagSupport {
 				matchingEncs.add(e);
 			}
 		}
-		log.debug("ForEachEncounterTag found " + matchingEncs.size() + " encounters matching type = " + type);
+		log.debug("ForEachEncounterTag found {} encounters matching type = {}", this.matchingEncs.size(), this.type);
 		
 		// Return appropriate number of results
 		if (matchingEncs.isEmpty()) {

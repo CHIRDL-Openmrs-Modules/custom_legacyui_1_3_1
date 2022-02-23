@@ -121,7 +121,8 @@ public class LoginController {
 			//was no exception message that might contain the required privilege
 			
 			//will be sending the alert via ajax, so we need to escape js special chars
-			model.put("alertMessage", JavaScriptUtils.javaScriptEscape(alertMessage));
+			if (StringUtils.isNotBlank(alertMessage))
+			    model.put("alertMessage", JavaScriptUtils.javaScriptEscape(alertMessage));
 			model.put("reason", reason);
 			model.put("refererUrl", refererUrl);
 		}

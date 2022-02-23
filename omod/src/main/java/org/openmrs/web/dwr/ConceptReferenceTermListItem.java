@@ -9,14 +9,10 @@
  */
 package org.openmrs.web.dwr;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.util.OpenmrsUtil;
 
 public class ConceptReferenceTermListItem {
-	
-	private static final Log log = LogFactory.getLog(ConceptReferenceTermListItem.class);
 	
 	private Integer conceptReferenceTermId;
 	

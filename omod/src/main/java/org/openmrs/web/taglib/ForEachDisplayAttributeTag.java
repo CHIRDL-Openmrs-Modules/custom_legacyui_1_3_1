@@ -16,8 +16,8 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.jstl.core.LoopTagSupport;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
@@ -35,7 +35,7 @@ public class ForEachDisplayAttributeTag extends LoopTagSupport {
 	
 	public static final long serialVersionUID = 123230012322221123L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ForEachDisplayAttributeTag.class);
 	
 	private String personType = "";
 	
