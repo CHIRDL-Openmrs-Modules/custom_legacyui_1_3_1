@@ -111,8 +111,8 @@ public class DWRPatientServiceTest extends BaseModuleWebContextSensitiveTest {
 		//Let's do this in a case insensitive way
 		Map<String, Object> resultObjects = new DWRPatientService().findCountAndPatients(identifier.toLowerCase(), 0, null,
 		    true);
-		Assertions.assertEquals(0, resultObjects.get("count"));
-		Assertions.assertEquals(0, ((List<?>) resultObjects.get("objectList")).size());
+		Assertions.assertEquals(1, resultObjects.get("count"));
+		Assertions.assertEquals(1, ((List<?>) resultObjects.get("objectList")).size());
 	}
 
 	/**
