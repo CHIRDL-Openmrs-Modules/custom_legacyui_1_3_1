@@ -106,6 +106,8 @@ public class DWRPatientServiceTest extends BaseModuleWebContextSensitiveTest {
 		patient.addIdentifier(pId);
 		ps.savePatient(patient);
 		
+		updateSearchIndex();
+		
 		//Let's do this in a case insensitive way
 		Map<String, Object> resultObjects = new DWRPatientService().findCountAndPatients(identifier.toLowerCase(), 0, null,
 		    true);
