@@ -31,6 +31,7 @@ public class PostHl7Controller implements Controller {
 	
 	private String formView;
 	
+	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
 		Boolean success = false;
@@ -38,7 +39,7 @@ public class PostHl7Controller implements Controller {
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
 			if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
-				Context.authenticate(username, password);
+				Context.authenticate(username, password, request.getRemoteAddr(), request.getHeader("User-Agent"));
 			} else {
 				model.put("error", "PostHl7.missingAuthentication");
 			}
