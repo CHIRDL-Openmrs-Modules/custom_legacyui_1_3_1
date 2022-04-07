@@ -43,6 +43,7 @@ public class ForgotPasswordFormController extends SimpleFormController {
 	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
+	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		return "";
@@ -66,6 +67,7 @@ public class ForgotPasswordFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
+	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		
@@ -172,7 +174,8 @@ public class ForgotPasswordFormController extends SimpleFormController {
 						
 						httpSession.setAttribute("resetPassword", randomPassword);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.password.reset");
-						Context.authenticate(username, randomPassword);
+						Context.authenticate(
+							username, randomPassword, request.getRemoteAddr(), request.getHeader("User-Agent"));
 						httpSession.setAttribute("loginAttempts", 0);
 
 						return new ModelAndView(new RedirectView(request.getContextPath() + "/options.form#Change Login Info"));

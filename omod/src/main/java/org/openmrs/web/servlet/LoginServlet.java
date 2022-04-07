@@ -125,7 +125,7 @@ public class LoginServlet extends HttpServlet {
 					throw new ContextAuthenticationException("Unable to authenticate with an empty username");
 				}
 				
-				Context.authenticate(username, password);
+				Context.authenticate(username, password, request.getRemoteAddr(), request.getHeader("User-Agent"));
 				
 				if (Context.isAuthenticated()) {
 					regenerateSession(request);

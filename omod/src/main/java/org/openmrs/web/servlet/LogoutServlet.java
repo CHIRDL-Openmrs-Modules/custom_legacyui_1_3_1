@@ -38,7 +38,7 @@ public class LogoutServlet extends HttpServlet {
 		
 		HttpSession httpSession = request.getSession();
 		
-		Context.logout();
+		Context.logout(request.getRemoteAddr(), request.getHeader("User-Agent"));
 		
 		response.sendRedirect(request.getContextPath() + "/index.htm?noredirect=true");
 		
