@@ -30,8 +30,8 @@ import java.util.TreeSet;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Obs;
@@ -42,7 +42,7 @@ public class ObsTableWidget extends TagSupport {
 	
 	private static final long serialVersionUID = 14352344444L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ObsTableWidget.class);
 	
 	/*
 	 * pipe-separated list that could be:
@@ -239,7 +239,7 @@ public class ObsTableWidget extends TagSupport {
 		ConceptService cs = Context.getConceptService();
 		for (StringTokenizer st = new StringTokenizer(concepts, "|"); st.hasMoreTokens();) {
 			String s = st.nextToken().trim();
-			log.debug("looking at " + s);
+			log.debug("looking at {}", s);
 			boolean isSet = s.startsWith("set:");
 			if (isSet) {
 				s = s.substring(4).trim();
@@ -272,7 +272,7 @@ public class ObsTableWidget extends TagSupport {
 					}
 				}
 			}
-			log.debug("conceptList == " + conceptList);
+			log.debug("conceptList == {}", conceptList);
 		}
 		
 		// organize obs of those concepts by Date and Concept

@@ -19,8 +19,8 @@ import java.util.Vector;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.ConceptProposal;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
@@ -31,7 +31,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 public class ConceptProposalListController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(ConceptProposalListController.class);
 	
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
@@ -48,9 +48,9 @@ public class ConceptProposalListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
-			log.debug("tmp value: " + request.getParameter("includeCompleted"));
+			log.debug("tmp value: {}", request.getParameter("includeCompleted"));
 			boolean b = new Boolean(request.getParameter("includeCompleted"));
-			log.debug("b value: " + b);
+			log.debug("b value: {}", b);
 			cpList = cs.getAllConceptProposals(b);
 		}
 		

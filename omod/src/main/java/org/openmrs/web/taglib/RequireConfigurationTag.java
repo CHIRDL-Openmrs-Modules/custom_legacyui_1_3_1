@@ -17,8 +17,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
@@ -32,7 +32,7 @@ public class RequireConfigurationTag extends TagSupport {
 	
 	private static final long serialVersionUID = 5958840687498314711L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(RequireConfigurationTag.class);
 	
 	private String propertyList;
 	
@@ -59,11 +59,10 @@ public class RequireConfigurationTag extends TagSupport {
 				pageContext.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.configurationRequired");
 				try {
 					if (p != null) {
-						log.info("Configuration not complete, missing property (" + p.getProperty()
-						        + ").  Redirecting to page: " + request.getContextPath() + configurationPage);
+						log.info("Configuration not complete, missing property ({}). Redirecting to page: {}{}", 
+						    p.getProperty(), request.getContextPath(), this.configurationPage);
 					} else {
-						log.info("Configuration not complete.  Redirecting to page: " + request.getContextPath()
-						        + configurationPage);
+						log.info("Configuration not complete. Redirecting to page: {}{}", request.getContextPath(), this.configurationPage);
 					}
 					response.sendRedirect(request.getContextPath() + configurationPage);
 					return SKIP_PAGE;

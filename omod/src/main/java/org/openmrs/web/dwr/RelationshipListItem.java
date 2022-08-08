@@ -11,16 +11,11 @@ package org.openmrs.web.dwr;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.Relationship;
-
 import org.openmrs.api.context.Context;
 
 public class RelationshipListItem {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer relationshipId;
 	

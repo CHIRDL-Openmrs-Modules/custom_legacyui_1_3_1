@@ -12,11 +12,10 @@ package org.openmrs.web.controller.program;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,11 +31,10 @@ public class ProgramFormControllerTest extends BaseModuleWebContextSensitiveTest
 	 */
 	@Test
 	@Transactional(readOnly = true)
-	@Verifies(value = "should save workflows with program", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldSaveWorkflowsWithProgram() throws Exception {
 		
 		// sanity check to make sure that program #3 doesn't have any workflows already:
-		Assert.assertEquals(0, Context.getProgramWorkflowService().getProgram(3).getAllWorkflows().size());
+	    Assertions.assertEquals(0, Context.getProgramWorkflowService().getProgram(3).getAllWorkflows().size());
 		
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
 		request.setParameter("programId", "3");
@@ -45,8 +43,8 @@ public class ProgramFormControllerTest extends BaseModuleWebContextSensitiveTest
 		ProgramFormController controller = (ProgramFormController) applicationContext.getBean("programForm");
 		controller.handleRequest(request, new MockHttpServletResponse());
 		
-		Assert.assertNotSame(0, Context.getProgramWorkflowService().getProgram(3).getAllWorkflows().size());
-		Assert.assertEquals(1, Context.getProgramWorkflowService().getProgram(3).getAllWorkflows().size());
+		Assertions.assertNotSame(0, Context.getProgramWorkflowService().getProgram(3).getAllWorkflows().size());
+		Assertions.assertEquals(1, Context.getProgramWorkflowService().getProgram(3).getAllWorkflows().size());
 	}
 	
 	/**
@@ -63,7 +61,7 @@ public class ProgramFormControllerTest extends BaseModuleWebContextSensitiveTest
 		ProgramFormController controller = (ProgramFormController) applicationContext.getBean("programForm");
 		controller.handleRequest(request, new MockHttpServletResponse());
 		
-		Assert.assertEquals(2, Context.getProgramWorkflowService().getProgram(3).getWorkflows().size());
+		Assertions.assertEquals(2, Context.getProgramWorkflowService().getProgram(3).getWorkflows().size());
 		
 		request = new MockHttpServletRequest("POST", "");
 		request.setParameter("programId", "3");
@@ -71,8 +69,8 @@ public class ProgramFormControllerTest extends BaseModuleWebContextSensitiveTest
 		
 		controller.handleRequest(request, new MockHttpServletResponse());
 		
-		Assert.assertEquals(1, Context.getProgramWorkflowService().getProgram(3).getWorkflows().size());
-		Assert.assertEquals(5, Context.getProgramWorkflowService().getProgram(3).getWorkflows().iterator().next()
+		Assertions.assertEquals(1, Context.getProgramWorkflowService().getProgram(3).getWorkflows().size());
+		Assertions.assertEquals(5, Context.getProgramWorkflowService().getProgram(3).getWorkflows().iterator().next()
 		        .getConcept().getConceptId().intValue());
 	}
 }

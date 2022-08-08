@@ -9,9 +9,9 @@
  */
 package org.openmrs.web.controller.patient;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -30,14 +30,12 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.LocationUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
-import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.openmrs.web.test.WebTestHelper;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BindException;
@@ -60,7 +58,6 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 	 * @see ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
-	@Verifies(value = "should pass if all the form data is valid", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
 	public void saveShortPatient_shouldPassIfAllTheFormDataIsValid() throws Exception {
 		Patient p = Context.getPatientService().getPatient(2);
 		ShortPatientModel patientModel = new ShortPatientModel(p);
@@ -78,17 +75,16 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		    WebRequest.SCOPE_SESSION), null, (ShortPatientModel) mockWebRequest.getAttribute("patientModel",
 		    WebRequest.SCOPE_SESSION), errors);
 		
-		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
+		Assertions.assertTrue(!errors.hasErrors(), "Should pass with no validation errors");
+		Assertions.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
 		    WebRequest.SCOPE_SESSION));
-		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
+		Assertions.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
 	}
 	
 	/**
 	 * @see ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
-	@Verifies(value = "should create a new patient", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
 	public void saveShortPatient_shouldCreateANewPatient() throws Exception {
 		int patientCount = Context.getPatientService().getAllPatients().size();
 		Patient p = new Patient();
@@ -112,22 +108,21 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		String redirectUrl = controller.saveShortPatient(mockWebRequest, new PersonName(), new PersonAddress(), null,
 		    patientModel, errors);
 		
-		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertNotNull(p.getId());
-		Assert.assertNotNull(p.getPersonName());
-		Assert.assertNotNull(p.getPersonName().getId());// the name was create
+		Assertions.assertTrue(!errors.hasErrors(), "Should pass with no validation errors");
+		Assertions.assertNotNull(p.getId());
+		Assertions.assertNotNull(p.getPersonName());
+		Assertions.assertNotNull(p.getPersonName().getId());// the name was create
 		// and added
-		Assert.assertEquals(patientCount + 1, Context.getPatientService().getAllPatients().size());
-		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
+		Assertions.assertEquals(patientCount + 1, Context.getPatientService().getAllPatients().size());
+		Assertions.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
 		    WebRequest.SCOPE_SESSION));
-		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
+		Assertions.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
 	}
 	
 	/**
 	 * @see ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
-	@Verifies(value = "should send the user back to the form in case of validation errors", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
 	public void saveShortPatient_shouldSendTheUserBackToTheFormInCaseOfValidationErrors() throws Exception {
 		Patient p = new Patient();
 		ShortPatientModel patientModel = new ShortPatientModel(p);
@@ -144,15 +139,14 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		String formUrl = controller.saveShortPatient(mockWebRequest, new PersonName(), new PersonAddress(), null,
 		    patientModel, errors);
 		
-		Assert.assertTrue("Should report validation errors", errors.hasErrors());
-		Assert.assertEquals("module/legacyui/admin/patients/shortPatientForm", formUrl);
+		Assertions.assertTrue(errors.hasErrors(), "Should report validation errors");
+		Assertions.assertEquals("module/legacyui/admin/patients/shortPatientForm", formUrl);
 	}
 	
 	/**
 	 * @see ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
-	@Verifies(value = "should void a name and replace it with a new one if it is changed to a unique value", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
 	public void saveShortPatient_shouldVoidANameAndReplaceItWithANewOneIfItIsChangedToAUniqueValue() throws Exception {
 		Patient p = Context.getPatientService().getPatient(2);
 		ShortPatientModel patientModel = new ShortPatientModel(p);
@@ -172,22 +166,21 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		String redirectUrl = controller.saveShortPatient(mockWebRequest, personNameCache, (PersonAddress) p
 		        .getPersonAddress().clone(), null, patientModel, errors);
 		
-		Assert.assertEquals(nameCount + 1, p.getNames().size());
-		Assert.assertTrue("The old name should be voided", oldPersonName.isVoided());
-		Assert.assertNotNull("The void reason should be set", oldPersonName.getVoidReason());
-		Assert.assertTrue("The old name should have remained un changed", oldGivenName.equalsIgnoreCase(oldPersonName
-		        .getGivenName()));
-		Assert.assertEquals("Changed", p.getGivenName());// the changes should
+		Assertions.assertEquals(nameCount + 1, p.getNames().size());
+		Assertions.assertTrue(oldPersonName.isVoided(), "The old name should be voided");
+		Assertions.assertNotNull(oldPersonName.getVoidReason(), "The void reason should be set");
+		Assertions.assertTrue(oldGivenName.equalsIgnoreCase(oldPersonName
+            .getGivenName()), "The old name should have remained un changed");
+		Assertions.assertEquals("Changed", p.getGivenName());// the changes should
 		// have taken effect
-		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
+		Assertions.assertTrue(!errors.hasErrors(), "Should pass with no validation errors");
+		Assertions.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
 	}
 	
 	/**
 	 * @see ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
-	@Verifies(value = "should add a new name if the person had no names", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
 	public void saveShortPatient_shouldAddANewNameIfThePersonHadNoNames() throws Exception {
 		Patient p = Context.getPatientService().getPatient(7);
 		
@@ -195,7 +188,7 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		//to have at least one non voided name.
 		/*p.getPersonName().setVoided(true);
 		Context.getPatientService().savePatient(p);
-		Assert.assertNull(p.getPersonName());// make sure all names are voided*/
+		Assertions.assertNull(p.getPersonName());// make sure all names are voided*/
 
 		// add a name that will used as a duplicate for testing purposes
 		PersonName newName = new PersonName("new", null, "name");
@@ -211,9 +204,9 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		String redirectUrl = controller.saveShortPatient(mockWebRequest, new PersonName(), (PersonAddress) p
 		        .getPersonAddress().clone(), null, patientModel, errors);
 		
-		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
-		Assert.assertNotNull(newName.getId());// name should have been added to
+		Assertions.assertTrue(!errors.hasErrors(), "Should pass with no validation errors");
+		Assertions.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
+		Assertions.assertNotNull(newName.getId());// name should have been added to
 		// DB
 	}
 	
@@ -221,7 +214,6 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 	 * @see ShortPatientFormController#saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
-	@Verifies(value = "should void an address and replace it with a new one if it is changed to a unique value", method = "saveShortPatient(WebRequest,ShortPatientModel,BindingResult,SessionStatus)")
 	public void saveShortPatient_shouldVoidAnAddressAndReplaceItWithANewOneIfItIsChangedToAUniqueValue() throws Exception {
 		Patient p = Context.getPatientService().getPatient(2);
 		ShortPatientModel patientModel = new ShortPatientModel(p);
@@ -240,30 +232,28 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		        .getBean("shortPatientFormController");
 		String redirectUrl = controller.saveShortPatient(mockWebRequest,
 		    (PersonName) BeanUtils.cloneBean(p.getPersonName()), personAddressCache, null, patientModel, errors);
-		Assert.assertEquals(addressCount + 1, p.getAddresses().size());
-		Assert.assertTrue("The old address should be voided", oldPersonAddress.isVoided());
-		Assert.assertNotNull("The void reason should be set", oldPersonAddress.getVoidReason());
-		Assert.assertTrue("The old address should have remained the same", oldAddress1.equalsIgnoreCase(oldPersonAddress
-		        .getAddress1()));
-		Assert.assertEquals("Kampala", p.getPersonAddress().getAddress1());// the
+		Assertions.assertEquals(addressCount + 1, p.getAddresses().size());
+		Assertions.assertTrue(oldPersonAddress.isVoided(), "The old address should be voided");
+		Assertions.assertNotNull("The void reason should be set", oldPersonAddress.getVoidReason());
+		Assertions.assertTrue(oldAddress1.equalsIgnoreCase(oldPersonAddress.getAddress1()), "The old address should have remained the same");
+		Assertions.assertEquals("Kampala", p.getPersonAddress().getAddress1());// the
 		// changes
 		// should
 		// have
 		// taken
 		// effect
-		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
+		Assertions.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
 	}
 	
 	/**
 	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,ShortPatientModel,Map,BindingResult, SessionStatus)
 	 */
 	@Test
-	@Verifies(value = "should add a new address if the person had none", method = "saveShortPatient(WebRequest,PersonName,ShortPatientModel,BindingResult,SessionStatus)")
 	public void saveShortPatient_shouldAddANewAddressIfThePersonHadNone() throws Exception {
 		Patient p = Context.getPatientService().getPatient(2);
 		p.getPersonAddress().setVoided(true);
 		Context.getPatientService().savePatient(p);
-		Assert.assertNull(p.getPersonAddress());// make sure all addresses are
+		Assertions.assertNull(p.getPersonAddress());// make sure all addresses are
 		// voided
 		
 		// add a name that will used as a duplicate for testing purposes
@@ -281,9 +271,9 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		String redirectUrl = controller.saveShortPatient(mockWebRequest,
 		    (PersonName) BeanUtils.cloneBean(p.getPersonName()), new PersonAddress(), null, patientModel, errors);
 		
-		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
-		Assert.assertNotNull(newAddress.getId());// name should have been added
+		Assertions.assertTrue(!errors.hasErrors(), "Should pass with no validation errors");
+		Assertions.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
+		Assertions.assertNotNull(newAddress.getId());// name should have been added
 		// to DB
 	}
 	
@@ -291,14 +281,13 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult,SessionStatus)
 	 */
 	@Test
-	@Verifies(value = "should ignore a new address that was added and voided at same time", method = "saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult,SessionStatus)")
 	public void saveShortPatient_shouldIgnoreANewAddressThatWasAddedAndVoidedAtSameTime() throws Exception {
 		Patient p = Context.getPatientService().getPatient(2);
 		p.getPersonAddress().setVoided(true);
 		Context.getPatientService().savePatient(p);
 		// make sure all addresses are voided so that whatever is entered a new
 		// address
-		Assert.assertNull(p.getPersonAddress());
+		Assertions.assertNull(p.getPersonAddress());
 		
 		// add the new address
 		PersonAddress newAddress = new PersonAddress();
@@ -316,17 +305,16 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		String redirectUrl = controller.saveShortPatient(mockWebRequest,
 		    (PersonName) BeanUtils.cloneBean(p.getPersonName()), new PersonAddress(), null, patientModel, errors);
 		
-		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
+		Assertions.assertTrue(!errors.hasErrors(), "Should pass with no validation errors");
+		Assertions.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
 		// address should have been ignored
-		Assert.assertNull(p.getPersonAddress());
+		Assertions.assertNull(p.getPersonAddress());
 	}
 	
 	/**
 	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)
 	 */
 	@Test
-	@Verifies(value = "should add a new person attribute with a non empty value", method = "saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult)")
 	public void saveShortPatient_shouldAddANewPersonAttributeWithANonEmptyValue() throws Exception {
 		Patient p = Context.getPatientService().getPatient(2);
 		int originalAttributeCount = p.getAttributes().size();
@@ -351,22 +339,21 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		    "personNameCache", WebRequest.SCOPE_SESSION), (PersonAddress) mockWebRequest.getAttribute("personAddressCache",
 		    WebRequest.SCOPE_SESSION), null, (ShortPatientModel) mockWebRequest.getAttribute("patientModel",
 		    WebRequest.SCOPE_SESSION), errors);
-		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
+		Assertions.assertTrue(!errors.hasErrors(), "Should pass with no validation errors");
 		
-		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
+		Assertions.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
 		    WebRequest.SCOPE_SESSION));
-		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
+		Assertions.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
 		//The new person attribute should have been added and saved
-		Assert.assertNotNull(p.getAttribute(2).getPersonAttributeId());
-		Assert.assertEquals(birthPlace, p.getAttribute(2).getValue());
-		Assert.assertEquals(originalAttributeCount + 1, p.getAttributes().size());
+		Assertions.assertNotNull(p.getAttribute(2).getPersonAttributeId());
+		Assertions.assertEquals(birthPlace, p.getAttribute(2).getValue());
+		Assertions.assertEquals(originalAttributeCount + 1, p.getAttributes().size());
 	}
 	
 	/**
 	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)
 	 */
 	@Test
-	@Verifies(value = "should not add a new person attribute with an empty value", method = "saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult)")
 	public void saveShortPatient_shouldNotAddANewPersonAttributeWithAnEmptyValue() throws Exception {
 		Patient p = Context.getPatientService().getPatient(2);
 		int originalAttributeCount = p.getAttributes().size();
@@ -388,19 +375,18 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		    WebRequest.SCOPE_SESSION), null, (ShortPatientModel) mockWebRequest.getAttribute("patientModel",
 		    WebRequest.SCOPE_SESSION), errors);
 		
-		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
+		Assertions.assertTrue(!errors.hasErrors(), "Should pass with no validation errors");
+		Assertions.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
 		    WebRequest.SCOPE_SESSION));
-		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
+		Assertions.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
 		//The new blank person attribute should have been ignored
-		Assert.assertEquals(originalAttributeCount, p.getAttributes().size());
+		Assertions.assertEquals(originalAttributeCount, p.getAttributes().size());
 	}
 	
 	/**
 	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)
 	 */
 	@Test
-	@Verifies(value = "should void an existing person attribute with an empty value", method = "saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult)")
 	public void saveShortPatient_shouldVoidAnExistingPersonAttributeWithAnEmptyValue() throws Exception {
 		int attributeTypeId = 8;
 		PersonAttributeType pat = Context.getPersonService().getPersonAttributeType(attributeTypeId);
@@ -430,8 +416,8 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 			}
 		}
 		//ensure we found and edited it
-		Assert.assertNotNull(attributeToEdit);
-		Assert.assertNotNull(oldValue);
+		Assertions.assertNotNull(attributeToEdit);
+		Assertions.assertNotNull(oldValue);
 		
 		WebRequest mockWebRequest = new ServletWebRequest(new MockHttpServletRequest());
 		BindException errors = new BindException(patientModel, "patientModel");
@@ -446,19 +432,18 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		    WebRequest.SCOPE_SESSION), null, (ShortPatientModel) mockWebRequest.getAttribute("patientModel",
 		    WebRequest.SCOPE_SESSION), errors);
 		
-		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
+		Assertions.assertTrue(!errors.hasErrors(), "Should pass with no validation errors");
+		Assertions.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
 		    WebRequest.SCOPE_SESSION));
 		
 		//the attribute should have been voided
-		Assert.assertEquals(originalActiveAttributeCount - 1, p.getActiveAttributes().size());
+		Assertions.assertEquals(originalActiveAttributeCount - 1, p.getActiveAttributes().size());
 	}
 	
 	/**
 	 * @see ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,Map,ShortPatientModel, BindingResult)
 	 */
 	@Test
-	@Verifies(value = "should should replace an existing attribute with a new one when edited", method = "saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult)")
 	public void saveShortPatient_shouldShouldReplaceAnExistingAttributeWithANewOneWhenEdited() throws Exception {
 		int attributeTypeId = 2;
 		PersonAttributeType pat = Context.getPersonService().getPersonAttributeType(attributeTypeId);
@@ -488,8 +473,8 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 			}
 		}
 		//ensure we found and edited it
-		Assert.assertNotNull(attributeToEdit);
-		Assert.assertNotNull(oldValue);
+		Assertions.assertNotNull(attributeToEdit);
+		Assertions.assertNotNull(oldValue);
 		
 		WebRequest mockWebRequest = new ServletWebRequest(new MockHttpServletRequest());
 		BindException errors = new BindException(patientModel, "patientModel");
@@ -504,14 +489,14 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		    WebRequest.SCOPE_SESSION), null, (ShortPatientModel) mockWebRequest.getAttribute("patientModel",
 		    WebRequest.SCOPE_SESSION), errors);
 		
-		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
-		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
+		Assertions.assertTrue(!errors.hasErrors(), "Should pass with no validation errors");
+		Assertions.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
 		    WebRequest.SCOPE_SESSION));
 		
 		//a new replacement attribute should have been created with the new value
 		PersonAttribute newAttribute = p.getAttribute(attributeTypeId);
-		Assert.assertEquals(originalAttributeCount + 1, p.getAttributes().size());
-		Assert.assertEquals(newValue, newAttribute.getValue());
+		Assertions.assertEquals(originalAttributeCount + 1, p.getAttributes().size());
+		Assertions.assertEquals(newValue, newAttribute.getValue());
 		
 		PersonAttribute oldAttribute = null;
 		//find the voided attribute
@@ -526,9 +511,9 @@ public class ShortPatientFormControllerTest extends BaseModuleWebContextSensitiv
 		}
 		
 		//The old attribute should have been voided and maintained its old value
-		Assert.assertNotNull(oldAttribute);
-		Assert.assertEquals(oldValue, oldAttribute.getValue());
-		Assert.assertTrue(oldAttribute.isVoided());
+		Assertions.assertNotNull(oldAttribute);
+		Assertions.assertEquals(oldValue, oldAttribute.getValue());
+		Assertions.assertTrue(oldAttribute.isVoided());
 	}
 	
 	/**

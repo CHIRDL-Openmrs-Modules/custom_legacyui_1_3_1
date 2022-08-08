@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Person;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
@@ -39,7 +39,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class AddPersonController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(AddPersonController.class);
 	
 	private static final String PATIENT_SHORT_EDIT_URL = "/admin/patients/shortPatientForm.form";
 	
@@ -145,12 +145,12 @@ public class AddPersonController extends SimpleFormController {
 			String birthdate = person.get(BIRTH_DATE);
 			String age = person.get(AGE);
 			
-			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
+			log.debug("name: {} birthdate: {} age: {} gender: {}", name, birthdate, age, gender);
 			
 			if (StringUtils.isNotEmpty(name) || StringUtils.isNotEmpty(birthdate) || StringUtils.isNotEmpty(age)
 			        || StringUtils.isNotEmpty(gender)) {
 				
-				log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
+				log.info("{}|{}|{}|{}|{}", userId, name, birthdate, age, gender);
 				
 				Integer d = null;
 				birthdate = birthdate.trim();
@@ -170,7 +170,7 @@ public class AddPersonController extends SimpleFormController {
 					// In theory, this should never happen -- the date selector should never allowed the
 					// user set an invalid date, but never know the scripts could be broken
 					if (log.isDebugEnabled()) {
-						log.debug("Parse exception occurred : " + e);
+						log.debug("Parse exception occurred : ", e);
 					}
 					invalidAgeFormat = true;
 				}
@@ -203,7 +203,7 @@ public class AddPersonController extends SimpleFormController {
 			
 		}
 		
-		log.debug("Returning personList of size: " + personList.size() + " from formBackingObject");
+		log.debug("Returning personList of size: {} from formBackingObject", personList.size());
 		
 		return personList;
 	}
@@ -230,7 +230,7 @@ public class AddPersonController extends SimpleFormController {
 		
 		List personList = (List) o;
 		
-		log.debug("Found list of size: " + personList.size());
+		log.debug("Found list of size: {}", personList.size());
 		
 		if (personList.size() < 1 && Context.isAuthenticated()) {
 			Map<String, String> person = getParametersFromRequest(request);
@@ -246,7 +246,7 @@ public class AddPersonController extends SimpleFormController {
 				viewType = "edit";
 			}
 			
-			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
+			log.debug("name: {} birthdate: {} age: {} gender: {}", name, birthdate, age, gender);
 			
 			if (StringUtils.isNotEmpty(name) || StringUtils.isNotEmpty(birthdate) || StringUtils.isNotEmpty(age)
 			        || StringUtils.isNotEmpty(gender)) {

@@ -12,14 +12,13 @@ package org.openmrs.layout;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.address.AddressSupport;
 import org.openmrs.layout.address.AddressTemplate;
-import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 
 public class AddressSupportTest extends BaseModuleWebContextSensitiveTest {
 	
@@ -32,21 +31,20 @@ public class AddressSupportTest extends BaseModuleWebContextSensitiveTest {
 	 * A fix was made for backward-compatibility; this test ensures that the fix is working.
 	 */
 	@Test
-	@Verifies(value = "should succeed even if db AddressTemplate class has changed", method = "getAddressTemplate()")
 	public void getAddressTemplate_shouldSucceedEvenIfDBAddressTemplateClassHasChanged() throws Exception {
-		
-		executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
-		
-		//first make sure the test setup is correct even if the dataset changes -- the AddressTemplate class used by this AddressSupport class
-		//(in the 'web' package differs from the updated classname in the DB
-		String newAddressTemplateClass = "org.openmrs.layout.address.AddressTemplate";
-		String xml = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE);
-		Assert.assertTrue(StringUtils.contains(xml, newAddressTemplateClass));
-		Assert.assertEquals(newAddressTemplateClass, AddressTemplate.class.getName());
-		
-		AddressSupport addressSupport = AddressSupport.getInstance();
-		List<AddressTemplate> addressTemplates = addressSupport.getAddressTemplate();
-		Assert.assertNotNull(addressTemplates.get(0));
-	}
+        
+        executeDataSet(PERSON_ADDRESS_VALIDATOR_DATASET_PACKAGE_PATH);
+        
+        //first make sure the test setup is correct even if the dataset changes -- the AddressTemplate class used by this AddressSupport class
+        //(in the 'web' package differs from the updated classname in the DB
+        String newAddressTemplateClass = "org.openmrs.layout.address.AddressTemplate";
+        String xml = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE);
+        Assertions.assertTrue(StringUtils.contains(xml, newAddressTemplateClass));
+        Assertions.assertEquals(newAddressTemplateClass, AddressTemplate.class.getName());
+        
+        AddressSupport addressSupport = AddressSupport.getInstance();
+        List<AddressTemplate> addressTemplates = addressSupport.getAddressTemplate();
+        Assertions.assertNotNull(addressTemplates.get(0));
+    }
 	
 }

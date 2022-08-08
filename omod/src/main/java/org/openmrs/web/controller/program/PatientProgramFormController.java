@@ -16,8 +16,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
@@ -29,23 +29,26 @@ import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class PatientProgramFormController implements Controller {
+@Controller
+public class PatientProgramFormController {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(PatientProgramFormController.class);
 	
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// can't do anything without a method
 		return null;
 	}
 	
+	@RequestMapping("/admin/programs/patientProgram.form")
 	public ModelAndView enroll(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 	        IOException {
 		
@@ -60,7 +63,7 @@ public class PatientProgramFormController implements Controller {
 		String locationIdStr = request.getParameter("locationId");
 		String completionDateStr = request.getParameter("dateCompleted");
 		
-		log.debug("enroll " + patientIdStr + " in " + programIdStr + " on " + enrollmentDateStr);
+		log.debug("enroll {} in {} on {}", patientIdStr, programIdStr, enrollmentDateStr);
 		
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		
@@ -106,7 +109,7 @@ public class PatientProgramFormController implements Controller {
 				if (StringUtils.hasText(stateIdStr)) {
 					Integer stateId = Integer.valueOf(stateIdStr);
 					ProgramWorkflowState state = workflow.getState(stateId);
-					log.debug("Transitioning to state: " + state);
+					log.debug("Transitioning to state: {}", state);
 					pp.transitionToState(state, enrollmentDate);
 				}
 			}

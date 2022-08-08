@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.SchedulerException;
@@ -40,7 +40,7 @@ public class SchedulerListController extends SimpleFormController {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	protected static final Log log = LogFactory.getLog(SchedulerListController.class);
+    private static final Logger log = LoggerFactory.getLogger(SchedulerListController.class);
 	
 	/**
 	 * Service context used to communicate with the services layer. TODO This is not used yet

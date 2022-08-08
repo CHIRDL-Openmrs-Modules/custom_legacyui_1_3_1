@@ -9,20 +9,18 @@
  */
 package org.openmrs.web.controller.observation.handler;
 
-import java.util.Locale;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
-import org.springframework.util.Assert;
-
-import org.openmrs.api.context.Context;
 import org.openmrs.Obs;
+import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.obs.handler.TextHandler;
+import org.springframework.util.Assert;
 
-import org.openmrs.web.controller.observation.handler.WebHandlerUtils;
 
 /**
  * Extends functionality of {@link TextHandler} for web specific views.

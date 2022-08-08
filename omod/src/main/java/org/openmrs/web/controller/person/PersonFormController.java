@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Attributable;
 import org.openmrs.Concept;
 import org.openmrs.Location;
@@ -68,7 +68,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class PersonFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	private static final Log log = LogFactory.getLog(PersonFormController.class);
+    private static final Logger log = LoggerFactory.getLogger(PersonFormController.class);
 	
 	/**
 	 * Allows for other Objects to be used as values in input tags. Normally, only strings and lists
@@ -263,7 +263,7 @@ public class PersonFormController extends SimpleFormController {
 				}
 			}
 			catch (DataIntegrityViolationException e) {
-				log.error("Unable to delete person because of database FK errors: " + person, e);
+				log.error("Unable to delete person because of database FK errors: {}", person, e);
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Person.cannot.delete");
 				
 				return new ModelAndView(new RedirectView(getSuccessView() + "?personId=" + person.getPersonId().toString()));
@@ -303,7 +303,7 @@ public class PersonFormController extends SimpleFormController {
 					List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(person, causeOfDeath);
 					if (obssDeath != null) {
 						if (obssDeath.size() > 1) {
-							log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
+							log.error("Multiple causes of death ({})?  Shouldn't be...", obssDeath.size());
 						} else {
 							Obs obsDeath = null;
 							if (obssDeath.size() == 1) {
@@ -360,7 +360,7 @@ public class PersonFormController extends SimpleFormController {
 									if (conceptOther.equals(currCause)) {
 										// seems like this is an other concept - let's try to get the "other" field info
 										deathReasonChanged = !otherInfo.equals(obsDeath.getValueText());
-										log.debug("Setting value_text as " + otherInfo);
+										log.debug("Setting value_text as {}", otherInfo);
 										obsDeath.setValueText(otherInfo);
 									} else {
 										// non empty text value implies concept changed from OTHER NON CODED to NONE
@@ -454,7 +454,7 @@ public class PersonFormController extends SimpleFormController {
 		}
 		
 		if (log.isDebugEnabled()) {
-			log.debug("Person Attributes: \n" + person.printAttributes());
+			log.debug("Person Attributes: \n {}", person.printAttributes());
 		}
 	}
 	
@@ -610,7 +610,7 @@ public class PersonFormController extends SimpleFormController {
 				maxAddrs = endDates.length;
 			}
 			
-			log.debug("There appears to be " + maxAddrs + " addresses that need to be saved");
+			log.debug("There appears to be {} addresses that need to be saved", maxAddrs);
 			
 			for (int i = 0; i < maxAddrs; i++) {
 				PersonAddress pa = new PersonAddress();
@@ -761,10 +761,10 @@ public class PersonFormController extends SimpleFormController {
 						log.debug("cod is null, so setting to empty string");
 						causeOfDeathOther = "";
 					} else {
-						log.debug("cod is valid: " + causeOfDeathOther);
+						log.debug("cod is valid: {}", causeOfDeathOther);
 					}
 				} else {
-					log.debug("obssDeath is wrong size: " + obssDeath.size());
+					log.debug("obssDeath is wrong size: {}", obssDeath.size());
 				}
 			} else {
 				log.warn("No concept death cause found");

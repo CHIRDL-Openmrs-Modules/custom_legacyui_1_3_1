@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -62,7 +62,7 @@ import org.springframework.web.context.request.WebRequest;
 @Controller
 public class ShortPatientFormController {
 	
-	private static final Log log = LogFactory.getLog(ShortPatientFormController.class);
+    private static final Logger log = LoggerFactory.getLogger(ShortPatientFormController.class);
 	
 	private static final String SHORT_PATIENT_FORM_URL = "/admin/patients/shortPatientForm";
 	
@@ -129,10 +129,10 @@ public class ShortPatientFormController {
 					log.debug("cod is null, so setting to empty string");
 					causeOfDeathOther = "";
 				} else {
-					log.debug("cod is valid: " + causeOfDeathOther);
+					log.debug("cod is valid: {}", causeOfDeathOther);
 				}
 			} else {
-				log.debug("obssDeath is wrong size: " + obssDeath.size());
+				log.debug("obssDeath is wrong size: {}", obssDeath.size());
 			}
 		} else {
 			log.debug("No concept cause found");
@@ -471,7 +471,7 @@ public class ShortPatientFormController {
 				    causeOfDeath);
 				if (obssDeath != null) {
 					if (obssDeath.size() > 1) {
-						log.warn("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
+						log.warn("Multiple causes of death ({})?  Shouldn't be...", obssDeath.size());
 					} else {
 						Obs obsDeath = null;
 						if (obssDeath.size() == 1) {
@@ -525,7 +525,7 @@ public class ShortPatientFormController {
 									if (otherInfo == null) {
 										otherInfo = "";
 									}
-									log.debug("Setting value_text as " + otherInfo);
+									log.debug("Setting value_text as {}", otherInfo);
 									obsDeath.setValueText(otherInfo);
 									
 								} else {
@@ -571,8 +571,7 @@ public class ShortPatientFormController {
 			// if the existing persoName has been edited
 			if (!getPersonNameString(personName).equalsIgnoreCase(getPersonNameString(personNameCache))) {
 				if (log.isDebugEnabled()) {
-					log.debug("Voiding person name with id: " + personName.getId() + " and replacing it with a new one: "
-					        + personName.getFullName());
+					log.debug("Voiding person name with id: {} and replacing it with a new one: {}", personName.getId(), personName.getFullName());
 				}
 				foundChanges = true;
 				// create a new one and copy the changes to it
@@ -607,8 +606,7 @@ public class ShortPatientFormController {
 				if (!personAddress.isBlank() && !personAddressCache.isBlank()
 				        && !personAddress.equalsContent(personAddressCache)) {
 					if (log.isDebugEnabled()) {
-						log.debug("Voiding person address with id: " + personAddress.getId()
-						        + " and replacing it with a new one: " + personAddress.toString());
+						log.debug("Voiding person address with id: {} and replacing it with a new one: {}", personAddress.getId(), personAddress.toString());
 					}
 					
 					foundChanges = true;

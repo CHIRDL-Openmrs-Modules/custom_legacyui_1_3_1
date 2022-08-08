@@ -14,8 +14,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 
@@ -33,7 +33,7 @@ import org.openmrs.Obs;
  */
 public class Filter {
 	
-	private static Log log = LogFactory.getLog(Filter.class);
+    private static final Logger log = LoggerFactory.getLogger(Filter.class);
 	
 	/**
 	 * Returns a subset of the passed set of encounters that match the passed encounter type id
@@ -43,7 +43,7 @@ public class Filter {
 	 * @return Subset of passed encounters that match EncounterTypeId
 	 */
 	public static Set<Encounter> filterEncountersByType(Collection<Encounter> encs, Integer type) {
-		log.debug("Filtering encounters for encounter type id: " + type);
+		log.debug("Filtering encounters for encounter type id: {}", type);
 		Set<Encounter> ret = new HashSet<Encounter>();
 		if (encs != null) {
 			for (Iterator<Encounter> i = encs.iterator(); i.hasNext();) {
@@ -64,7 +64,7 @@ public class Filter {
 	 * @return Subset of passed obs that match ConceptId
 	 */
 	public static Set<Obs> filterObsByConcept(Collection<Obs> obs, Integer concept) {
-		log.debug("Filtering obs for concept id: " + concept);
+		log.debug("Filtering obs for concept id: {}", concept);
 		Set<Obs> ret = new HashSet<Obs>();
 		if (obs != null) {
 			for (Iterator<Obs> i = obs.iterator(); i.hasNext();) {

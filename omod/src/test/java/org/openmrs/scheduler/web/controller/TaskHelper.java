@@ -9,8 +9,8 @@
  */
 package org.openmrs.scheduler.web.controller;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskDefinition;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class TaskHelper {
 	
-	private static final Log log = LogFactory.getLog(TaskHelper.class);
+    private static final Logger log = LoggerFactory.getLogger(TaskHelper.class);
 	
 	private SchedulerService service;
 	
@@ -107,8 +107,7 @@ public class TaskHelper {
 			Thread.sleep(10);
 		}
 		
-		log.debug("test task has started executing " + (System.currentTimeMillis() - scheduledBefore)
-		        + " milliseconds after having been scheduled");
+		log.debug("test task has started executing {} milliseconds after having been scheduled", (System.currentTimeMillis() - scheduledBefore));
 	}
 	
 }

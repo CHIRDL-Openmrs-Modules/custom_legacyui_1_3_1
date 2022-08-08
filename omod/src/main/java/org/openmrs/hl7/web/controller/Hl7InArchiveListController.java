@@ -15,8 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.hl7.HL7InArchive;
@@ -32,11 +30,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 public class Hl7InArchiveListController {
-	
-	/**
-	 * Logger for this class and subclasses
-	 */
-	private static final Log log = LogFactory.getLog(Hl7InArchiveListController.class);
 	
 	/**
 	 * Render the archived HL7 messages page

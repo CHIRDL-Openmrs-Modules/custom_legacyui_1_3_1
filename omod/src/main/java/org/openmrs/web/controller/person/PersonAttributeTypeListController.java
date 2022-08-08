@@ -18,8 +18,6 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.AdministrationService;
@@ -39,9 +37,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 @RequestMapping(value = "/admin/person/personAttributeType.list")
 public class PersonAttributeTypeListController {
-	
-	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * Show the page to the user.

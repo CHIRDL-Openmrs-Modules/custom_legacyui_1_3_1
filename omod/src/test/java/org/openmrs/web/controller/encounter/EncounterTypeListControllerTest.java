@@ -12,9 +12,8 @@ package org.openmrs.web.controller.encounter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Test;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.junit.jupiter.api.Test;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.validation.BindException;
@@ -29,7 +28,6 @@ public class EncounterTypeListControllerTest extends BaseModuleWebContextSensiti
 	 * @see EncounterTypeListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should not fail if no encounter types are selected", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldNotFailIfNoEncounterTypesAreSelected() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
 		HttpServletResponse response = new MockHttpServletResponse();

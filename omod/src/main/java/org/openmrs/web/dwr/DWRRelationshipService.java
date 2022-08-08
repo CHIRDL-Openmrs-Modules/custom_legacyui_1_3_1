@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
@@ -27,8 +25,6 @@ import org.openmrs.validator.RelationshipValidator;
 import org.springframework.validation.MapBindingResult;
 
 public class DWRRelationshipService {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	public String[] createRelationship(Integer personAId, Integer personBId, Integer relationshipTypeId, String startDateStr)
 	        throws Exception {

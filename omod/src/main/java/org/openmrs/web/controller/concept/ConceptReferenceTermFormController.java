@@ -16,8 +16,8 @@ import java.util.Set;
 
 import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.ListUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.api.APIException;
@@ -43,7 +43,7 @@ public class ConceptReferenceTermFormController {
 	/**
 	 * Logger for this class
 	 */
-	private static final Log log = LogFactory.getLog(ConceptReferenceTermFormController.class);
+    private static final Logger log = LoggerFactory.getLogger(ConceptReferenceTermFormController.class);
 	
 	private static final String CONCEPT_REFERENCE_TERM_FORM_URL = "/admin/concepts/conceptReferenceTerm";
 	
@@ -154,7 +154,7 @@ public class ConceptReferenceTermFormController {
 			try {
 				conceptReferenceTerm = Context.getConceptService().saveConceptReferenceTerm(conceptReferenceTerm);
 				if (log.isDebugEnabled()) {
-					log.debug("Saved concept reference term: " + conceptReferenceTerm.toString());
+					log.debug("Saved concept reference term: {}", conceptReferenceTerm);
 				}
 				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptReferenceTerm.saved", WebRequest.SCOPE_SESSION);
 				return "redirect:" + CONCEPT_REFERENCE_TERM_FORM_URL + ".form?conceptReferenceTermId="
@@ -191,7 +191,7 @@ public class ConceptReferenceTermFormController {
 			ConceptReferenceTerm conceptReferenceTerm = conceptReferenceTermModel.getConceptReferenceTerm();
 			Context.getConceptService().retireConceptReferenceTerm(conceptReferenceTerm, retireReason);
 			if (log.isDebugEnabled()) {
-				log.debug("Retired concept reference term with id: " + conceptReferenceTerm.getId());
+				log.debug("Retired concept reference term with id: {}", conceptReferenceTerm.getId());
 			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 			    Context.getMessageSourceService().getMessage("ConceptReferenceTerm.retired"), WebRequest.SCOPE_SESSION);
@@ -224,7 +224,7 @@ public class ConceptReferenceTermFormController {
 			ConceptReferenceTerm conceptReferenceTerm = conceptReferenceTermModel.getConceptReferenceTerm();
 			Context.getConceptService().unretireConceptReferenceTerm(conceptReferenceTerm);
 			if (log.isDebugEnabled()) {
-				log.debug("Unretired concept reference term with id: " + conceptReferenceTerm.getId());
+				log.debug("Unretired concept reference term with id: {}", conceptReferenceTerm.getId());
 			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 			    Context.getMessageSourceService().getMessage("ConceptReferenceTerm.unretired"), WebRequest.SCOPE_SESSION);
@@ -257,7 +257,7 @@ public class ConceptReferenceTermFormController {
 		try {
 			Context.getConceptService().purgeConceptReferenceTerm(conceptReferenceTermModel.getConceptReferenceTerm());
 			if (log.isDebugEnabled()) {
-				log.debug("Purged concept reference term with id: " + id);
+				log.debug("Purged concept reference term with id: {}", id);
 			}
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 			    Context.getMessageSourceService().getMessage("ConceptReferenceTerm.purged"), WebRequest.SCOPE_SESSION);

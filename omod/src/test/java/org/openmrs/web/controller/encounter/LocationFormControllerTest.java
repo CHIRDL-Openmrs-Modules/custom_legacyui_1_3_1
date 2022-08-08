@@ -12,12 +12,11 @@ package org.openmrs.web.controller.encounter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -44,7 +43,6 @@ public class LocationFormControllerTest extends BaseModuleWebContextSensitiveTes
 	 * @see LocationFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should not retire location if reason is empty", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldNotRetireLocationIfReasonIsEmpty() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
 		request.setParameter("locationId", "1");
@@ -61,14 +59,13 @@ public class LocationFormControllerTest extends BaseModuleWebContextSensitiveTes
 		// make sure an error is returned because of the empty retire reason
 		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult) modelAndView.getModel().get(
 		    "org.springframework.validation.BindingResult.location");
-		Assert.assertTrue(bindingResult.hasFieldErrors("retireReason"));
+		Assertions.assertTrue(bindingResult.hasFieldErrors("retireReason"));
 	}
 	
 	/**
 	 * @see LocationFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should retire location", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldRetireLocation() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
 		request.setParameter("locationId", "1");
@@ -80,14 +77,13 @@ public class LocationFormControllerTest extends BaseModuleWebContextSensitiveTes
 		((SimpleFormController) getLocationFormController()).handleRequest(request, response);
 		
 		Location retiredLocation = Context.getLocationService().getLocation(1);
-		Assert.assertTrue(retiredLocation.isRetired());
+		Assertions.assertTrue(retiredLocation.isRetired());
 	}
 	
 	/**
 	 * @see LocationFormController#formBackingObject(HttpServletRequest)
 	 */
 	@Test
-	@Verifies(value = "should return valid location given valid locationId", method = "formBackingObject(HttpServletRequest)")
 	public void formBackingObject_shouldReturnValidLocationGivenValidLocationId() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "");
 		request.setParameter("locationId", "1");
@@ -100,6 +96,6 @@ public class LocationFormControllerTest extends BaseModuleWebContextSensitiveTes
 		
 		// make sure there is an "locationId" filled in on the concept
 		Location command = (Location) modelAndView.getModel().get("location");
-		Assert.assertNotNull(command.getLocationId());
+		Assertions.assertNotNull(command.getLocationId());
 	}
 }

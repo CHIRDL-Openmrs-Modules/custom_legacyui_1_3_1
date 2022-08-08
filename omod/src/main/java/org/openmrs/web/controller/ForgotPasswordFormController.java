@@ -22,8 +22,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -39,9 +37,6 @@ import org.springframework.web.servlet.view.RedirectView;
  * box for the answer to the secret question is shown
  */
 public class ForgotPasswordFormController extends SimpleFormController {
-	
-	/** Logger for this class and subclasses */
-	protected static final Log log = LogFactory.getLog(ForgotPasswordFormController.class);
 	
 	/**
 	 * Not used with the forgot password form controller.

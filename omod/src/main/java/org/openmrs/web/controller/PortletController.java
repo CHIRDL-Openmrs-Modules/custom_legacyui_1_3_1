@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
@@ -46,7 +46,7 @@ import org.springframework.web.servlet.mvc.Controller;
 
 public class PortletController implements Controller {
 	
-	protected Log log = LogFactory.getLog(this.getClass());
+    protected static final Logger log = LoggerFactory.getLogger(PortletController.class);
 	
 	/**
 	 * This method produces a model containing the following mappings:
@@ -140,7 +140,7 @@ public class PortletController implements Controller {
 				        "Illegal extension used for portlet: '.jsp'. Allowable extensions are '' (no extension) and '.portlet'");
 			}
 			
-			log.debug("Loading portlet: " + portletPath);
+			log.debug("Loading portlet: {}", portletPath);
 			
 			String id = (String) request.getAttribute("org.openmrs.portlet.id");
 			String size = (String) request.getAttribute("org.openmrs.portlet.size");
@@ -353,9 +353,9 @@ public class PortletController implements Controller {
 			o = model.get("conceptIds");
 			
 			if (!StringUtils.isEmpty(o) && !model.containsKey("conceptMap")) {
-				log.debug("Found conceptIds parameter: " + o);
-				Map<Integer, Concept> concepts = new HashMap<Integer, Concept>();
-				Map<String, Concept> conceptsByStringIds = new HashMap<String, Concept>();
+				log.debug("Found conceptIds parameter: {}", o);
+				Map<Integer, Concept> concepts = new HashMap<>();
+				Map<String, Concept> conceptsByStringIds = new HashMap<>();
 				String conceptIds = (String) o;
 				String[] ids = conceptIds.split(",");
 				for (String cId : ids) {
@@ -375,7 +375,7 @@ public class PortletController implements Controller {
 			}
 			
 			populateModel(request, model);
-			log.debug(portletPath + " took " + (System.currentTimeMillis() - timeAtStart) + " ms");
+			log.debug("{} took {} ms", portletPath, (System.currentTimeMillis() - timeAtStart));
 		}
 		
 		return new ModelAndView(portletPath, "model", model);

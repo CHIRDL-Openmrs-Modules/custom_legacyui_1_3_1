@@ -15,12 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptSearchResult;
@@ -40,7 +39,7 @@ import org.openmrs.web.WebUtil;
  */
 public class DWRFormService {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(DWRFormService.class);
 	
 	/**
 	 * Finds forms based on search text.
@@ -215,10 +214,10 @@ public class DWRFormService {
 		ff.setRequired(required);
 		ff.setSortWeight(sortWeight);
 		
-		log.debug("fieldId: " + fieldId);
-		log.debug("formFieldId: " + formFieldId);
-		log.debug("parentId: " + parent);
-		log.debug("parent: " + ff.getParent());
+		log.debug("fieldId: {}", fieldId);
+		log.debug("formFieldId: {}", formFieldId);
+		log.debug("parentId: {}", parent);
+		log.debug("parent: {}", ff.getParent());
 		
 		if (fieldId != null && fieldId != 0) {
 			field = fs.getField(fieldId);
@@ -227,7 +226,7 @@ public class DWRFormService {
 		}
 		
 		if (field == null) {
-			log.error("Field is null. Field Id: " + fieldId);
+			log.error("Field is null. Field Id: {}", fieldId);
 		} else {
 			field.setName(name);
 			field.setDescription(fieldDesc);
@@ -303,7 +302,7 @@ public class DWRFormService {
 		}
 		
 		if (log.isDebugEnabled()) {
-			log.debug("ff.getFormFieldId: " + ff.getFormFieldId());
+			log.debug("ff.getFormFieldId: {}", ff.getFormFieldId());
 		}
 		
 		List<Field> fields = new Vector<Field>();

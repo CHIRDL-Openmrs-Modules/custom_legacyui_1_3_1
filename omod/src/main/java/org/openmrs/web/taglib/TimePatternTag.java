@@ -9,8 +9,8 @@
  */
 package org.openmrs.web.taglib;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 
 import javax.servlet.jsp.tagext.TagSupport;
@@ -25,7 +25,7 @@ public class TimePatternTag extends TagSupport {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(TimePatternTag.class);
 	
 	/**
 	 * Defines whether time pattern sting to be localised or not,

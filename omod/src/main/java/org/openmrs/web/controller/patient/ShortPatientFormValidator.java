@@ -17,8 +17,8 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
@@ -38,7 +38,7 @@ import org.springframework.validation.Validator;
  */
 public class ShortPatientFormValidator implements Validator {
 	
-	private static Log log = LogFactory.getLog(PersonNameValidator.class);
+    private static final Logger log = LoggerFactory.getLogger(ShortPatientFormValidator.class);
 	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
@@ -74,7 +74,7 @@ public class ShortPatientFormValidator implements Validator {
 	 */
 	public void validate(Object obj, Errors errors) {
 		if (log.isDebugEnabled()) {
-			log.debug(this.getClass().getName() + ": Validating patient data from the short patient form....");
+			log.debug("{}: Validating patient data from the short patient form....", this.getClass().getName());
 		}
 		
 		ShortPatientModel shortPatientModel = (ShortPatientModel) obj;

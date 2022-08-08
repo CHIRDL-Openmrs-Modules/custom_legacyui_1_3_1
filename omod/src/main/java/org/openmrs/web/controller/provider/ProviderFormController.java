@@ -9,8 +9,11 @@
  */
 package org.openmrs.web.controller.provider;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+
 import org.openmrs.Provider;
 import org.openmrs.ProviderAttribute;
 import org.openmrs.ProviderAttributeType;
@@ -31,15 +34,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-
 @Controller
 @RequestMapping("/admin/provider/provider.form")
 public class ProviderFormController {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) throws Exception {

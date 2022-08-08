@@ -12,8 +12,6 @@ package org.openmrs.web.dwr;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
@@ -23,8 +21,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.web.WebUtil;
 
 public class ConceptListItem {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer conceptId;
 	

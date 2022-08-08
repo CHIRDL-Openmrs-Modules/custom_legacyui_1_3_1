@@ -11,8 +11,8 @@ package org.openmrs.web.taglib;
 
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 
@@ -59,7 +59,7 @@ public class PrivilegeTag extends TagSupport {
 
 	public static final long serialVersionUID = 11233L;
 
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(PrivilegeTag.class);
 
 	private String privilege;
 
@@ -99,7 +99,7 @@ public class PrivilegeTag extends TagSupport {
 
 		UserContext userContext = Context.getUserContext();
 
-		log.debug("Checking user " + userContext.getAuthenticatedUser() + " for privs " + privilege);
+		log.debug("Checking user {} for privs {}", userContext.getAuthenticatedUser(), this.privilege);
 
 		boolean isHasAllSet = Boolean.valueOf(hasAll);
 		boolean hasSatisfiedPrivilegeCondition;

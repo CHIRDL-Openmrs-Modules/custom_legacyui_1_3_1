@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
@@ -62,7 +62,7 @@ public class ModuleListController extends SimpleFormController {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	protected static final Log log = LogFactory.getLog(ModuleListController.class);
+    private static final Logger log = LoggerFactory.getLogger(ModuleListController.class);
 	
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
@@ -247,7 +247,7 @@ public class ModuleListController extends SimpleFormController {
 				error = msa.getMessage("Module.disallowAdministration",
 				    new String[] { ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN });
 			} else {
-				log.debug("Module id: " + moduleId);
+				log.debug("Module id: {}", moduleId);
 				Module mod = ModuleFactory.getModuleById(moduleId);
 
 				// Argument to pass to the success/error message
@@ -306,7 +306,7 @@ public class ModuleListController extends SimpleFormController {
 		while (candidates.size() > 0) {
 			Module mod = removeModuleWithNoDependencies(candidates);
 			if (mod == null) {
-				log.warn("Unable to determine suitable startup order for " + modulesToStart);
+				log.warn("Unable to determine suitable startup order for {}", modulesToStart);
 				return modulesToStart;
 			}
 			ret.add(mod);
@@ -350,7 +350,7 @@ public class ModuleListController extends SimpleFormController {
 		
 		Collection<Module> modules = ModuleFactory.getLoadedModules();
 		
-		log.info("Returning " + modules.size() + " modules");
+		log.info("Returning {} modules", modules.size());
 		
 		return modules;
 	}

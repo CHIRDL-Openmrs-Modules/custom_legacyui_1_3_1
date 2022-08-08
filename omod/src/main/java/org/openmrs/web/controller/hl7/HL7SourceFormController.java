@@ -14,12 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.hl7.HL7Source;
 import org.openmrs.api.APIException;
-import org.openmrs.hl7.HL7Service;
 import org.openmrs.api.context.Context;
+import org.openmrs.hl7.HL7Service;
+import org.openmrs.hl7.HL7Source;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -35,9 +33,6 @@ import org.springframework.web.servlet.view.RedirectView;
  * that was modified by the input form and saves it to the db
  */
 public class HL7SourceFormController extends SimpleFormController {
-	
-	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are

@@ -9,7 +9,6 @@
  */
 package org.openmrs.scheduler.web.controller;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,8 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsUtil;
@@ -40,7 +39,7 @@ public class SchedulerFormController extends SimpleFormController {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	private static final Log log = LogFactory.getLog(SchedulerFormController.class);
+    private static final Logger log = LoggerFactory.getLogger(SchedulerFormController.class);
 	
 	// Move this to message.properties or OpenmrsConstants
 	public static String DEFAULT_DATE_PATTERN = "MM/dd/yyyy HH:mm:ss";
@@ -131,7 +130,7 @@ public class SchedulerFormController extends SimpleFormController {
 		
 		TaskDefinition task = (TaskDefinition) command;
 		task.setStartTimePattern(DEFAULT_DATE_PATTERN);
-		log.info("task started? " + task.getStarted());
+		log.info("task started? {}", task.getStarted());
 		
 		//TODO Add unit test method to check that an executing task doesn't get rescheduled, it would require adding a test task 
 		//that runs for a period that spans beyond time it takes to execute all the necessary assertions in the test method

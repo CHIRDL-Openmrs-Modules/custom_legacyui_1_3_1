@@ -20,8 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -39,7 +39,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class WorkflowFormController extends SimpleFormController {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(WorkflowFormController.class);
 	
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
@@ -88,7 +88,7 @@ public class WorkflowFormController extends SimpleFormController {
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	        BindException errors) throws Exception {
-		log.debug("about to save " + obj);
+		log.debug("about to save {}", obj);
 		HttpSession httpSession = request.getSession();
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
@@ -118,7 +118,7 @@ public class WorkflowFormController extends SimpleFormController {
 						wf.removeState(remove.getValue());
 						//Context.getProgramWorkflowService().updateWorkflow(wf);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Workflow.saved");
-						log.debug("removed " + remove);
+						log.debug("removed {}", remove);
 					}
 					catch (DataIntegrityViolationException e) {
 						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.state.inuse.cannot.delete");

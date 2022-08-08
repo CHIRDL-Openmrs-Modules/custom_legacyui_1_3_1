@@ -20,8 +20,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptDescription;
@@ -38,7 +38,7 @@ public class DownloadDictionaryServlet extends HttpServlet {
 	
 	public static final long serialVersionUID = 1231231L;
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(DownloadDictionaryServlet.class);
 	
 	/**
 	 * Maximum size of query results, when retrieved in batches. ABKTODO: should probably be

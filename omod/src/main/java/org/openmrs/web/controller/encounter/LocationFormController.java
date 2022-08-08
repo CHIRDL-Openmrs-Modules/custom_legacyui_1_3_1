@@ -19,8 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
 import org.openmrs.LocationTag;
@@ -43,7 +43,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class LocationFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(LocationFormController.class);
 	
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
@@ -127,7 +127,7 @@ public class LocationFormController extends SimpleFormController {
 				}
 			}
 			catch (APIException e) {
-				log.error("Error while saving location: " + obj, e);
+				log.error("Error while saving location: {}", obj, e);
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
 				return showForm(request, response, errors);
 			}

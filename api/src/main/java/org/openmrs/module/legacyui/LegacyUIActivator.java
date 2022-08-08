@@ -10,8 +10,8 @@
 package org.openmrs.module.legacyui;
 
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.ModuleActivator;
 
@@ -20,7 +20,7 @@ import org.openmrs.module.ModuleActivator;
  */
 public class LegacyUIActivator extends BaseModuleActivator {
 	
-	protected Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(LegacyUIActivator.class);
 		
 	/**
 	 * @see ModuleActivator#willRefreshContext()

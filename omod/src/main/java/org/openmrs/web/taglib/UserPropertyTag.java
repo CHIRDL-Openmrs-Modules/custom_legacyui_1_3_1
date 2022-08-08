@@ -11,15 +11,15 @@ package org.openmrs.web.taglib;
 
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 
 public class UserPropertyTag extends TagSupport {
 	
 	private static final long serialVersionUID = 121L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(UserPropertyTag.class);
 	
 	private String key = "";
 	

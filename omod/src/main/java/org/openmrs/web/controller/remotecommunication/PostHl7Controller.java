@@ -15,8 +15,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7Service;
@@ -27,7 +27,7 @@ import org.springframework.web.servlet.mvc.Controller;
 
 public class PostHl7Controller implements Controller {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(PostHl7Controller.class);
 	
 	private String formView;
 	
@@ -54,7 +54,7 @@ public class PostHl7Controller implements Controller {
 				HL7InQueue hl7InQueue = new HL7InQueue();
 				hl7InQueue.setHL7Data(message);
 				hl7InQueue.setHL7Source(source);
-				log.debug("source: " + hl7Source + " , message: " + message);
+				log.debug("source: {} , message: {}", hl7Source, message);
 				Context.getHL7Service().saveHL7InQueue(hl7InQueue);
 				success = true;
 			} else {

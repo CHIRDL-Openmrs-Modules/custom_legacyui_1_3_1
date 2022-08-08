@@ -13,8 +13,8 @@ import java.text.SimpleDateFormat;
 
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 
 /**
@@ -24,7 +24,7 @@ public class DatePatternTag extends TagSupport {
 	
 	private static final long serialVersionUID = 122L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(DatePatternTag.class);
 	
 	/**
 	 * This is to tell the user whether the string to be returned is the localized pattern or not,
