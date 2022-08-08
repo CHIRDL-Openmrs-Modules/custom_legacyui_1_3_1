@@ -9,11 +9,10 @@
  */
 package org.openmrs.web.taglib;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mockStatic;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 
@@ -46,22 +45,16 @@ public class PortletTagTest {
 		String portletUrl = "test.portlet";
 		String moduleId = "moduleId";
 		
-		// Setup the mocking for the ModuleFactory
-		MockedStatic<ModuleFactory> mocked = null;;
-        try {
-            mocked = mockStatic(ModuleFactory.class);
-            mocked.when(() -> ModuleFactory.getModuleById(moduleId))
-              .thenReturn(new Module(moduleId));
-            
-            // Instantiate the portlet and get the module url
-            PortletTag portlet = new PortletTag();
-            String result = portlet.generatePortletUrl(portletUrl, moduleId);
-            
-            // Verify the portlet url
-            assertEquals("/module/" + moduleId + "/portlets/" + portletUrl, result);
-        } finally {
-            mocked.close();
-        }
+		Module module = new Module(moduleId, moduleId, portletUrl, "author", "description", "1.0");
+		ModuleFactory.loadModule(module, Boolean.FALSE);
+		assertEquals(module, ModuleFactory.getModuleById(moduleId));
+        
+        // Instantiate the portlet and get the module url
+        PortletTag portlet = new PortletTag();
+        String result = portlet.generatePortletUrl(portletUrl, moduleId);
+        
+        // Verify the portlet url
+        assertEquals("/module/" + moduleId + "/portlets/" + portletUrl, result);
 	}
 	
 	/**
@@ -70,17 +63,16 @@ public class PortletTagTest {
 	@Test
 	public void getModulePortletUrl_shouldReplacePeriodInAModuleIdWithAForwardSlashWhenBuildingAModulePortletUrl() {
 		String portletUrl = "test.portlet";
-		String moduleId = "module.id";
+		String moduleId = "module.id.";
 		
-		try (MockedStatic<ModuleFactory> mocked = mockStatic(ModuleFactory.class)) {
-            mocked.when(() -> ModuleFactory.getModuleById(moduleId))
-              .thenReturn(new Module(moduleId));
+		Module module = new Module(moduleId, moduleId, portletUrl, "author", "description", "1.0");
+		ModuleFactory.loadModule(module, Boolean.FALSE);
+		assertEquals(module, ModuleFactory.getModuleById(moduleId));
             
-            PortletTag portlet = new PortletTag();
-            String result = portlet.generatePortletUrl(portletUrl, moduleId);
-            
-            assertEquals("/module/" + moduleId.replace('.', '/') + "/portlets/" + portletUrl, result);
-        }
+        PortletTag portlet = new PortletTag();
+        String result = portlet.generatePortletUrl(portletUrl, moduleId);
+        
+        assertEquals("/module/" + moduleId.replace('.', '/') + "/portlets/" + portletUrl, result);
 	}
 	
 	/**
@@ -91,17 +83,16 @@ public class PortletTagTest {
 		String portletUrl = "test.portlet";
 		String moduleId = "module.id";
 		
-		try (MockedStatic<ModuleFactory> mocked = mockStatic(ModuleFactory.class)) {
-            mocked.when(() -> ModuleFactory.getModuleById(moduleId))
-              .thenReturn(new Module(moduleId));
-            
-            PortletTag portlet = new PortletTag();
-            portlet.setModuleId(moduleId);
-            String result = portlet.generatePortletUrl(portletUrl, moduleId);
-            
-            assertEquals("/module/" + moduleId.replace('.', '/') + "/portlets/" + portletUrl, result);
-            assertEquals(moduleId, portlet.getModuleId());
-        }
+		Module module = new Module(moduleId, moduleId, portletUrl, "author", "description", "1.0");
+		ModuleFactory.loadModule(module, Boolean.FALSE);
+		assertEquals(module, ModuleFactory.getModuleById(moduleId));
+        
+        PortletTag portlet = new PortletTag();
+        portlet.setModuleId(moduleId);
+        String result = portlet.generatePortletUrl(portletUrl, moduleId);
+        
+        assertEquals("/module/" + moduleId.replace('.', '/') + "/portlets/" + portletUrl, result);
+        assertEquals(moduleId, portlet.getModuleId());
 	}
 	
 	/**
@@ -110,18 +101,15 @@ public class PortletTagTest {
 	@Test
 	public void getModulePortletUrl_shouldReturnACorePortletUrlWhenTheSpecifiedModuleCannotBeFound() {
 		String portletUrl = "test.portlet";
-		String moduleId = "moduleId";
+		String moduleId = "moduleId.";
 		
 		// Setup the mocking for ModuleFactory to return null to test when the module is not found
-		try (MockedStatic<ModuleFactory> mocked = mockStatic(ModuleFactory.class)) {
-            mocked.when(() -> ModuleFactory.getModuleById(moduleId))
-              .thenReturn(null);
+		assertNull(ModuleFactory.getModuleById(moduleId));
             
-            PortletTag portlet = new PortletTag();
-            String result = portlet.generatePortletUrl(portletUrl, moduleId);
+        PortletTag portlet = new PortletTag();
+        String result = portlet.generatePortletUrl(portletUrl, moduleId);
                 
-            assertEquals("/portlets/" + portletUrl, result);
-        }
+        assertEquals("/portlets/" + portletUrl, result);
 	}
 	
 	/**

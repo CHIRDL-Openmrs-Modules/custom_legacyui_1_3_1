@@ -9,11 +9,11 @@
  */
 package org.openmrs.module.web.extension;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.openmrs.module.Extension;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.web.extension.provider.Link;
@@ -36,18 +35,15 @@ public class ExtensionUtilTest {
 	@Test
 	public void getModulesAddEncounterToVisitLinks_shouldReturnEmptySetIfThereIsNoAddEncounterToVisitExtension()
 	        throws Exception {
-	    try (MockedStatic<ModuleFactory> mocked = mockStatic(ModuleFactory.class)) {
-            //given
-            mocked.when(() -> ModuleFactory.getExtensions("org.openmrs.module.web.extension.AddEncounterToVisitExtension"))
-              .thenReturn(null);
-            
-            //when
-            Set<Link> links = ExtensionUtil.getAllAddEncounterToVisitLinks();
-            
-            //then
-            assertNotNull(links);
-            assertEquals(0, links.size());
-        }
+        //given
+		assertEquals(new ArrayList<>(), ModuleFactory.getExtensions("org.openmrs.module.web.extension.AddEncounterToVisitExtension"));
+        
+        //when
+        Set<Link> links = ExtensionUtil.getAllAddEncounterToVisitLinks();
+        
+        //then
+        assertNotNull(links);
+        assertEquals(0, links.size());
 	}
 	
 	/**
@@ -79,18 +75,17 @@ public class ExtensionUtilTest {
 		extensions.add(ext1);
 		extensions.add(ext2);
 		
-		try (MockedStatic<ModuleFactory> mocked = mockStatic(ModuleFactory.class)) {
-            //given
-            mocked.when(() -> ModuleFactory.getExtensions("org.openmrs.module.web.extension.AddEncounterToVisitExtension"))
-              .thenReturn(extensions);
-            
-            //when
-            Set<Link> allAddEncounterToVisitLinks = ExtensionUtil.getAllAddEncounterToVisitLinks();
-            
-            //then
-            assertTrue(allAddEncounterToVisitLinks.contains(link1));
-            assertTrue(allAddEncounterToVisitLinks.contains(link2));
-            assertTrue(allAddEncounterToVisitLinks.contains(link3));
-        }
+		ModuleFactory.getExtensionMap().put("org.openmrs.module.web.extension.AddEncounterToVisitExtension", extensions);
+		
+        //given
+		assertEquals(extensions, ModuleFactory.getExtensions("org.openmrs.module.web.extension.AddEncounterToVisitExtension"));
+        
+        //when
+        Set<Link> allAddEncounterToVisitLinks = ExtensionUtil.getAllAddEncounterToVisitLinks();
+        
+        //then
+        assertTrue(allAddEncounterToVisitLinks.contains(link1));
+        assertTrue(allAddEncounterToVisitLinks.contains(link2));
+        assertTrue(allAddEncounterToVisitLinks.contains(link3));
 	}
 }
