@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
-//import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.util.ArrayList;
 import java.util.HashSet;

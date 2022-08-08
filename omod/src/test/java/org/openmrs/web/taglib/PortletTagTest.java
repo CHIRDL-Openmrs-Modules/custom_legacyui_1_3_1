@@ -16,12 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 /**
  * Tests the {@link PortletTag}
  */
-@PrepareForTest(ModuleFactory.class)
 public class PortletTagTest {
 	
 	/**
