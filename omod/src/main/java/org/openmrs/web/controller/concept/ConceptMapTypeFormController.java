@@ -11,21 +11,21 @@ package org.openmrs.web.controller.concept;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openmrs.ConceptMapType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.validator.ConceptMapTypeValidator;
 import org.openmrs.web.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
@@ -49,7 +49,7 @@ public class ConceptMapTypeFormController {
 	/**
 	 * Processes requests to display the form
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = CONCEPT_MAP_TYPE_FORM_URL)
+	@GetMapping(value = CONCEPT_MAP_TYPE_FORM_URL)
 	public String showForm() {
 		return CONCEPT_MAP_TYPE_FORM;
 	}
@@ -59,7 +59,7 @@ public class ConceptMapTypeFormController {
 	 *
 	 * @param model the {@link ModelMap} object
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = CONCEPT_MAP_TYPE_LIST_URL)
+	@GetMapping(value = CONCEPT_MAP_TYPE_LIST_URL)
 	public void showConceptMapTypeList(ModelMap model) {
 		ConceptService conceptService = Context.getConceptService();
 		List<ConceptMapType> conceptMapTypeList = conceptService.getConceptMapTypes(true, true);
@@ -90,7 +90,7 @@ public class ConceptMapTypeFormController {
 	 * @param result the {@link BindingResult} object
 	 * @return the url to redirect to
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = CONCEPT_MAP_TYPE_FORM_URL)
+	@PostMapping(value = CONCEPT_MAP_TYPE_FORM_URL)
 	public String saveConceptMapType(WebRequest request, @ModelAttribute("conceptMapType") ConceptMapType conceptMapType,
 	        BindingResult result) {
 		
@@ -123,7 +123,7 @@ public class ConceptMapTypeFormController {
 	 * @param retireReason the reason why the concept map type is getting retired
 	 * @return the url to redirect to
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/concepts/retireConceptMapType")
+	@PostMapping(value = "/admin/concepts/retireConceptMapType")
 	public String retireConceptMapType(WebRequest request,
 	        @ModelAttribute(value = "conceptMapType") ConceptMapType conceptMapType,
 	        @RequestParam(required = false, value = "retireReason") String retireReason) {
@@ -159,7 +159,7 @@ public class ConceptMapTypeFormController {
 	 * @param conceptMapType the concept map type object to unretire
 	 * @return the url to redirect to
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/concepts/unretireConceptMapType")
+	@PostMapping(value = "/admin/concepts/unretireConceptMapType")
 	public String unretireConceptMapType(WebRequest request,
 	        @ModelAttribute(value = "conceptMapType") ConceptMapType conceptMapType) {
 		
@@ -190,7 +190,7 @@ public class ConceptMapTypeFormController {
 	 * @param conceptMapType
 	 * @return the url to forward to
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/concepts/purgeConceptMapType")
+	@PostMapping(value = "/admin/concepts/purgeConceptMapType")
 	public String purgeTerm(WebRequest request, @ModelAttribute(value = "conceptMapType") ConceptMapType conceptMapType) {
 		Integer id = conceptMapType.getId();
 		try {

@@ -9,32 +9,38 @@
  */
 package org.openmrs.web.controller.encounter;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Test;
 import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindException;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 
 /**
  * Tests against the {@link EncounterTypeListController}
  */
 public class EncounterTypeListControllerTest extends BaseModuleWebContextSensitiveTest {
-	
+
+	@Autowired
+	EncounterTypeListController controller;
+
+	private MockMvc mockMvc;
+
 	/**
 	 * @see EncounterTypeListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	public void onSubmit_shouldNotFailIfNoEncounterTypesAreSelected() throws Exception {
-		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		HttpServletResponse response = new MockHttpServletResponse();
-		
-		SimpleFormController controller = (SimpleFormController) applicationContext.getBean("encounterTypeList");
-		
-		// make sure an NPE isn't thrown here because no encounter types were selected
-		controller.handleRequest(request, response);
+		this.mockMvc = MockMvcBuilders.standaloneSetup(this.controller).build();
+
+		this.mockMvc.perform(get("/admin/encounters/encounterType.list")).andExpect(status().isOk())
+				.andExpect(model().hasNoErrors());
 	}
 }

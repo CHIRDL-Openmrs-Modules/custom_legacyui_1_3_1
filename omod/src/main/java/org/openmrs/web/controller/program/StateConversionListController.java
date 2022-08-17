@@ -12,56 +12,61 @@ package org.openmrs.web.controller.program;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.web.WebConstants;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.validation.BindException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class StateConversionListController extends SimpleFormController {
-	
+@Controller
+@RequestMapping(value = "admin/programs/conversion.list")
+public class StateConversionListController {
+
+	private static final String FORM_VIEW = "/module/legacyui/admin/programs/conversionList";
+	private static final String SUBMIT_VIEW = "conversion.list";
 	/** Logger for this class and subclasses */
-    private static final Logger log = LoggerFactory.getLogger(StateConversionListController.class);
-	
+	private static final Logger log = LoggerFactory.getLogger(StateConversionListController.class);
+
 	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by
+	 * the input form and saves it to the db
 	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
-		
+	@PostMapping
+	public ModelAndView processSubmit(HttpServletRequest request) throws Exception {
+
 		HttpSession httpSession = request.getSession();
-		
-		String view = getFormView();
+
+		String view = FORM_VIEW;
 		if (Context.isAuthenticated()) {
 			String[] conversionIdList = request.getParameterValues("conceptStateConversionId");
 			ProgramWorkflowService pws = Context.getProgramWorkflowService();
-			
+
 			StringBuilder success = new StringBuilder("");
 			StringBuilder error = new StringBuilder("");
 			int numDeleted = 0;
-			
-			MessageSourceAccessor msa = getMessageSourceAccessor();
-			String deleted = msa.getMessage("general.deleted");
-			String notDeleted = msa.getMessage("general.cannot.delete");
-			String textConversion = msa.getMessage("Program.conversion");
-			String noneDeleted = msa.getMessage("Program.conversion.nonedeleted");
+
+			MessageSourceService mss = Context.getMessageSourceService();
+			String deleted = mss.getMessage("general.deleted");
+			String notDeleted = mss.getMessage("general.cannot.delete");
+			String textConversion = mss.getMessage("Program.conversion");
+			String noneDeleted = mss.getMessage("Program.conversion.nonedeleted");
 			if (conversionIdList != null) {
 				for (String id : conversionIdList) {
 					try {
@@ -71,8 +76,7 @@ public class StateConversionListController extends SimpleFormController {
 						}
 						success.append(textConversion).append(" ").append(id).append(" ").append(deleted);
 						numDeleted++;
-					}
-					catch (APIException e) {
+					} catch (APIException e) {
 						log.warn("Error deleting concept state conversion", e);
 						if (!"".equals(error.toString())) {
 							error.append("<br/>");
@@ -80,14 +84,14 @@ public class StateConversionListController extends SimpleFormController {
 						error.append(textConversion).append(" ").append(id).append(" ").append(notDeleted);
 					}
 				}
-				
+
 				if (numDeleted > 3) {
 					success = new StringBuilder(numDeleted).append(" ").append(deleted);
 				}
 			} else {
 				success.append(noneDeleted);
 			}
-			view = getSuccessView();
+			view = SUBMIT_VIEW;
 			if (!"".equals(success.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
@@ -95,27 +99,33 @@ public class StateConversionListController extends SimpleFormController {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 			}
 		}
-		
+
 		return new ModelAndView(new RedirectView(view));
 	}
-	
+
 	/**
-	 * This is called prior to displaying a form for the first time. It tells Spring the
-	 * form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring
+	 * the form/command object to load into the request
 	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
-		//default empty Object
-		List<ConceptStateConversion> conversionList = new ArrayList<ConceptStateConversion>();
-		
-		//only fill the Object if the user has authenticated properly
+	@ModelAttribute("stateConversionList")
+	protected Object formBackingObject() {
+
+		// default empty Object
+		List<ConceptStateConversion> conversionList = new ArrayList<>();
+
+		// only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
 			conversionList = ps.getAllConceptStateConversions();
 		}
-		
+
 		return conversionList;
+	}
+
+	@GetMapping
+	public String initForm() throws Exception {
+		return FORM_VIEW;
 	}
 }

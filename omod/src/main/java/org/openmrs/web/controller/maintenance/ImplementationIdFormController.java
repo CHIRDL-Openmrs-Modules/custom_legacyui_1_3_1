@@ -10,28 +10,37 @@
 package org.openmrs.web.controller.maintenance;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.validator.ImplementationIdValidator;
+import org.openmrs.web.ShowFormUtil;
 import org.openmrs.web.WebConstants;
-import org.springframework.validation.BindException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * This controller controls all uploading and syncing the Implementation Id with
  * the implementation id server
  */
-public class ImplementationIdFormController extends SimpleFormController {
+@Controller
+@RequestMapping(value = "admin/maintenance/implementationid.form")
+public class ImplementationIdFormController {
 
+	private static final String FORM_VIEW = "/module/legacyui/admin/maintenance/implementationIdForm";
+	private static final String SUBMIT_VIEW = "implementationid.form";
+	
 	/** Logger for this class and subclasses */
-    private static final Logger log = LoggerFactory.getLogger(ImplementationIdFormController.class);
+	private static final Logger log = LoggerFactory.getLogger(ImplementationIdFormController.class);
 
 	/**
 	 * Actions taken when the form is submitted
@@ -40,39 +49,37 @@ public class ImplementationIdFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	@Override
-	protected ModelAndView onSubmit(HttpServletRequest req, HttpServletResponse response, Object object,
-			BindException exceptions) throws Exception {
+	@PostMapping
+	protected ModelAndView processSubmit(HttpServletRequest request, @ModelAttribute("implId") ImplementationId implId,
+			BindingResult errors) throws Exception {
 
-		ImplementationId implId = (ImplementationId) object;
+		new ImplementationIdValidator().validate(implId, errors);
 
-		new ImplementationIdValidator().validate(implId, exceptions);
-
-		if (exceptions.hasErrors()) {
-			return showForm(req, response, exceptions);
+		if (errors.hasErrors()) {
+			return ShowFormUtil.showForm(errors, FORM_VIEW);
 		}
 
 		try {
 			Context.getAdministrationService().setImplementationId(implId);
-			req.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ImplementationId.validatedId");
+			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ImplementationId.validatedId");
 		} catch (APIException e) {
 			log.warn("Unable to set implementation id", e);
-			exceptions.reject(e.getMessage());
-			req.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
-			return showForm(req, response, exceptions);
+			errors.reject(e.getMessage());
+			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+			return ShowFormUtil.showForm(errors, FORM_VIEW);
 		}
 
-		return new ModelAndView(new RedirectView(getSuccessView()));
+		return new ModelAndView(new RedirectView(SUBMIT_VIEW));
 	}
 
 	/**
-	 * The object that backs the form. The class of this object (String) is set
-	 * in the servlet descriptor file
+	 * The object that backs the form. The class of this object (String) is set in
+	 * the servlet descriptor file
 	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	@Override
-	protected Object formBackingObject(HttpServletRequest request) throws Exception {
+	@ModelAttribute("implId")
+	protected Object formBackingObject() {
 
 		// get the impl id from the database that is the implementation id
 		ImplementationId implId = Context.getAdministrationService().getImplementationId();
@@ -82,6 +89,11 @@ public class ImplementationIdFormController extends SimpleFormController {
 		} else {
 			return new ImplementationId();
 		}
+	}
+
+	@GetMapping
+	public String initForm() throws Exception {
+		return FORM_VIEW;
 	}
 
 }

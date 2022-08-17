@@ -20,7 +20,7 @@
 		<div class="box">
 			<openmrs:message code="Person.search.instructions"/> <br/>
 			
-			<form method="get" action="${model.postURL}" onSubmit="return validateForm()">
+			<form method="post" action="${model.postURL}" onSubmit="return validateForm()">
 				
 				<table>
 					<tr>

@@ -50,6 +50,7 @@ public class ConceptFormValidator implements Validator {
 		} else {
 			// validate the concept term mappings
 			for (int x = 0; x < backingObject.getConceptMappings().size(); x++) {
+				
 				ConceptMap map = backingObject.getConceptMappings().get(x);
 				//this mapping has been removed or is new with no term selected, so ignore it
 				if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null) {

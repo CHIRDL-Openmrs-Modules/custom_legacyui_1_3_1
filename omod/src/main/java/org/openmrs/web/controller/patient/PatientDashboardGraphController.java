@@ -17,8 +17,8 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -38,8 +38,7 @@ public class PatientDashboardGraphController {
 	 * @should return json data with observation details and critical values for the concept
 	 * @should return form for rendering the json data
 	 */
-	@SuppressWarnings("unchecked")
-	@RequestMapping(method = RequestMethod.GET)
+	@GetMapping
 	public String showGraphData(@RequestParam(required = true, value = "patientId") Integer patientId,
 	        @RequestParam(required = true, value = "conceptId") Integer conceptId, ModelMap map) {
 		Patient patient = Context.getPatientService().getPatient(patientId);

@@ -9,114 +9,134 @@
  */
 package org.openmrs.web.controller.concept;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.openmrs.ConceptSource;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.validator.ConceptSourceValidator;
+import org.openmrs.web.ShowFormUtil;
 import org.openmrs.web.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class ConceptSourceFormController extends SimpleFormController {
-	
+@Controller
+@RequestMapping(value = "admin/concepts/conceptSource.form")
+public class ConceptSourceFormController {
+
+	private static final String FORM_VIEW = "/admin/concepts/conceptSourceForm";
 	/**
-	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
-	 * expected
+	 * Set the name of the view that should be shown on successful submit.
+	 */
+	private static final String SUBMIT_VIEW = "conceptSource.list";
+	/** Logger for this class and subclasses */
+	private static final Logger log = LoggerFactory.getLogger(ConceptSourceFormController.class);
+
+	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only
+	 * strings and lists are expected
 	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-	
+
 	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by
+	 * the input form and saves it to the db
 	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
+	@PostMapping
+	public ModelAndView processSubmit(HttpServletRequest request, @ModelAttribute("conceptSource") ConceptSource conceptSource,
+			BindingResult errors) throws Exception {
+
+		new ConceptSourceValidator().validate(conceptSource, errors);
+		
+		if (errors.hasErrors()) {
+			if (log.isDebugEnabled()) {
+				log.debug("Data binding errors: {}", errors.getErrorCount());
+			}
+			return new ModelAndView(FORM_VIEW);
+		}
 		
 		HttpSession httpSession = request.getSession();
-		
-		String view = getFormView();
-		
+
+		String view = FORM_VIEW;
+
 		if (Context.isAuthenticated()) {
-			
+
 			if (request.getParameter("retire") != null) {
 				String retireReason = request.getParameter("retireReason");
-				ConceptSource conceptSource = (ConceptSource) obj;
 				if (!StringUtils.hasText(retireReason)) {
 					errors.reject("retireReason", "general.retiredReason.empty");
-					return showForm(request, response, errors);
+					return ShowFormUtil.showForm(errors, FORM_VIEW);
 				}
-				
+
 				conceptSource.setRetireReason(retireReason);
 				conceptSource.setRetired(true);
-				
+
 				Context.getConceptService().saveConceptSource(conceptSource);
-				view = getSuccessView();
+				view = SUBMIT_VIEW;
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptSource.retired");
 			} else if (request.getParameter("restore") != null) {
-				ConceptSource conceptSource = (ConceptSource) obj;
 				conceptSource.setRetireReason(null);
 				conceptSource.setRetired(false);
-				
+
 				Context.getConceptService().saveConceptSource(conceptSource);
-				view = getSuccessView();
+				view = SUBMIT_VIEW;
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptSource.restored");
 			} else if (request.getParameter("purge") != null) {
-				ConceptSource conceptSource = (ConceptSource) obj;
 				try {
 					Context.getConceptService().purgeConceptSource(conceptSource);
-					view = getSuccessView();
+					view = SUBMIT_VIEW;
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptSource.purged");
-				}
-				catch (DataIntegrityViolationException e) {
+				} catch (DataIntegrityViolationException e) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
-					return showForm(request, response, errors);
+					return ShowFormUtil.showForm(errors, FORM_VIEW);
 				}
 			} else {
-				ConceptSource conceptSource = (ConceptSource) obj;
 				Context.getConceptService().saveConceptSource(conceptSource);
-				view = getSuccessView();
+				view = SUBMIT_VIEW;
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptSource.saved");
 			}
 		}
-		
+
 		return new ModelAndView(new RedirectView(view));
 	}
-	
+
 	/**
-	 * This is called prior to displaying a form for the first time. It tells Spring the
-	 * form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring
+	 * the form/command object to load into the request
 	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
+	@ModelAttribute("conceptSource")
+	protected Object formBackingObject(HttpServletRequest request) {
+
 		ConceptSource conceptSource = null;
-		
+
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
 			String conceptSourceId = request.getParameter("conceptSourceId");
@@ -124,31 +144,29 @@ public class ConceptSourceFormController extends SimpleFormController {
 				conceptSource = cs.getConceptSource(Integer.valueOf(conceptSourceId));
 			}
 		}
-		
+
 		if (conceptSource == null) {
 			conceptSource = new ConceptSource();
 		}
-		
+
 		return conceptSource;
 	}
-	
+
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
 	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
-	@Override
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
-		ConceptSource conceptSource = (ConceptSource) command;
-		
-		Map<String, Object> map = new HashMap<String, Object>();
-		
+	@GetMapping
+	public String initForm(ConceptSource conceptSource, ModelMap map)
+			throws Exception {
+
 		ImplementationId implId = Context.getAdministrationService().getImplementationId();
-		
+
 		if (implId != null && implId.getImplementationId().equals(conceptSource.getHl7Code())) {
 			map.put("isImplementationId", true);
 		}
-		
-		return map;
+
+		return FORM_VIEW;
 	}
-	
+
 }

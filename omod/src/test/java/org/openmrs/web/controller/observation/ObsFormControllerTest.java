@@ -10,30 +10,46 @@
 package org.openmrs.web.controller.observation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
- * Test the methods on the {@link org.openmrs.web.controller.observation.ObsFormController}
+ * Test the methods on the
+ * {@link org.openmrs.web.controller.observation.ObsFormController}
  */
 public class ObsFormControllerTest extends BaseModuleWebContextSensitiveTest {
-	
+
+	@Autowired
+	ObsFormController controller;
+
+	private MockMvc mockMvc;
+
+	@BeforeEach
+	public void setUp() {
+		this.mockMvc = MockMvcBuilders.standaloneSetup(this.controller).build();
+	}
+
 	/**
-	 * Tests that an "encounterId" parameter sets the obs.encounter attribute on an empty obs
+	 * Tests that an "encounterId" parameter sets the obs.encounter attribute on an
+	 * empty obs
 	 * 
 	 * @throws Exception
 	 */
@@ -41,19 +57,12 @@ public class ObsFormControllerTest extends BaseModuleWebContextSensitiveTest {
 	public void shouldGetObsFormWithEncounterFilledIn() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "");
 		request.setParameter("encounterId", "3");
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		
-		ObsFormController controller = new ObsFormController();
-		
-		ModelAndView modelAndView = controller.handleRequest(request, response);
-		
-		// make sure there is an "encounterId" element on the obs
-		Obs commandObs = (Obs) modelAndView.getModel().get("command");
+
+		Obs commandObs = (Obs) this.controller.formBackingObject(request);
 		Assertions.assertNotNull(commandObs.getEncounter());
 		
 	}
-	
+
 	/**
 	 * Test to make sure a new patient form can save a person relationship
 	 * 
@@ -62,41 +71,27 @@ public class ObsFormControllerTest extends BaseModuleWebContextSensitiveTest {
 	@Test
 	public void shouldSaveObsFormNormally() throws Exception {
 		ObsService os = Context.getObsService();
-		
-		// set up the controller
-		ObsFormController controller = new ObsFormController();
-		controller.setApplicationContext(applicationContext);
-		controller.setSuccessView("encounter.form");
-		controller.setFormView("obs.form");
-		
+
 		// set up the request and do an initial "get" as if the user loaded the
 		// page for the first time
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/admin/observations/obs.form");
 		request.setSession(new MockHttpSession(null));
-		HttpServletResponse response = new MockHttpServletResponse();
-		controller.handleRequest(request, response);
-		
+
+		this.mockMvc.perform(get("/admin/observations/obs.form").session(new MockHttpSession(null)))
+				.andExpect(status().isOk());
 		// set this to be a page submission
-		request.setMethod("POST");
 		
-		// add all of the parameters that are expected
-		// all but the relationship "3a" should match the stored data
-		request.addParameter("person", "2");
-		request.addParameter("encounter", "3");
-		request.addParameter("location", "1");
-		request.addParameter("obsDatetime", "05/05/2005");
-		request.addParameter("concept", "4"); // CIVIL_STATUS (conceptid=4) concept
-		request.addParameter("valueCoded", "5"); // conceptNameId=2458 for SINGLE concept
-		request.addParameter("saveObs", "Save Obs"); // so that the form is processed
-		
-		// send the parameters to the controller
-		controller.handleRequest(request, response);
-		
+		this.mockMvc
+				.perform(post("/admin/observations/obs.form").param("person", "2").param("encounter", "3")
+						.param("location", "1").param("obsDatetime", "05/05/2005").param("concept", "4")
+						.param("valueCoded", "5").param("saveObs", "Save Obs"))
+				.andExpect(status().isFound()).andExpect(model().hasNoErrors());
+
 		// make sure an obs was created
 		List<Obs> obsForPatient = os.getObservationsByPerson(new Person(2));
 		assertEquals(1, obsForPatient.size());
 		assertEquals(3, obsForPatient.get(0).getEncounter().getId().intValue());
 		assertEquals(1, obsForPatient.get(0).getLocation().getId().intValue());
 	}
-	
+
 }

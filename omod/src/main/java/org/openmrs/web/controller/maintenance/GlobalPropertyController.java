@@ -14,28 +14,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.ShowFormUtil;
 import org.openmrs.web.WebConstants;
-import org.springframework.validation.BindException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
  *
  */
-public class GlobalPropertyController extends SimpleFormController {
+@Controller
+@RequestMapping(value = "admin/maintenance/globalProps.form")
+public class GlobalPropertyController {
 
+	private static final String FORM_VIEW = "/module/legacyui/admin/maintenance/globalPropsForm";
+	private static final String SUBMIT_VIEW = "globalProps.form";
+	
 	public static final String PROP_NAME = "property";
 
 	public static final String PROP_VAL_NAME = "value";
@@ -55,16 +63,15 @@ public class GlobalPropertyController extends SimpleFormController {
 	 * @should save or update included properties
 	 * @should purge not included properties
 	 */
-	@SuppressWarnings("unchecked")
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-			BindException errors) throws Exception {
+	@PostMapping
+	protected ModelAndView processSubmit(HttpServletRequest request, @ModelAttribute("globalProps") List<GlobalProperty> formBackingObject, BindingResult errors) throws Exception {
 
 		String action = request.getParameter("action");
 		if (action == null) {
 			action = "cancel";
 		}
 
-		if (action.equals(getMessageSourceAccessor().getMessage("general.save"))) {
+		if (action.equals(Context.getMessageSourceService().getMessage("general.save"))) {
 			HttpSession httpSession = request.getSession();
 
 			if (Context.isAuthenticated()) {
@@ -73,7 +80,6 @@ public class GlobalPropertyController extends SimpleFormController {
 				// fetch the backing object
 				// and save it to a hashmap for easy retrieval of
 				// already-used-GPs
-				List<GlobalProperty> formBackingObject = (List<GlobalProperty>) obj;
 				Map<String, GlobalProperty> formBackingObjectMap = new HashMap<String, GlobalProperty>();
 				for (GlobalProperty prop : formBackingObject) {
 					formBackingObjectMap.put(prop.getProperty(), prop);
@@ -125,12 +131,12 @@ public class GlobalPropertyController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, e.getMessage());
 				}
 
-				return new ModelAndView(new RedirectView(getSuccessView()));
+				return new ModelAndView(new RedirectView(SUBMIT_VIEW));
 
 			}
 		}
 
-		return showForm(request, response, errors);
+		return ShowFormUtil.showForm(errors, FORM_VIEW);
 
 	}
 
@@ -140,7 +146,8 @@ public class GlobalPropertyController extends SimpleFormController {
 	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@ModelAttribute("globalProps")
+	protected Object formBackingObject() {
 
 		if (Context.isAuthenticated()) {
 			// return a non-empty list if the user has authenticated properly
@@ -149,6 +156,11 @@ public class GlobalPropertyController extends SimpleFormController {
 		} else {
 			return new ArrayList<GlobalProperty>();
 		}
+	}
+	
+	@GetMapping
+	public String initForm() throws Exception {
+		return FORM_VIEW;
 	}
 
 }

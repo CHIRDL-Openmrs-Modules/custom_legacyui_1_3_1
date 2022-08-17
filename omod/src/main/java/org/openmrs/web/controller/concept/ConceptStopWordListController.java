@@ -19,8 +19,9 @@ import org.openmrs.api.ConceptStopWordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -46,7 +47,7 @@ public class ConceptStopWordListController {
 	 * @should add the already deleted error message in session attribute if delete the same word
 	 *         twice
 	 */
-	@RequestMapping(method = RequestMethod.POST)
+	@PostMapping
 	public String handleSubmission(HttpSession session,
 	        @RequestParam(required = false, value = "conceptStopWord") String[] conceptStopWordsToBeDeleted) {
 		if (conceptStopWordsToBeDeleted != null) {
@@ -77,7 +78,7 @@ public class ConceptStopWordListController {
 	 * @should return Concept Stop Word List View
 	 * @should add all ConceptStopWords in session attribute
 	 */
-	@RequestMapping(method = RequestMethod.GET)
+	@GetMapping
 	public String showForm(HttpSession session) {
 		
 		ConceptService conceptService = Context.getConceptService();

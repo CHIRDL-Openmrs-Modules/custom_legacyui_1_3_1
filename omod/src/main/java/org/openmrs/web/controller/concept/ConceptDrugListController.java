@@ -12,16 +12,25 @@ package org.openmrs.web.controller.concept;
 import java.util.List;
 import java.util.Vector;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.Drug;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-public class ConceptDrugListController extends SimpleFormController {
+@Controller
+@RequestMapping(value = "admin/concepts/conceptDrug.list")
+public class ConceptDrugListController {
 	
+	private static final String FORM_VIEW = "/admin/concepts/conceptDrugList";
+	/**
+	 * Set the name of the view that should be shown on successful submit.
+	 */
+	private static final String SUBMIT_VIEW = "conceptDrug.list";
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
@@ -29,8 +38,8 @@ public class ConceptDrugListController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
+	@ModelAttribute("conceptDrugList") 
+	protected Object formBackingObject(HttpServletRequest request) { 
 		//HttpSession httpSession = request.getSession();
 		
 		// default empty Object
@@ -43,5 +52,10 @@ public class ConceptDrugListController extends SimpleFormController {
 		}
 		
 		return conceptDrugList;
+	}
+	
+	@GetMapping
+	public String initForm() throws Exception {
+		return FORM_VIEW;
 	}
 }

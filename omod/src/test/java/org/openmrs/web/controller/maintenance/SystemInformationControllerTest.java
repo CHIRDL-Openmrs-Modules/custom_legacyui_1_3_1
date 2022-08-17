@@ -37,7 +37,6 @@ public class SystemInformationControllerTest extends BaseModuleWebContextSensiti
 		model = new ModelMap();
 		SystemInformationController controller = new SystemInformationController();
 		controller.showPage(model);
-		//System.out.println("SystemInformationControllerTest.createController() "+model.toString());
 	}
 	
 	/**

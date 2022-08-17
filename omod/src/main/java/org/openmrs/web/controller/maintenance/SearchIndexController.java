@@ -12,12 +12,12 @@ package org.openmrs.web.controller.maintenance;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openmrs.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.openmrs.api.context.Context;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -32,7 +32,7 @@ public class SearchIndexController {
 	 * @should return the search index view
 	 * @return the searchIndex view
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = "admin/maintenance/searchIndex")
+    @GetMapping(value = "admin/maintenance/searchIndex")
 	public String showPage() {
 		return "/module/legacyui/admin/maintenance/searchIndex";
 	}
@@ -42,7 +42,7 @@ public class SearchIndexController {
 	 * @should return false for success if a RuntimeException is thrown
 	 * @return a marker indicating success
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "admin/maintenance/rebuildSearchIndex")
+	@PostMapping(value = "admin/maintenance/rebuildSearchIndex")
 	public @ResponseBody Map<String, Object> rebuildSearchIndex() {
 		boolean success = true;
 		Map<String, Object> results = new HashMap<String, Object>();

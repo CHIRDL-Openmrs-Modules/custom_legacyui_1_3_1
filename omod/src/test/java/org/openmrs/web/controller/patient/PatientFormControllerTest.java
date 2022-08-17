@@ -9,17 +9,16 @@
  */
 package org.openmrs.web.controller.patient;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -28,47 +27,46 @@ import org.springframework.web.servlet.ModelAndView;
  * @see PatientFormController
  */
 public class PatientFormControllerTest extends BaseModuleWebContextSensitiveTest {
-	
+
+	@Autowired
+	PatientFormController controller;
+
 	/**
-	 * @see PatientFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, Object, org.springframework.validation.BindException)
+	 * @see PatientFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, Object,
+	 *      org.springframework.validation.BindException)
 	 */
 	@Test
 	public void onSubmit_shouldVoidPatientWhenVoidReasonIsNotEmpty() throws Exception {
-		
+
 		Patient p = Context.getPatientService().getPatient(2);
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		
-		PatientFormController controller = (PatientFormController) applicationContext.getBean("patientForm");
-		controller.setApplicationContext(applicationContext);
-		
+
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
 		request.setParameter("action", "Patient.void");
 		request.setParameter("voidReason", "some reason");
-		BindException errors = new BindException(p, "patient");
-		ModelAndView modelAndview = controller.onSubmit(request, response, p, errors);
-		
+
+		BindingResult errors = new BindException(p, "patient");
+		ModelAndView modelAndview = this.controller.processFormSubmission(request, p, errors);
+
 		Assertions.assertTrue(p.isVoided());
 	}
-	
+
 	/**
-	 * @see PatientFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, Object, org.springframework.validation.BindException)
+	 * @see PatientFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, Object,
+	 *      org.springframework.validation.BindException)
 	 */
 	@Test
 	public void onSubmit_shouldNotVoidPatientWhenVoidReasonIsEmpty() throws Exception {
 		Patient p = Context.getPatientService().getPatient(2);
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		
-		PatientFormController controller = (PatientFormController) applicationContext.getBean("patientForm");
-		controller.setApplicationContext(applicationContext);
-		
+
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
 		request.setParameter("action", "Patient.void");
 		request.setParameter("voidReason", "");
-		BindException errors = new BindException(p, "patient");
-		ModelAndView modelAndview = controller.onSubmit(request, response, p, errors);
-		
+
+		BindingResult errors = new BindException(p, "patient");
+		ModelAndView modelAndview = this.controller.processFormSubmission(request, p, errors);
+
 		Assertions.assertTrue(!p.isVoided());
 		String tmp = request.getSession().getAttribute(WebConstants.OPENMRS_ERROR_ATTR).toString();
 		Assertions.assertEquals(tmp, "Patient.error.void.reasonEmpty");

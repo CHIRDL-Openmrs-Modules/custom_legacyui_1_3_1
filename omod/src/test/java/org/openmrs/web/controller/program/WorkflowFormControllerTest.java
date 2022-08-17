@@ -9,21 +9,22 @@
  */
 package org.openmrs.web.controller.program;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Tests the {@link WorkflowFormController} class.
  */
 public class WorkflowFormControllerTest extends BaseModuleWebContextSensitiveTest {
+
+	@Autowired
+	private WorkflowFormController controller;
 
 	/**
 	 * @see WorkflowFormController#formBackingObject(HttpServletRequest)
@@ -34,13 +35,7 @@ public class WorkflowFormControllerTest extends BaseModuleWebContextSensitiveTes
 		request.setParameter("programId", "1");
 		request.setParameter("programWorkflowId", "1");
 
-		HttpServletResponse response = new MockHttpServletResponse();
-
-		WorkflowFormController controller = (WorkflowFormController) applicationContext.getBean("workflowFormController");
-
-		ModelAndView modelAndView = controller.handleRequest(request, response);
-
-		ProgramWorkflow command = (ProgramWorkflow) modelAndView.getModel().get("workflow");
+		ProgramWorkflow command = (ProgramWorkflow) this.controller.formBackingObject(request);
 		Assertions.assertNotNull(command.getProgramWorkflowId());
 	}
 

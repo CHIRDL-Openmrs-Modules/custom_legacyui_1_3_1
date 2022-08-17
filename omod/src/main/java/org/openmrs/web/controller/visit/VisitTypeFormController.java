@@ -9,23 +9,30 @@
  */
 package org.openmrs.web.controller.visit;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
+import org.openmrs.validator.VisitTypeValidator;
+import org.openmrs.web.ShowFormUtil;
 import org.openmrs.web.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
@@ -33,43 +40,59 @@ import org.springframework.web.servlet.view.RedirectView;
  *
  * @since 1.9
  */
-public class VisitTypeFormController extends SimpleFormController {
+@Controller
+@RequestMapping(value = "admin/visits/visitType.form")
+public class VisitTypeFormController {
+
+	private static final String FORM_VIEW = "/admin/visits/visitTypeForm";
+	private static final String SUBMIT_VIEW = "visitType.list";
+	/** Logger for this class and subclasses */
+	private static final Logger log = LoggerFactory.getLogger(VisitTypeFormController.class);
 	
 	/**
-	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
-	 * expected
+	 * Allows for Integers to be used as values in input tags. Normally, only
+	 * strings and lists are expected
 	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
-		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+		// NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-	
+
 	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by
+	 * the input form and saves it to the db
 	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
+	@PostMapping
+	public ModelAndView processSubmit(HttpServletRequest request, @ModelAttribute("visitType") VisitType visitType,
+			BindingResult errors) throws Exception {
+
+		new VisitTypeValidator().validate(visitType, errors);
+		
+		if (errors.hasErrors()) {
+			if (log.isDebugEnabled()) {
+				log.debug("Data binding errors: {}", errors.getErrorCount());
+			}
+			return new ModelAndView(FORM_VIEW);
+		}
 		
 		HttpSession httpSession = request.getSession();
-		
-		String view = getFormView();
-		
+
+		String view = FORM_VIEW;
+
 		if (Context.isAuthenticated()) {
-			VisitType visitType = (VisitType) obj;
 			VisitService es = Context.getVisitService();
-			
+
 			if (request.getParameter("save") != null) {
 				es.saveVisitType(visitType);
-				view = getSuccessView();
+				view = SUBMIT_VIEW;
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "VisitType.saved");
 			}
 
@@ -78,55 +101,55 @@ public class VisitTypeFormController extends SimpleFormController {
 				String retireReason = request.getParameter("retireReason");
 				if (visitType.getVisitTypeId() != null && !(StringUtils.hasText(retireReason))) {
 					errors.reject("retireReason", "general.retiredReason.empty");
-					return showForm(request, response, errors);
+					return ShowFormUtil.showForm(errors, FORM_VIEW);
 				}
-				
+
 				es.retireVisitType(visitType, retireReason);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "VisitType.retiredSuccessfully");
-				
-				view = getSuccessView();
+
+				view = SUBMIT_VIEW;
 			}
 
 			// if the user is unretiring the VisitType
 			else if (request.getParameter("unretire") != null) {
 				es.unretireVisitType(visitType);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "VisitType.unretiredSuccessfully");
-				view = getSuccessView();
+				view = SUBMIT_VIEW;
 			}
 
 			// if the user is purging the visitType
 			else if (request.getParameter("purge") != null) {
-				
+
 				try {
 					es.purgeVisitType(visitType);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "VisitType.purgedSuccessfully");
-					view = getSuccessView();
-				}
-				catch (DataIntegrityViolationException e) {
+					view = SUBMIT_VIEW;
+				} catch (DataIntegrityViolationException e) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
 					view = "visitType.form?visitTypeId=" + visitType.getVisitTypeId();
-				}
-				catch (APIException e) {
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
+				} catch (APIException e) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+							"error.general: " + e.getLocalizedMessage());
 					view = "visitType.form?visitTypeId=" + visitType.getVisitTypeId();
 				}
 			}
-			
+
 		}
-		
+
 		return new ModelAndView(new RedirectView(view));
 	}
-	
+
 	/**
-	 * This is called prior to displaying a form for the first time. It tells Spring the
-	 * form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring
+	 * the form/command object to load into the request
 	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
+	@ModelAttribute("visitType")
+	protected Object formBackingObject(HttpServletRequest request) {
+
 		VisitType visitType = null;
-		
+
 		if (Context.isAuthenticated()) {
 			VisitService os = Context.getVisitService();
 			String visitTypeId = request.getParameter("visitTypeId");
@@ -134,12 +157,17 @@ public class VisitTypeFormController extends SimpleFormController {
 				visitType = os.getVisitType(Integer.valueOf(visitTypeId));
 			}
 		}
-		
+
 		if (visitType == null) {
 			visitType = new VisitType();
 		}
-		
+
 		return visitType;
 	}
-	
+
+	@GetMapping
+	public String initForm() throws Exception {
+		return FORM_VIEW;
+	}
+
 }

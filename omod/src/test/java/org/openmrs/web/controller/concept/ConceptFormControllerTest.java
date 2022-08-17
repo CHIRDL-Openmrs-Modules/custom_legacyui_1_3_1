@@ -42,8 +42,7 @@ public class ConceptFormControllerTest extends BaseModuleWebContextSensitiveTest
 		Mockito.when(concept.getConceptMappings()).thenReturn(new ArrayList<ConceptMap>());
 		
 		ConceptFormController controller = new ConceptFormController();
-		ConceptFormController.ConceptFormBackingObject conceptFormBackingObject = controller.new ConceptFormBackingObject(
-		                                                                                                                  concept);
+		ConceptFormController.ConceptFormBackingObject conceptFormBackingObject = controller.new ConceptFormBackingObject(concept);
 		assertEquals(true, concept.isNumeric());
 		assertEquals(Double.valueOf(5.2), conceptFormBackingObject.getHiAbsolute());
 		assertEquals(Double.valueOf(1.0), conceptFormBackingObject.getLowAbsolute());

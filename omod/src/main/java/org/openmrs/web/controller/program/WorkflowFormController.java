@@ -9,19 +9,15 @@
  */
 package org.openmrs.web.controller.program;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Map;
-import java.util.HashMap;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -29,34 +25,46 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class WorkflowFormController extends SimpleFormController {
-	
-    private static final Logger log = LoggerFactory.getLogger(WorkflowFormController.class);
-	
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
+@Controller
+@RequestMapping(value = "admin/programs/workflow.form")
+public class WorkflowFormController {
+
+	private static final String FORM_VIEW = "/module/legacyui/admin/programs/workflowForm";
+	private static final String SUBMIT_VIEW = "program.list";
+
+	private static final Logger log = LoggerFactory.getLogger(WorkflowFormController.class);
+
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-	
+
 	/**
-	 * This is called prior to displaying a form for the first time. It tells Spring the
-	 * form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring
+	 * the form/command object to load into the request
 	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@ModelAttribute("workflow")
+	protected Object formBackingObject(HttpServletRequest request) {
 		log.debug("called formBackingObject");
-		
+
 		ProgramWorkflow wf = null;
-		
+
 		if (Context.isAuthenticated()) {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
 			String programWorkflowId = request.getParameter("programWorkflowId");
@@ -65,81 +73,80 @@ public class WorkflowFormController extends SimpleFormController {
 				Program program = ps.getProgram(Integer.valueOf(programId));
 				wf = program.getWorkflow(Integer.valueOf(programWorkflowId));
 			}
-			
+
 			if (wf == null) {
 				throw new IllegalArgumentException("Can't find workflow");
 			}
 		}
-		
+
 		if (wf == null) {
 			wf = new ProgramWorkflow();
 		}
-		
+
 		return wf;
 	}
-	
+
 	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by
+	 * the input form and saves it to the db
 	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
-		log.debug("about to save {}", obj);
+	@PostMapping
+	public ModelAndView processSubmit(HttpServletRequest request, @ModelAttribute("workflow") ProgramWorkflow wf)
+			throws Exception {
+		log.debug("about to save {}", wf);
 		HttpSession httpSession = request.getSession();
-		String view = getFormView();
+		String view = FORM_VIEW;
 		if (Context.isAuthenticated()) {
-			ProgramWorkflow wf = (ProgramWorkflow) obj;
 			// get list of states to be deleted
 			String statesToDelete = request.getParameter("deleteStates");
-			Set<Integer> cantBeDeleted = new HashSet<Integer>(); // holds concept ids that cant be deleted
+			Set<Integer> cantBeDeleted = new HashSet<>(); // holds concept ids that cant be deleted
 			if (!"".equals(statesToDelete)) {
 				// then delete listed states first
-				Map<Integer, ProgramWorkflowState> toRemove = new HashMap<Integer, ProgramWorkflowState>();
+				Map<Integer, ProgramWorkflowState> toRemove = new HashMap<>();
 				for (StringTokenizer std = new StringTokenizer(statesToDelete, "|"); std.hasMoreTokens();) {
 					String str = std.nextToken();
 					String[] state = str.split(",");
 					Integer conceptIdDelete = Integer.valueOf(state[0]);
-					
+
 					for (ProgramWorkflowState s : wf.getStates()) {
 						if (s.getConcept().getConceptId().equals(conceptIdDelete)) {
 							toRemove.put(conceptIdDelete, s);
 							break;
 						}
 					}
-					
+
 				}
-				
+
 				for (Map.Entry<Integer, ProgramWorkflowState> remove : toRemove.entrySet()) {
 					try {
 						wf.removeState(remove.getValue());
-						//Context.getProgramWorkflowService().updateWorkflow(wf);
+						// Context.getProgramWorkflowService().updateWorkflow(wf);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Workflow.saved");
 						log.debug("removed {}", remove);
-					}
-					catch (DataIntegrityViolationException e) {
-						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.state.inuse.cannot.delete");
+					} catch (DataIntegrityViolationException e) {
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+								"error.object.state.inuse.cannot.delete");
 						wf.addState(remove.getValue());
 						// add to cant be deleted so it would be skipped from getting retired
 						cantBeDeleted.add(remove.getKey());
-					}
-					catch (APIException e) {
+					} catch (APIException e) {
 						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general");
 						wf.addState(remove.getValue());
 						// add to cant be deleted so it would be skipped from getting retired
 						cantBeDeleted.add(remove.getKey());
 					}
 				}
-				
+
 			}
 			// get list of states, and update the command object
 			String statesStr = request.getParameter("newStates");
 			if (!"".equals(statesStr)) {
 				// This is a brute-force algorithm, but n will be small.
-				Set<Integer> doneSoFar = new HashSet<Integer>(); // concept ids done so far
+				Set<Integer> doneSoFar = new HashSet<>(); // concept ids done so far
 				for (StringTokenizer st = new StringTokenizer(statesStr, "|"); st.hasMoreTokens();) {
 					String str = st.nextToken();
 					String[] tmp = str.split(",");
@@ -174,8 +181,7 @@ public class WorkflowFormController extends SimpleFormController {
 				try {
 					Context.getProgramWorkflowService().saveProgram(wf.getProgram());
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Workflow.saved");
-				}
-				catch (APIException e) {
+				} catch (APIException e) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general");
 				}
 			} else {
@@ -188,7 +194,12 @@ public class WorkflowFormController extends SimpleFormController {
 				Context.getProgramWorkflowService().saveProgram(wf.getProgram());
 			}
 		}
-		view = getSuccessView();
+		view = SUBMIT_VIEW;
 		return new ModelAndView(new RedirectView(view));
+	}
+
+	@GetMapping
+	public String initForm() {
+		return FORM_VIEW;
 	}
 }

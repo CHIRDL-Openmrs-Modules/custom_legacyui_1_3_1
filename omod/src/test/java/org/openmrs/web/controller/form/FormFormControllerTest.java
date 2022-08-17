@@ -9,79 +9,95 @@
  */
 package org.openmrs.web.controller.form;
 
-import javax.servlet.http.HttpServletResponse;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Tests the {@link FormFormController} class.
  */
 public class FormFormControllerTest extends BaseModuleWebContextSensitiveTest {
-	
+
 	private FormService formService;
-	
+	private MockMvc mockMvc;
+
+	@Autowired
 	private FormFormController controller;
-	
+
 	@BeforeEach
 	public void setup() throws Exception {
-		if (formService == null) {
-			formService = Context.getFormService();
+		if (this.formService == null) {
+			this.formService = Context.getFormService();
 		}
 		// dataset to locks forms
 		executeDataSet("org/openmrs/web/controller/include/FormFormControllerTest.xml");
-		
-		//setting the controller
-		controller = (FormFormController) applicationContext.getBean("formEditForm");
-		controller.setApplicationContext(applicationContext);
-		controller.setFormView("index.htm");
-		controller.setSuccessView("formEdit.form");
+
+		this.mockMvc = MockMvcBuilders.standaloneSetup(this.controller).build();
 	}
-	
+
 	@Test
 	public void shouldNotSaveAFormWhenFormsAreLocked() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/admin/forms/formEdit.form?formId=1");
 		request.setSession(new MockHttpSession(null));
-		HttpServletResponse response = new MockHttpServletResponse();
-		controller.handleRequest(request, response);
-		
+
 		request.addParameter("name", "TRUNK");
 		request.addParameter("version", "1");
 		request.addParameter("action", "Form.save");
 		request.setContentType("application/x-www-form-urlencoded");
-		
-		ModelAndView mav = controller.handleRequest(request, response);
-		Assertions.assertEquals("index.htm", mav.getViewName(), "The save attempt should have failed!");
+
+		this.mockMvc
+				.perform(post("/admin/forms/formEdit.form?formId=1").param("name", "TRUNK").param("version", "1")
+						.param("action", "Form.save").contentType("application/x-www-form-urlencoded"))
+				.andExpect(status().isOk());
+
+		Form form = new Form();
+		BindingResult errors = new BindException(form, "TestForm");
+		ModelMap map = new ModelMap();
+		ModelAndView mav = this.controller.processSubmit(request, form, errors, map);
+		Assertions.assertEquals("/module/legacyui/admin/forms/formEditForm", mav.getViewName(), "The save attempt should have failed!");
 		Assertions.assertNotEquals("formEdit.form", mav.getViewName());
-		Assertions.assertSame(controller.getFormView(), mav.getViewName());
-		Assertions.assertNotNull(formService.getForm(1));
+		Assertions.assertNotNull(this.formService.getForm(1));
 	}
-	
+
 	@Test
 	public void shouldNotDuplicateAFormWhenFormsAreLocked() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("POST",
-		        "/admin/forms/formEdit.form?duplicate=true&formId=1");
+				"/admin/forms/formEdit.form?duplicate=true&formId=1");
 		request.setSession(new MockHttpSession(null));
-		HttpServletResponse response = new MockHttpServletResponse();
-		controller.handleRequest(request, response);
-		
+		Form form = new Form();
+		BindingResult errors = new BindException(form, "TestForm");
+		ModelMap map = new ModelMap();
+		this.controller.processSubmit(request, form, errors, map);
+
 		request.addParameter("name", "TRUNK");
 		request.addParameter("version", "1");
 		request.addParameter("action", "Form.Duplicate");
 		request.setContentType("application/x-www-form-urlencoded");
-		
-		ModelAndView mav = controller.handleRequest(request, response);
-		Assertions.assertEquals("index.htm", mav.getViewName(), "The duplicate attempt should have failed!");
+
+		this.mockMvc
+				.perform(post("/admin/forms/formEdit.form?formId=1").param("name", "TRUNK").param("version", "1")
+						.param("action", "Form.Duplicate").contentType("application/x-www-form-urlencoded"))
+				.andExpect(status().isOk());
+
+		ModelAndView mav = this.controller.processSubmit(request, form, errors, map);
+		Assertions.assertEquals("/module/legacyui/admin/forms/formEditForm", mav.getViewName(), "The duplicate attempt should have failed!");
 		Assertions.assertNotEquals("formEdit.form", mav.getViewName());
-		Assertions.assertSame(controller.getFormView(), mav.getViewName());
-		Assertions.assertNotNull(formService.getForm(1));
+		Assertions.assertNotNull(this.formService.getForm(1));
 	}
 }

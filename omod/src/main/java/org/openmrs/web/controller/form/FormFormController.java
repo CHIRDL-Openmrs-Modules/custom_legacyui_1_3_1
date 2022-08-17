@@ -11,19 +11,14 @@ package org.openmrs.web.controller.form;
 
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
@@ -31,29 +26,41 @@ import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.FormsLockedException;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.MetadataComparator;
+import org.openmrs.validator.FormValidator;
+import org.openmrs.web.ShowFormUtil;
 import org.openmrs.web.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-@SuppressWarnings("deprecation")
-public class FormFormController extends SimpleFormController {
+@Controller
+@RequestMapping(value = {"admin/forms/formEdit.form","admin/forms/formSchemaDesign.form"})
+public class FormFormController {
 	
+	private static final String FORM_VIEW = "/module/legacyui/admin/forms/formEditForm";
+    private static final String SUBMIT_VIEW = "form.list";
+    
 	/** Logger for this class and subclasses */
     private static final Logger log = LoggerFactory.getLogger(FormFormController.class);
 	
-	@Override
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
 		// NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 		binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor());
@@ -67,22 +74,33 @@ public class FormFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
+    @PostMapping
+    protected ModelAndView processSubmit(HttpServletRequest request, @ModelAttribute("form") Form form,
+            BindingResult errors, ModelMap map) throws Exception {
+    	
+    	new FormValidator().validate(form, errors);
+    	
+    	if (errors.hasErrors()) {
+			if (log.isDebugEnabled()) {
+				log.debug("Data binding errors: {}", errors.getErrorCount());
+			}
+
+			getModelMap(map, request);
+			return new ModelAndView(FORM_VIEW, map);
+		}
 		
 		HttpSession httpSession = request.getSession();
-		String view = getFormView();
+		String view = FORM_VIEW;
 		
 		if (Context.isAuthenticated()) {
-			Form form = (Form) obj;
-			MessageSourceAccessor msa = getMessageSourceAccessor();
+			
+			MessageSourceService mss = Context.getMessageSourceService();
 			String action = request.getParameter("action");
 			try {
 				if (action == null) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
 				} else {
-					if (action.equals(msa.getMessage("Form.save"))) {
+					if (action.equals(mss.getMessage("Form.save"))) {
 						try {
 							// save form
 							form = Context.getFormService().saveForm(form);
@@ -92,9 +110,9 @@ public class FormFormController extends SimpleFormController {
 							log.error("Error while saving form {}", form.getFormId(), e);
 							errors.reject(e.getMessage());
 							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
-							return showForm(request, response, errors);
+							return ShowFormUtil.showForm(errors, FORM_VIEW);
 						}
-					} else if (action.equals(msa.getMessage("Form.delete"))) {
+					} else if (action.equals(mss.getMessage("Form.delete"))) {
 						try {
 							Context.getFormService().purgeForm(form);
 							httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.deleted");
@@ -107,10 +125,10 @@ public class FormFormController extends SimpleFormController {
 							log.error("Error while deleting form {}", form.getFormId(), e);
 							errors.reject(e.getMessage());
 							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
-							return showForm(request, response, errors);
+							return ShowFormUtil.showForm(errors, FORM_VIEW);
 							//return new ModelAndView(new RedirectView(getSuccessView()));
 						}
-					} else if (action.equals(msa.getMessage("Form.updateSortOrder"))) {
+					} else if (action.equals(mss.getMessage("Form.updateSortOrder"))) {
 						
 						FormService fs = Context.getFormService();
 						
@@ -133,11 +151,11 @@ public class FormFormController extends SimpleFormController {
 							log.error("Error while duplicating form {}", form.getFormId(), e);
 							errors.reject(e.getMessage());
 							httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.duplicate");
-							return showForm(request, response, errors);
+							return ShowFormUtil.showForm(errors, FORM_VIEW);
 						}
 					}
 					
-					view = getSuccessView();
+					view = SUBMIT_VIEW;
 				}
 			}
 			catch (FormsLockedException e) {
@@ -158,18 +176,22 @@ public class FormFormController extends SimpleFormController {
 	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	@Override
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+    @ModelAttribute("form")
+    protected Object formBackingObject(HttpServletRequest request) {
 		return getForm(request);
 	}
 	
-	@Override
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+    @GetMapping
+    public String initForm(ModelMap map, HttpServletRequest request) throws Exception {
 		
-		Map<String, Object> map = new HashMap<String, Object>();
+		getModelMap(map, request);
 		
-		List<FieldType> fieldTypes = new Vector<FieldType>();
-		List<EncounterType> encTypes = new Vector<EncounterType>();
+		return FORM_VIEW;
+	}
+    
+    public void getModelMap(ModelMap map, HttpServletRequest request) {
+    	List<FieldType> fieldTypes = new Vector<>();
+		List<EncounterType> encTypes = new Vector<>();
 		
 		if (Context.isAuthenticated()) {
 			fieldTypes = Context.getFormService().getAllFieldTypes();
@@ -181,9 +203,7 @@ public class FormFormController extends SimpleFormController {
 		map.put("fieldTypes", fieldTypes);
 		map.put("encounterTypes", encTypes);
 		map.put("isBasicForm", isBasicForm(getForm(request)));
-		
-		return map;
-	}
+    }
 	
 	/**
 	 * Gets the form for a given http request.
@@ -233,4 +253,5 @@ public class FormFormController extends SimpleFormController {
 		        && calender.get(Calendar.YEAR) == 2006 && calender.get(Calendar.MONTH) == 6
 		        && calender.get(Calendar.DAY_OF_MONTH) == 18 && form.getBuild().intValue() == 1;
 	}
+	
 }

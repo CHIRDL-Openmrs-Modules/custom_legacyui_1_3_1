@@ -11,14 +11,10 @@ package org.openmrs.web.controller.form;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.openmrs.EncounterType;
@@ -28,60 +24,88 @@ import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.validator.FieldValidator;
 import org.openmrs.web.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class FieldFormController extends SimpleFormController {
-	
-	@Override
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
+@Controller
+@RequestMapping(value = "admin/forms/field.form")
+public class FieldFormController {
+
+	private static final String FORM_VIEW = "/module/legacyui/admin/forms/fieldForm";
+	private static final String SUBMIT_VIEW = "field.list";
+
+	/** Logger for this class and subclasses */
+	private static final Logger log = LoggerFactory.getLogger(FieldFormController.class);
+
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-	
-	@Override
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj,
-	        BindException errors) throws Exception {
-		
-		Field field = (Field) obj;
-		
-		field = setObjects(field, request);
-		
-		return super.processFormSubmission(request, reponse, field, errors);
+
+	@PostMapping
+	public ModelAndView processSubmit(HttpServletRequest request, @ModelAttribute("field") Field field,
+			BindingResult errors, ModelMap map) throws Exception {
+
+		new FieldValidator().validate(field, errors);
+
+		return processSubmission(request, field, errors, map);
 	}
-	
+
+	protected ModelAndView processSubmission(HttpServletRequest request, Field field, BindingResult errors,
+			ModelMap map) throws Exception {
+
+		if (errors.hasErrors()) {
+			if (log.isDebugEnabled()) {
+				log.debug("Data binding errors: {}", errors.getErrorCount());
+			}
+
+			getModelMap(map, field);
+			return new ModelAndView(FORM_VIEW, map);
+		}
+		log.debug("No errors -> processing submit");
+		return processFormSubmission(request, field, errors);
+
+	}
+
 	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by
+	 * the input form and saves it to the db
 	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
-		
+
+	public ModelAndView processFormSubmission(HttpServletRequest request, @ModelAttribute("field") Field field,
+			BindingResult errors) throws Exception {
+
 		HttpSession httpSession = request.getSession();
-		
-		String view = getFormView();
+
+		String view = FORM_VIEW;
 		String action = request.getParameter("action");
-		
+
 		if (Context.isAuthenticated()) {
-			Field field = (Field) obj;
 			field = setObjects(field, request);
-			
+
 			if (action != null && action.equals(Context.getMessageSourceService().getMessage("general.delete"))) {
 				try {
 					Context.getFormService().purgeField(field);
-				}
-				catch (DataIntegrityViolationException e) {
+				} catch (DataIntegrityViolationException e) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
 					return new ModelAndView(new RedirectView("field.form?fieldId=" + field.getFieldId()));
 				}
@@ -91,24 +115,24 @@ public class FieldFormController extends SimpleFormController {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Field.saved");
 			}
 		}
-		
-		view = getSuccessView();
+
+		view = SUBMIT_VIEW;
 		view = view + "?phrase=" + request.getParameter("phrase");
-		
+
 		return new ModelAndView(new RedirectView(view));
 	}
-	
+
 	/**
-	 * This is called prior to displaying a form for the first time. It tells Spring the
-	 * form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring
+	 * the form/command object to load into the request
 	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	@Override
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
+	@ModelAttribute("field")
+	protected Object formBackingObject(HttpServletRequest request) {
+
 		Field field = null;
-		
+
 		if (Context.isAuthenticated()) {
 			FormService fs = Context.getFormService();
 			String fieldId = request.getParameter("fieldId");
@@ -116,24 +140,27 @@ public class FieldFormController extends SimpleFormController {
 				field = fs.getField(Integer.valueOf(fieldId));
 			}
 		}
-		
+
 		if (field == null) {
 			field = new Field();
 		}
-		
+
 		return field;
 	}
-	
-	@Override
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
-		
-		Field field = (Field) obj;
+
+	@GetMapping
+	public String initForm(ModelMap map, @ModelAttribute("field") Field field) {
+
+		getModelMap(map, field);
+		return FORM_VIEW;
+	}
+
+	public void getModelMap(ModelMap map, Field field) {
 		Locale locale = Context.getLocale();
 		FormService fs = Context.getFormService();
-		
-		Map<String, Object> map = new HashMap<String, Object>();
+
 		String defaultVerbose = "false";
-		
+
 		if (Context.isAuthenticated()) {
 			map.put("fieldTypes", fs.getAllFieldTypes());
 			if (field.getConcept() != null) {
@@ -141,31 +168,30 @@ public class FieldFormController extends SimpleFormController {
 			} else {
 				map.put("conceptName", "");
 			}
-			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			defaultVerbose = Context.getAuthenticatedUser()
+					.getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
-		
-		Collection<EncounterType> encounterTypes = new ArrayList<EncounterType>();
-		Collection<FormField> containingAnyFormField = new ArrayList<FormField>();
-		Collection<FormField> containingAllFormFields = new ArrayList<FormField>();
-		Collection<Field> fields = new ArrayList<Field>();
-		fields.add(field); // add the field to the fields collection                                                      	
+
+		Collection<EncounterType> encounterTypes = new ArrayList<>();
+		Collection<FormField> containingAnyFormField = new ArrayList<>();
+		Collection<FormField> containingAllFormFields = new ArrayList<>();
+		Collection<Field> fields = new ArrayList<>();
+		fields.add(field); // add the field to the fields collection
 		List<Form> formsReturned = null;
 		try {
-			formsReturned = fs.getForms(null, null, encounterTypes, null, containingAnyFormField, containingAllFormFields,
-			    fields); // Retrieving forms which contain this particular field
+			formsReturned = fs.getForms(null, null, encounterTypes, null, containingAnyFormField,
+					containingAllFormFields, fields); // Retrieving forms which contain this particular field
+		} catch (Exception e) {
+			// When Object parameter doesn't contain a valid Form object, getFroms() throws
+			// an Exception
 		}
-		catch (Exception e) {
-			// When Object parameter doesn't contain a valid Form object, getFroms() throws an Exception
-		}
-		
-		map.put("formList", formsReturned); // add the returned forms to the ma
-		
-		return map;
+
+		map.put("formList", formsReturned); // add the returned forms to the map
 	}
-	
+
 	private Field setObjects(Field field, HttpServletRequest request) {
-		
+
 		if (Context.isAuthenticated()) {
 			String conceptId = request.getParameter("conceptId");
 			if (conceptId != null && conceptId.length() > 0) {
@@ -173,12 +199,13 @@ public class FieldFormController extends SimpleFormController {
 			} else {
 				field.setConcept(null);
 			}
-			
-			field.setFieldType(Context.getFormService().getFieldType(Integer.valueOf(request.getParameter("fieldTypeId"))));
+
+			field.setFieldType(
+					Context.getFormService().getFieldType(Integer.valueOf(request.getParameter("fieldTypeId"))));
 		}
-		
+
 		return field;
-		
+
 	}
-	
+
 }

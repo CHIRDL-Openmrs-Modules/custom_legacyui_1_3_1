@@ -21,20 +21,34 @@ import org.openmrs.Person;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * Controller for the page that shows an administrator's view of all a patients observations
- * (possibly only for a specified concept)
+ * Controller for the page that shows an administrator's view of all a patients
+ * observations (possibly only for a specified concept)
  */
-public class PersonObsFormController extends SimpleFormController {
+
+@Controller
+@RequestMapping(value = "admin/observations/personObs.form")
+public class PersonObsFormController {
+
+	private static final String FORM_VIEW = "/admin/observations/personObsForm";
+	private static final String SUBMIT_VIEW = "personObs.form";
 	
-	@Override
-	protected CommandObject formBackingObject(HttpServletRequest request) throws Exception {
+	private static final Logger log = LoggerFactory.getLogger(PersonObsFormController.class);
+
+	@ModelAttribute("command")
+	protected Object formBackingObject(HttpServletRequest request) {
 		if (!Context.isAuthenticated()) {
 			return new CommandObject();
 		}
 		
+		log.debug("personId: {}", request.getParameter("personId"));
 		Person person = Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("personId")));
 		List<Concept> concepts = null;
 		Concept concept = null;
@@ -42,12 +56,12 @@ public class PersonObsFormController extends SimpleFormController {
 			concept = Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId")));
 			concepts = Collections.singletonList(concept);
 		}
-		
+
 		ObsService os = Context.getObsService();
-		List<Obs> ret = os.getObservations(Collections.singletonList(person), null, concepts, null, null, null, null, null,
-		    null, null, null, true);
+		List<Obs> ret = os.getObservations(Collections.singletonList(person), null, concepts, null, null, null, null,
+				null, null, null, null, true);
 		Collections.sort(ret, new Comparator<Obs>() {
-			
+
 			public int compare(Obs left, Obs right) {
 				int temp = left.getConcept().getName().getName().compareTo(right.getConcept().getName().getName());
 				if (temp == 0) {
@@ -58,52 +72,56 @@ public class PersonObsFormController extends SimpleFormController {
 				}
 				return temp;
 			}
-			
+
 		});
 		return new CommandObject(person, concept, ret);
 	}
-	
+
 	public class CommandObject {
-		
+
 		private Person person;
-		
+
 		private Concept concept;
-		
+
 		private List<Obs> observations;
-		
+
 		public CommandObject() {
 		}
-		
+
 		public CommandObject(Person person, Concept concept, List<Obs> observations) {
 			super();
 			this.person = person;
 			this.concept = concept;
 			this.observations = observations;
 		}
-		
+
 		public Person getPerson() {
 			return person;
 		}
-		
+
 		public void setPerson(Person person) {
 			this.person = person;
 		}
-		
+
 		public Concept getConcept() {
 			return concept;
 		}
-		
+
 		public void setConcept(Concept concept) {
 			this.concept = concept;
 		}
-		
+
 		public List<Obs> getObservations() {
 			return observations;
 		}
-		
+
 		public void setObservations(List<Obs> observations) {
 			this.observations = observations;
 		}
 	}
-	
+
+	@GetMapping
+	public String initForm() {
+		return FORM_VIEW;
+	}
 }

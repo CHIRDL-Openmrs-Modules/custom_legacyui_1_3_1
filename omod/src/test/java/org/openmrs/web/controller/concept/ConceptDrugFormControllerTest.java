@@ -15,8 +15,8 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 
 /**
  * Tests against the {@link ConceptDrugFormController}
@@ -32,19 +32,18 @@ public class ConceptDrugFormControllerTest extends BaseModuleWebContextSensitive
 	public void onSubmit_shouldPurgeConceptDrug() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-drugSearch.xml");
 		ConceptService service = Context.getConceptService();
-		ConceptDrugFormController controller = (ConceptDrugFormController) applicationContext
-		        .getBean("conceptDrugForm");
+		ConceptDrugFormController controller = new ConceptDrugFormController();
 		
 		Integer drugId = new Integer(444);
 		Drug drug = service.getDrug(drugId);
 		org.junit.jupiter.api.Assertions.assertEquals(drugId, drug.getDrugId());
 		
 		MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
-		MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
-		BindException errors = new BindException(drug, "drug");
+		
+		BindingResult errors = new BindException(drug, "drug");
 		mockHttpServletRequest.setParameter("purgeDrug", String.valueOf(drugId));
 		
-		controller.onSubmit(mockHttpServletRequest, mockHttpServletResponse, drug, errors);
+		controller.processSubmit(mockHttpServletRequest, drug, errors);
 		Context.flushSession();
 		org.junit.jupiter.api.Assertions.assertNull(service.getDrug(drugId));
 	}

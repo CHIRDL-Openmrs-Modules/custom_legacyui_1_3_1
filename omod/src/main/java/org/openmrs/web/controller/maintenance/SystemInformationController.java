@@ -12,8 +12,7 @@ package org.openmrs.web.controller.maintenance;
 import org.openmrs.api.context.Context;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * This backs the maintenance/systemInfo.jsp page that lists off all the system
@@ -39,7 +38,7 @@ public class SystemInformationController {
 	 * @should add memory information attribute to the model map
 	 * @should add module information attribute to the model map
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = "admin/maintenance/systemInfo")
+	@GetMapping(value = "admin/maintenance/systemInfo")
 	public String showPage(ModelMap model) {
 		model.addAttribute("systemInfo", Context.getAdministrationService().getSystemInformation());
 		return "/module/legacyui/admin/maintenance/systemInfo";

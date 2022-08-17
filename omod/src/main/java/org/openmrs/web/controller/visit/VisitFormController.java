@@ -18,8 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Visit;
 import org.openmrs.VisitAttribute;
@@ -32,6 +30,8 @@ import org.openmrs.validator.EncounterValidator;
 import org.openmrs.validator.VisitValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
@@ -41,9 +41,10 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
@@ -72,7 +73,7 @@ public class VisitFormController {
 	/**
 	 * Processes requests to display the form
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = VISIT_FORM_URL)
+	@GetMapping(value = VISIT_FORM_URL)
 	public String showForm(@ModelAttribute("visit") Visit visit,
 	        @RequestParam(required = false, value = "startNow") Boolean startNow, ModelMap model) {
 		if (startNow != null && startNow && visit.getStartDatetime() == null) {
@@ -121,7 +122,7 @@ public class VisitFormController {
 	 * @return the url to forward/redirect to
 	 */
 	@SuppressWarnings("unchecked")
-	@RequestMapping(method = RequestMethod.POST, value = VISIT_FORM_URL)
+	@PostMapping(value = VISIT_FORM_URL)
 	public String saveVisit(HttpServletRequest request, @ModelAttribute("visit") Visit visit, BindingResult result,
 	        ModelMap model) {
 		String[] ids = ServletRequestUtils.getStringParameters(request, "encounterIds");
@@ -205,7 +206,7 @@ public class VisitFormController {
 	 * @param request the {@link WebRequest} object
 	 * @return the url to forward/redirect to
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/visits/endVisit")
+	@PostMapping(value = "/admin/visits/endVisit")
 	public String endVisit(@ModelAttribute(value = "visit") Visit visit,
 	        @RequestParam(value = "stopDate", required = false) String stopDate, HttpServletRequest request) {
 		
@@ -238,7 +239,7 @@ public class VisitFormController {
 	 * @param model the {@link ModelMap} object
 	 * @return the url to forward to
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/visits/voidVisit")
+	@PostMapping(value = "/admin/visits/voidVisit")
 	public String voidVisit(WebRequest request, @ModelAttribute(value = "visit") Visit visit,
 	        @RequestParam(required = false, value = "voidReason") String voidReason, SessionStatus status, ModelMap model) {
 		if (!StringUtils.hasText(voidReason)) {
@@ -274,7 +275,7 @@ public class VisitFormController {
 	 * @param model the {@link ModelMap} object
 	 * @return the url to forward to
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/visits/unvoidVisit")
+	@PostMapping(value = "/admin/visits/unvoidVisit")
 	public String unvoidVisit(WebRequest request, @ModelAttribute(value = "visit") Visit visit, SessionStatus status,
 	        ModelMap model) {
 		try {
@@ -306,7 +307,7 @@ public class VisitFormController {
 	 * @param model the {@link ModelMap} object
 	 * @return the url to forward to
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/visits/purgeVisit")
+	@PostMapping(value = "/admin/visits/purgeVisit")
 	public String purgeVisit(WebRequest request, @ModelAttribute(value = "visit") Visit visit, SessionStatus status,
 	        ModelMap model) {
 		try {

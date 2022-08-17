@@ -16,21 +16,21 @@ import java.util.Set;
 
 import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.ListUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptReferenceTermMap;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.validator.ConceptReferenceTermValidator;
 import org.openmrs.web.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ValidationUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
@@ -51,14 +51,14 @@ public class ConceptReferenceTermFormController {
 	
 	private static final String FIND_CONCEPT_REFERENCE_TERM_URL = "/admin/concepts/conceptReferenceTerms.htm";
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/admin/concepts/conceptReferenceTerms")
+	@GetMapping(value = "/admin/concepts/conceptReferenceTerms")
 	public void showConceptReferenceTermIndexPage() {
 	}
 	
 	/**
 	 * Processes requests to display the form
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = CONCEPT_REFERENCE_TERM_FORM_URL)
+	@GetMapping(value = CONCEPT_REFERENCE_TERM_FORM_URL)
 	public String showForm() {
 		return CONCEPT_REFERENCE_TERM_FORM;
 	}
@@ -95,7 +95,7 @@ public class ConceptReferenceTermFormController {
 	 * @param result the {@link BindingResult} object
 	 * @return the url to redirect to
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = CONCEPT_REFERENCE_TERM_FORM_URL)
+	@PostMapping(value = CONCEPT_REFERENCE_TERM_FORM_URL)
 	public String saveConceptReferenceTerm(WebRequest request,
 	                                       @ModelAttribute(value = "conceptReferenceTermModel") ConceptReferenceTermModel conceptReferenceTermModel,
 	                                       BindingResult result) {
@@ -178,7 +178,7 @@ public class ConceptReferenceTermFormController {
 	 * @param retireReason the reason why the concept reference term is being retired
 	 * @return the url to redirect to
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/concepts/retireConceptReferenceTerm")
+	@PostMapping(value = "/admin/concepts/retireConceptReferenceTerm")
 	public String retireConceptReferenceTerm(WebRequest request,
 	                                         @ModelAttribute(value = "conceptReferenceTermModel") ConceptReferenceTermModel conceptReferenceTermModel,
 	                                         @RequestParam(required = false, value = "retireReason") String retireReason) {
@@ -216,7 +216,7 @@ public class ConceptReferenceTermFormController {
 	 *            unretire
 	 * @return the url to redirect to
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/concepts/unretireConceptReferenceTerm")
+	@PostMapping(value = "/admin/concepts/unretireConceptReferenceTerm")
 	public String unretireConceptReferenceTerm(WebRequest request,
 	                                           @ModelAttribute(value = "conceptReferenceTermModel") ConceptReferenceTermModel conceptReferenceTermModel) {
 		
@@ -250,7 +250,7 @@ public class ConceptReferenceTermFormController {
 	 * @param conceptReferenceTermModel
 	 * @return the url to forward to
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/concepts/purgeConceptReferenceTerm")
+	@PostMapping(value = "/admin/concepts/purgeConceptReferenceTerm")
 	public String purgeTerm(WebRequest request,
 	                        @ModelAttribute(value = "conceptReferenceTermModel") ConceptReferenceTermModel conceptReferenceTermModel) {
 		Integer id = conceptReferenceTermModel.getConceptReferenceTerm().getId();

@@ -32,9 +32,9 @@ import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -54,12 +54,12 @@ public class SettingsController {
 
 	public static final String SECTIONS = "sections";
 
-	@RequestMapping(value = SETTINGS_PATH, method = RequestMethod.GET)
+	@GetMapping(value = SETTINGS_PATH)
 	public String showSettings() {
 		return SETTINGS_VIEW_PATH;
 	}
 
-	@RequestMapping(value = SETTINGS_PATH, method = RequestMethod.POST)
+	@PostMapping(value = SETTINGS_PATH)
 	public String updateSettings(@ModelAttribute(SETTINGS_FORM) SettingsForm settingsForm, Errors errors,
 			HttpServletRequest request, HttpSession session) {
 
@@ -169,11 +169,9 @@ public class SettingsController {
 	 * @return <code>true</code> if the property should be hidden from the user
 	 */
 	private boolean isHidden(SettingsProperty settingsProperty) {
-		if (settingsProperty.getName().equals("Started")) {
-			return true;
-		} else if (settingsProperty.getName().equals("Mandatory")) {
-			return true;
-		} else if (settingsProperty.getName().equals("Database Version")) {
+		String name = settingsProperty.getName();
+		
+		if (name.equals("Started") || name.equals("Mandatory") || name.equals("Database Version")) {
 			return true;
 		}
 		return false;

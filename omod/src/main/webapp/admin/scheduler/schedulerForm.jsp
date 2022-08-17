@@ -189,8 +189,8 @@ window.onload = init;
 		<tr>
 			<td valign="top"><openmrs:message code="general.createdBy"/></td>
 			<td valign="top">
-				<spring:bind path="task.creator">
-					<openmrs:format user="${status.value}"/>
+				<spring:bind path="task.creator.userId">
+					<openmrs:format userId="${status.value}"/>
 				</spring:bind>
 			</td>
 		</tr>
@@ -205,8 +205,8 @@ window.onload = init;
 		<tr>
 			<td valign="top"><openmrs:message code="general.changedBy"/></td>
 			<td valign="top">
-				<spring:bind path="task.changedBy">
-					<openmrs:format user="${status.value}"/>
+				<spring:bind path="task.changedBy.userId">
+					<openmrs:format userId="${status.value}"/>
 				</spring:bind>
 			</td>
 		</tr>

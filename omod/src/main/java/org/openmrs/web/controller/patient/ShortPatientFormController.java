@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -39,6 +37,8 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.PatientValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -46,9 +46,9 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
@@ -73,7 +73,7 @@ public class ShortPatientFormController {
 	@Autowired
 	PatientValidator patientValidator;
 	
-	@RequestMapping(method = RequestMethod.GET, value = SHORT_PATIENT_FORM_URL)
+	@GetMapping(value = SHORT_PATIENT_FORM_URL)
 	public void showForm() {
 	}
 	
@@ -199,7 +199,7 @@ public class ShortPatientFormController {
 	 * @should not void address if it was not changed
 	 * @should void address if it was changed
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = SHORT_PATIENT_FORM_URL)
+	@PostMapping(value = SHORT_PATIENT_FORM_URL)
 	public String saveShortPatient(WebRequest request, @ModelAttribute("personNameCache") PersonName personNameCache,
 	        @ModelAttribute("personAddressCache") PersonAddress personAddressCache,
 	        @ModelAttribute("relationshipsMap") Map<String, Relationship> relationshipsMap,

@@ -21,9 +21,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ValidationUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * This is the controlling class for the conceptStopWordForm.jsp page. This class used to
@@ -53,7 +54,7 @@ public class ConceptStopWordFormController {
 	 * @should return error message if a duplicate ConceptStopWord is added
 	 * @should return error message for an empty ConceptStopWord
 	 */
-	@RequestMapping(method = RequestMethod.POST)
+    @PostMapping
 	public String handleSubmission(HttpSession httpSession, @ModelAttribute("command") ConceptStopWord conceptStopWord,
 	        BindingResult errors) {
 		
@@ -82,7 +83,7 @@ public class ConceptStopWordFormController {
 		return new ConceptStopWord();
 	}
 	
-	@RequestMapping(method = RequestMethod.GET)
+	@GetMapping
 	public String showForm() {
 		return "admin/concepts/conceptStopWordForm";
 	}

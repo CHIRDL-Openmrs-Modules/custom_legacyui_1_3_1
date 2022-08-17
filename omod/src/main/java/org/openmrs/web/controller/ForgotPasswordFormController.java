@@ -15,9 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.RandomStringUtils;
@@ -26,27 +24,42 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.web.ShowFormUtil;
 import org.openmrs.web.WebConstants;
-import org.springframework.validation.BindException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * Controls the forgotten password form Initially a form with just a username box is shown Then a
  * box for the answer to the secret question is shown
  */
-public class ForgotPasswordFormController extends SimpleFormController {
+@Controller
+@RequestMapping(value = "forgotPassword.form")
+public class ForgotPasswordFormController{
 	
+	private static final String FORM_VIEW = "/forgotPasswordForm";
+    private static final String SUBMIT_VIEW = "forgotPassword.form";
+    
+    /** Logger for this class and subclasses */
+    private static final Logger log = LoggerFactory.getLogger(ForgotPasswordFormController.class);
+
 	/**
 	 * Not used with the forgot password form controller.
 	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	@Override
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
-		return "";
+    @ModelAttribute("forgotPassword") 
+    protected Object formBackingObject(HttpServletRequest request) { 
+
+    	return "";
 	}
 	
 	/**
@@ -67,10 +80,10 @@ public class ForgotPasswordFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
-		
+	@PostMapping
+	public ModelAndView processSubmit(HttpServletRequest request, Object obj,
+			BindingResult errors) throws Exception { 	
+	
 		HttpSession httpSession = request.getSession();
 		
 		String username = request.getParameter("uname");
@@ -192,7 +205,7 @@ public class ForgotPasswordFormController extends SimpleFormController {
 		
 		request.setAttribute("uname", username);
 		
-		return showForm(request, response, errors);
+		return ShowFormUtil.showForm(errors, FORM_VIEW);
 	}
 	
 	public String getRandomPassword() {
@@ -228,5 +241,10 @@ public class ForgotPasswordFormController extends SimpleFormController {
 		
 		//Return random question
 		return questions.get(hashValueForName);
+	}
+	
+	@GetMapping
+	public String initForm() throws Exception {
+		return FORM_VIEW;
 	}
 }

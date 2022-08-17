@@ -9,79 +9,81 @@
  */
 package org.openmrs.web.controller.concept;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.ConceptSource;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-public class ConceptSourceListController extends SimpleFormController {
-	
+@Controller
+@RequestMapping(value = "admin/concepts/conceptSource.list")
+public class ConceptSourceListController {
+
+	private static final String FORM_VIEW = "/admin/concepts/conceptSourceList";
+	private static final String SUBMIT_VIEW = "conceptSource.list";
+
 	/**
-	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
-	 * expected
+	 * Allows for Integers to be used as values in input tags. Normally, only
+	 * strings and lists are expected
 	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-	
+
 	/**
-	 * This is called prior to displaying a form for the first time. It tells Spring the
-	 * form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring
+	 * the form/command object to load into the request
 	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
-		//default empty Object
-		List<ConceptSource> conceptSourceList = new Vector<ConceptSource>();
-		
-		//only fill the Object if the user has authenticated properly
+	@ModelAttribute("conceptSourceList")
+	protected Object formBackingObject() {
+
+		// default empty Object
+		List<ConceptSource> conceptSourceList = new Vector<>();
+
+		// only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
 			conceptSourceList = cs.getAllConceptSources(true);
 		}
-		
+
 		return conceptSourceList;
 	}
-	
+
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
 	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
-		List<ConceptSource> conceptSources = (List<ConceptSource>) command;
-		Map<String, Object> map = new HashMap<String, Object>();
-		
+	@GetMapping
+	public String initForm(ModelMap map, @ModelAttribute("conceptSourceList") List<ConceptSource> conceptSources) {
 		ImplementationId implId = Context.getAdministrationService().getImplementationId();
-		
-		// make available the source that corresponds to the implementation id 
+
+		// make available the source that corresponds to the implementation id
 		if (implId != null) {
 			for (ConceptSource conceptSource : conceptSources) {
-				if (conceptSource.getHl7Code() != null && conceptSource.getHl7Code().equals(implId.getImplementationId())) {
+				if (conceptSource.getHl7Code() != null
+						&& conceptSource.getHl7Code().equals(implId.getImplementationId())) {
 					map.put("implIdSource", conceptSource);
 				}
 			}
 		}
-		
-		return map;
+
+		return FORM_VIEW;
 	}
-	
+
 }

@@ -11,17 +11,16 @@ package org.openmrs.web.controller.maintenance;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.servlet.LoginServlet;
 import org.openmrs.web.user.CurrentUsers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * Display the current users logged in the system.
@@ -41,7 +40,7 @@ public class CurrentUsersController {
 	 * @param request
 	 * @param modelMap
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = "admin/maintenance/currentUsers.list")
+    @GetMapping(value = "admin/maintenance/currentUsers.list")
 	public String listCurrentUsers(HttpServletRequest request, ModelMap modelMap) {
 		log.debug("List current users");
 		if (!Context.hasPrivilege(PrivilegeConstants.GET_USERS)) {

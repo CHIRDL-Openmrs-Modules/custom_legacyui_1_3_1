@@ -9,21 +9,33 @@
  */
 package org.openmrs.web.controller.form;
 
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import org.springframework.web.servlet.mvc.SimpleFormController;
+@Controller
+@RequestMapping(value = "admin/forms/field.list")
+public class FieldListController {
 
-public class FieldListController extends SimpleFormController {
-	
+	private static final String FORM_VIEW = "/module/legacyui/admin/forms/fieldList";
+	private static final String SUBMIT_VIEW = "field.list";
+
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws Exception {
-		
+	@ModelAttribute("fieldList")
+	protected Object formBackingObject() {
+
 		String s = "";
-		
+
 		return s;
-		
+
 	}
-	
+
+	@GetMapping
+	public String initForm() {
+		return FORM_VIEW;
+	}
+
 }

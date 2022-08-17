@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openmrs.Form;
 import org.openmrs.FormResource;
 import org.openmrs.api.InvalidFileTypeException;
@@ -22,12 +20,14 @@ import org.openmrs.api.context.Context;
 import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -37,14 +37,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class FormResourceController {
     private static final Logger log = LoggerFactory.getLogger(FormResourceController.class);
 	
-	@RequestMapping(method = RequestMethod.GET, value = "admin/forms/formResources")
+	@GetMapping(value = "admin/forms/formResources")
 	public void manageFormResources(@RequestParam("formId") Form form, Model model) {
 		model.addAttribute("form", form);
 		model.addAttribute("resources", Context.getFormService().getFormResourcesForForm(form));
 		model.addAttribute("datatypes", CustomDatatypeUtil.getDatatypeClassnames());
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "admin/forms/deleteFormResource")
+	@PostMapping(value = "admin/forms/deleteFormResource")
 	public String deleteFormResource(@RequestParam("formId") Form form, @RequestParam("name") String name) {
 		FormResource resource = Context.getFormService().getFormResource(form, name);
 		if (resource != null) {
@@ -53,7 +53,7 @@ public class FormResourceController {
 		return "redirect:formResources.form?formId=" + form.getFormId();
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "admin/forms/addFormResource")
+	@GetMapping(value = "admin/forms/addFormResource")
 	public void addFormResource(@RequestParam("formId") Form form, @RequestParam("datatype") String datatype,
 	        @RequestParam(required = false, value = "handler") String handler, Model model) {
 		model.addAttribute("form", form);
@@ -74,7 +74,7 @@ public class FormResourceController {
 		}
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "admin/forms/addFormResource")
+	@PostMapping(value = "admin/forms/addFormResource")
 	public String handleAddFormResource(@ModelAttribute("resource") FormResource resource, Errors errors, HttpServletRequest request) {
 		HttpSession session = request.getSession();
 	
@@ -87,16 +87,15 @@ public class FormResourceController {
 		}
 		if (errors.hasErrors()) {
 		    throw new RuntimeException("Error handling not yet implemented");
-		} else {
-		    try {
-			Context.getFormService().saveFormResource(resource);
-		    }
-		    catch (InvalidFileTypeException ex) {
-    			log.error(ex.getMessage(), ex);
-    			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.file.upload.expected.text.file");
-    			return "redirect:addFormResource.form?formId=" + resource.getForm().getId() + "&datatype=" + resource.getDatatypeClassname() + "&handler=" + resource.getPreferredHandlerClassname();
-		    }
-		    return "redirect:formResources.form?formId=" + resource.getForm().getId();
 		}
+		try {
+		Context.getFormService().saveFormResource(resource);
+		}
+		catch (InvalidFileTypeException ex) {
+			log.error(ex.getMessage(), ex);
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.file.upload.expected.text.file");
+			return "redirect:addFormResource.form?formId=" + resource.getForm().getId() + "&datatype=" + resource.getDatatypeClassname() + "&handler=" + resource.getPreferredHandlerClassname();
+		}
+		return "redirect:formResources.form?formId=" + resource.getForm().getId();
 	}
 }

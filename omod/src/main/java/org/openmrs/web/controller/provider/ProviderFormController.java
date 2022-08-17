@@ -28,8 +28,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,7 +45,7 @@ public class ProviderFormController {
 		binder.registerCustomEditor(org.openmrs.Person.class, new PersonEditor());
 	}
 	
-	@RequestMapping(method = RequestMethod.POST)
+	@PostMapping
 	public String onSubmit(HttpServletRequest request, @RequestParam(required = false) String saveProviderButton,
 	        @RequestParam(required = false) String retireProviderButton,
 	        @RequestParam(required = false) String unretireProviderButton,
@@ -105,7 +107,7 @@ public class ProviderFormController {
 		return Context.getProviderService().getAllProviderAttributeTypes(true);
 	}
 	
-	@RequestMapping(method = RequestMethod.GET)
+	@GetMapping
 	public String showForm() {
 		return "module/legacyui/admin/provider/providerForm";
 	}

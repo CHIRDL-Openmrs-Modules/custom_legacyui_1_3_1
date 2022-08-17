@@ -9,8 +9,10 @@
  */
 package org.openmrs.web.controller.concept;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
 import java.util.Locale;
@@ -19,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Assertions;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptProposal;
@@ -27,14 +29,22 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockHttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindException;
-import org.springframework.web.servlet.ModelAndView;
 
 public class ConceptProposalFormControllerTest extends BaseModuleWebContextSensitiveTest {
 	
+	@Autowired
+	ConceptProposalFormController controller;
+
+	private MockMvc mockMvc;
+	
+	@BeforeEach
+	public void runBeforeEachTest() throws Exception {
+		this.mockMvc = MockMvcBuilders.standaloneSetup(this.controller).build();
+	}
 	/**
 	 * @see ConceptProposalFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
@@ -57,26 +67,16 @@ public class ConceptProposalFormControllerTest extends BaseModuleWebContextSensi
 		for (ConceptProposal conceptProposal : proposals) {
 		    Assertions.assertNull(conceptProposal.getObs());
 		}
-		
-		// set up the controller
-		ConceptProposalFormController controller = (ConceptProposalFormController) applicationContext
-		        .getBean("conceptProposalForm");
-		controller.setApplicationContext(applicationContext);
-		
-		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setSession(new MockHttpSession(null));
-		request.setMethod("POST");
-		request.addParameter("conceptProposalId", conceptproposalId.toString());
-		request.addParameter("finalText", cp.getOriginalText());
-		request.addParameter("conceptId", conceptToMap.getConceptId().toString());
-		request.addParameter("conceptNamelocale", locale.toString());
-		request.addParameter("action", "");
-		request.addParameter("actionToTake", "saveAsSynonym");
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		ModelAndView mav = controller.handleRequest(request, response);
-		assertNotNull(mav);
-		assertTrue(mav.getModel().isEmpty());
+				
+		this.mockMvc
+		.perform(post("/admin/concepts/conceptProposal.form").param("action", "")
+				.param("conceptProposalId", conceptproposalId.toString())
+				.param("finalText", cp.getOriginalText())
+				.param("conceptId", conceptToMap.getConceptId().toString())
+				.param("conceptNamelocale", locale.toString())
+				.param("actionToTake", "saveAsSynonym"))
+		.andExpect(status().isFound()).andExpect(redirectedUrlPattern("conceptProposal.*"))
+		.andExpect(model().hasNoErrors());
 		
 		Assertions.assertEquals(cp.getOriginalText(), cp.getFinalText());
 		Assertions.assertTrue(conceptToMap.hasName(cp.getOriginalText(), locale));
@@ -106,24 +106,15 @@ public class ConceptProposalFormControllerTest extends BaseModuleWebContextSensi
 		
 		Assertions.assertFalse(conceptToMap.hasName(cp.getOriginalText(), locale));
 		
-		ConceptProposalFormController controller = (ConceptProposalFormController) applicationContext
-		        .getBean("conceptProposalForm");
-		controller.setApplicationContext(applicationContext);
-		
-		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setSession(new MockHttpSession(null));
-		request.setMethod("POST");
-		request.addParameter("conceptProposalId", conceptproposalId.toString());
-		request.addParameter("finalText", cp.getOriginalText());
-		request.addParameter("conceptId", conceptToMap.getConceptId().toString());
-		request.addParameter("conceptNamelocale", locale.toString());
-		request.addParameter("action", "");
-		request.addParameter("actionToTake", "saveAsSynonym");
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		ModelAndView mav = controller.handleRequest(request, response);
-		assertNotNull(mav);
-		assertTrue(mav.getModel().isEmpty());
+		this.mockMvc
+		.perform(post("/admin/concepts/conceptProposal.form").param("action", "")
+				.param("conceptProposalId", conceptproposalId.toString())
+				.param("finalText", cp.getOriginalText())
+				.param("conceptId", conceptToMap.getConceptId().toString())
+				.param("conceptNamelocale", locale.toString())
+				.param("actionToTake", "saveAsSynonym"))
+		.andExpect(status().isFound()).andExpect(redirectedUrlPattern("conceptProposal.*"))
+		.andExpect(model().hasNoErrors());
 		
 		Assertions.assertEquals(cp.getOriginalText(), cp.getFinalText());
 		Assertions.assertTrue(conceptToMap.hasName(cp.getOriginalText(), locale));

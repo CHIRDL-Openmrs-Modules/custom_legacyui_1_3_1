@@ -9,22 +9,35 @@
  */
 package org.openmrs.web.controller.form;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.openmrs.FieldType;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.validator.FieldTypeValidator;
 import org.openmrs.web.WebConstants;
-import org.springframework.validation.BindException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class FieldTypeFormController extends SimpleFormController {
+@Controller
+@RequestMapping(value = "admin/forms/fieldType.form")
+public class FieldTypeFormController {
 	
+	private static final String FORM_VIEW = "/module/legacyui/admin/forms/fieldTypeForm";
+    private static final String SUBMIT_VIEW = "fieldType.list";
+    
+    /** Logger for this class and subclasses */
+    private static final Logger log = LoggerFactory.getLogger(FieldTypeFormController.class);
+    
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
@@ -33,17 +46,26 @@ public class FieldTypeFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
+    @PostMapping
+    public ModelAndView processSubmit(HttpServletRequest request, @ModelAttribute("fieldType") FieldType fieldType, BindingResult errors) throws Exception {
 		
+    	new FieldTypeValidator().validate(fieldType, errors);
+    	
+    	if (errors.hasErrors()) {
+			if (log.isDebugEnabled()) {
+				log.debug("Data binding errors: {}", errors.getErrorCount());
+			}
+			
+			return new ModelAndView(FORM_VIEW);
+		}
+    	
 		HttpSession httpSession = request.getSession();
 		
-		String view = getFormView();
+		String view = FORM_VIEW;
 		
 		if (Context.isAuthenticated()) {
-			FieldType fieldType = (FieldType) obj;
 			Context.getFormService().saveFieldType(fieldType);
-			view = getSuccessView();
+			view = SUBMIT_VIEW;
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "FieldType.saved");
 		}
 		
@@ -56,7 +78,8 @@ public class FieldTypeFormController extends SimpleFormController {
 	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+    @ModelAttribute("fieldType")
+    protected Object formBackingObject(HttpServletRequest request) {
 		
 		FieldType fieldType = null;
 		
@@ -75,4 +98,8 @@ public class FieldTypeFormController extends SimpleFormController {
 		return fieldType;
 	}
 	
+    @GetMapping
+  	public String initForm() throws Exception {
+  		return FORM_VIEW;
+  	}
 }

@@ -237,7 +237,7 @@
 <h2><openmrs:message code="Person.title"/></h2>
 
 <c:if test="${person.dead}">
-	<div id="personFormDeceased" class="retiredMessage">
+    <div id="personFormDeceased" class="retiredMessage">
 		<div><openmrs:message code="Person.personDeceased"/></div>
 	</div>
 </c:if>
@@ -264,7 +264,7 @@
 <form method="post" onSubmit="removeBlankData()">
 	
 	<h3><openmrs:message code="Person.names"/></h3>
-		<spring:hasBindErrors name="person.names">
+        <spring:hasBindErrors name="person.names">
 			<span class="error">${error.errorMessage}</span><br/>
 		</spring:hasBindErrors>
 		<div id="pNames">
@@ -285,18 +285,18 @@
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="nameData" class="tabBox">
-					<spring:nestedPath path="emptyName">
+				  	<spring:nestedPath path="emptyName">
 						<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true|layoutHideVoidOption=true" />
 						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<openmrs:message code="Person.removeThisName"/>'/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
 			</div>
 		</div>
-	
+		
 	<br style="clear: both" />
 	
 	<h3><openmrs:message code="Person.addresses"/></h3>
-		<spring:hasBindErrors name="person.addresses">
+	    <spring:hasBindErrors name="person.addresses">
 			<span class="error">${error.errorMessage}</span><br/>
 		</spring:hasBindErrors>
 		<div id="pAddresses">
@@ -318,14 +318,14 @@
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="addressData" class="tabBox">
-					<spring:nestedPath path="emptyAddress">
+				    <spring:nestedPath path="emptyAddress">
 						<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true|layoutHideVoidOption=true|isNew=true" />
 						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<openmrs:message code="Person.removeThisAddress"/>'/><br/> --> <br/>
-					</spring:nestedPath>
+					</spring:nestedPath> 	
 				</div>
 			</div>
 		</div>
-	
+		
 	<br/>
 	
 	<h3><openmrs:message code="Person.information"/></h3>

@@ -9,15 +9,22 @@
  */
 package org.openmrs.web.controller.program;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindException;
 
@@ -25,28 +32,35 @@ import org.springframework.validation.BindException;
  * Tests the {@link ProgramFormController} class.
  */
 public class ProgramFormControllerTest extends BaseModuleWebContextSensitiveTest {
-	
+
+	@Autowired
+	private ProgramFormController controller;
+
+	private MockMvc mockMvc;
+
+	@BeforeEach
+	public void setup() throws Exception {
+		this.mockMvc = MockMvcBuilders.standaloneSetup(this.controller).build();
+	}
+
 	/**
 	 * @see ProgramFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
 	@Transactional(readOnly = true)
 	public void onSubmit_shouldSaveWorkflowsWithProgram() throws Exception {
-		
+
 		// sanity check to make sure that program #3 doesn't have any workflows already:
-	    Assertions.assertEquals(0, Context.getProgramWorkflowService().getProgram(3).getAllWorkflows().size());
-		
-		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("programId", "3");
-		request.setParameter("allWorkflows", ":3"); // set one workflow on this program
-		
-		ProgramFormController controller = (ProgramFormController) applicationContext.getBean("programForm");
-		controller.handleRequest(request, new MockHttpServletResponse());
-		
+		Assertions.assertEquals(0, Context.getProgramWorkflowService().getProgram(3).getAllWorkflows().size());
+
+		this.mockMvc.perform(post("/admin/programs/program.form").param("programId", "3").param("allWorkflows", ":3"))
+				.andExpect(status().isFound()).andExpect(redirectedUrlPattern("program.*"))
+				.andExpect(model().hasNoErrors());
+
 		Assertions.assertNotSame(0, Context.getProgramWorkflowService().getProgram(3).getAllWorkflows().size());
 		Assertions.assertEquals(1, Context.getProgramWorkflowService().getProgram(3).getAllWorkflows().size());
 	}
-	
+
 	/**
 	 * @see ProgramFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 * @verifies edit existing workflows within programs
@@ -54,23 +68,19 @@ public class ProgramFormControllerTest extends BaseModuleWebContextSensitiveTest
 	@Test
 	@Transactional(readOnly = true)
 	public void onSubmit_shouldEditExistingWorkflowsWithinPrograms() throws Exception {
-		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("programId", "3");
-		request.setParameter("allWorkflows", ":3 4"); // set two workflows on this program
-		
-		ProgramFormController controller = (ProgramFormController) applicationContext.getBean("programForm");
-		controller.handleRequest(request, new MockHttpServletResponse());
-		
+
+		this.mockMvc.perform(post("/admin/programs/program.form").param("programId", "3").param("allWorkflows", ":3 4"))
+				.andExpect(status().isFound()).andExpect(redirectedUrlPattern("program.*"))
+				.andExpect(model().hasNoErrors());
+
 		Assertions.assertEquals(2, Context.getProgramWorkflowService().getProgram(3).getWorkflows().size());
-		
-		request = new MockHttpServletRequest("POST", "");
-		request.setParameter("programId", "3");
-		request.setParameter("allWorkflows", ":5"); // set one workflow on this program
-		
-		controller.handleRequest(request, new MockHttpServletResponse());
-		
+
+		this.mockMvc.perform(post("/admin/programs/program.form").param("programId", "3").param("allWorkflows", ":5"))
+				.andExpect(status().isFound()).andExpect(redirectedUrlPattern("program.*"))
+				.andExpect(model().hasNoErrors());
+
 		Assertions.assertEquals(1, Context.getProgramWorkflowService().getProgram(3).getWorkflows().size());
 		Assertions.assertEquals(5, Context.getProgramWorkflowService().getProgram(3).getWorkflows().iterator().next()
-		        .getConcept().getConceptId().intValue());
+				.getConcept().getConceptId().intValue());
 	}
 }
