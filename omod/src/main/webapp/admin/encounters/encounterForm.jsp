@@ -328,7 +328,7 @@
             <td>
                 <spring:bind path="encounter.encounterDatetime">            
                     <input type="text" name="${status.expression}" size="20" 
-                           value="${encounter.encounterDatetime}" onfocus="showDateTimePicker(this)" />
+                           value="${status.value}" onfocus="showDateTimePicker(this)" />
                    (<openmrs:message code="general.format"/>: <openmrs:dateTimePattern />)
                     <c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
                 </spring:bind>
