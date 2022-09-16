@@ -12,7 +12,7 @@ package org.openmrs.web.controller.form;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Form;
 import org.openmrs.FormResource;
 import org.openmrs.api.InvalidFileTypeException;

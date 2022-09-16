@@ -115,6 +115,7 @@
                 <artifactId>hibernate-validator</artifactId>
                 <version>7.0.3.Final</version>
             </dependency>
+            
             <!-- End OpenMRS core -->
         </dependencies>
     </dependencyManagement>
