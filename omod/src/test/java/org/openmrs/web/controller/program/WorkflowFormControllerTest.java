@@ -9,41 +9,34 @@
  */
 package org.openmrs.web.controller.program;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openmrs.ProgramWorkflow;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.openmrs.ProgramWorkflow;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 /**
  * Tests the {@link WorkflowFormController} class.
  */
 public class WorkflowFormControllerTest extends BaseModuleWebContextSensitiveTest {
 
+	@Autowired
+	private WorkflowFormController controller;
+
 	/**
 	 * @see WorkflowFormController#formBackingObject(HttpServletRequest)
 	 */
 	@Test
-	@Verifies(value = "should return valid programWorkflow given valid programId and workflowId", method = "formBackingObject(HttpServletRequest)")
 	public void formBackingObject_shouldReturnValidProgramWorkflowGivenValidProgramIdAndWorkflowId() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "");
 		request.setParameter("programId", "1");
 		request.setParameter("programWorkflowId", "1");
 
-		HttpServletResponse response = new MockHttpServletResponse();
-
-		WorkflowFormController controller = (WorkflowFormController) applicationContext.getBean("workflowFormController");
-
-		ModelAndView modelAndView = controller.handleRequest(request, response);
-
-		ProgramWorkflow command = (ProgramWorkflow) modelAndView.getModel().get("workflow");
-		Assert.assertNotNull(command.getProgramWorkflowId());
+		ProgramWorkflow command = (ProgramWorkflow) this.controller.formBackingObject(request);
+		Assertions.assertNotNull(command.getProgramWorkflowId());
 	}
 
 }

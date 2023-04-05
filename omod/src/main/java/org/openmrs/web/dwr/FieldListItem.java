@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptName;
 import org.openmrs.Field;
 import org.openmrs.api.context.Context;
@@ -28,8 +26,6 @@ import org.openmrs.api.context.Context;
  * @see DWRFormService
  */
 public class FieldListItem {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer fieldId;
 	

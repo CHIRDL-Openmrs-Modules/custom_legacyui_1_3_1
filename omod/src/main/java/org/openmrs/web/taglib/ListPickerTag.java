@@ -16,15 +16,15 @@ import java.util.Vector;
 
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.web.WebUtil;
 
 public class ListPickerTag extends TagSupport {
 	
 	public static final long serialVersionUID = 1122112233L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ListPickerTag.class);
 	
 	private String name;
 	
@@ -94,7 +94,7 @@ public class ListPickerTag extends TagSupport {
 			pageContext.getOut().write(str);
 		}
 		catch (IOException e) {
-			log.error(e);
+			log.error("Error genereted: ", e);
 		}
 		
 		return SKIP_BODY;

@@ -5,7 +5,7 @@
 		</td>
 		<td>
 			<spring:bind path="field.name">
-				<input type="text" name="${status.expression}" id="${status.expression}" value="${status.value}" size="55" />
+				<input type="text" name="${status.expression}" id="${status.expression}" value="${field.name}" size="55" />
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">
 						${status.errorMessage}
@@ -20,7 +20,7 @@
 		</td>
 		<td>
 			<spring:bind path="field.description">
-				<textarea name="${status.expression}" id="${status.expression}" rows="2" cols="40" type="_moz">${status.value}</textarea>
+				<textarea name="${status.expression}" id="${status.expression}" rows="2" cols="40" type="_moz">${field.description}</textarea>
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">
 						${status.errorMessage}
@@ -38,7 +38,7 @@
 				<select name="fieldTypeId" id="${status.expression}" onchange="chooseFieldType(this.value)">
 					<c:forEach items="${fieldTypes}" var="ft">
 						<option value="${ft.fieldTypeId}"
-							<c:if test="${ft.fieldTypeId == status.value.fieldTypeId}">selected</c:if>>
+							<c:if test="${ft.fieldTypeId == field.fieldType.fieldTypeId}">selected</c:if>>
 							<c:out value="${ft.name}"/>
 						</option>
 					</c:forEach>
@@ -58,7 +58,7 @@
 		<td>
 			<spring:bind path="field.concept">
 				
-				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.value.conceptId}" showVerboseListing="true"></div>
+				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${field.concept.conceptId}" showVerboseListing="true"></div>
 				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<openmrs:message code="Concept.find" />'></div>
 					
 				<c:if test="${status.errorMessage != ''}">
@@ -80,7 +80,7 @@
 						<openmrs:message code="Field.tableName" />
 						<br />
 						<spring:bind path="field.tableName">
-							<input type="input" name="${status.expression}" id="${status.expression}" value="${status.value}"/>
+							<input type="input" name="${status.expression}" id="${status.expression}" value="${field.tableName}"/>
 							<c:if test="${status.errorMessage != ''}">
 								<span class="error">
 									${status.errorMessage}
@@ -92,7 +92,7 @@
 						<openmrs:message code="Field.attributeName" />
 						<br />
 						<spring:bind path="field.attributeName">
-							<input type="input" name="${status.expression}" id="${status.expression}" value="${status.value}"/>
+							<input type="input" name="${status.expression}" id="${status.expression}" value="${field.attributeName}"/>
 							<c:if test="${status.errorMessage != ''}">
 								<span class="error">
 									${status.errorMessage}
@@ -110,7 +110,7 @@
 		</td>
 		<td>
 			<spring:bind path="field.defaultValue">
-				<input type="text" name="${status.expression}" id="${status.expression}" value="${status.value}" size="55" />
+				<input type="text" name="${status.expression}" id="${status.expression}" value="${field.defaultValue}" size="55" />
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">
 						${status.errorMessage}
@@ -127,7 +127,7 @@
 			<spring:bind path="field.selectMultiple">
 				<input type="hidden" name="_${status.expression}">
 				<input type="checkbox" name="${status.expression}" id="${status.expression}" value="on" 
-					<c:if test="${status.value == true}">checked</c:if> />
+					<c:if test="${field.selectMultiple == true}">checked</c:if> />
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">
 						${status.errorMessage}
@@ -162,7 +162,7 @@
          <c:if test="${field.fieldId != null}">
           <td><font color="#D0D0D0"><sub><openmrs:message code="general.uuid"/></sub></font></td>
           <td colspan="${fn:length(locales)}"><font color="#D0D0D0"><sub><spring:bind path="field.uuid">
-          ${status.value}
+          ${field.uuid}
       </spring:bind>M</sub></font></td>
         </c:if>
   </tr>

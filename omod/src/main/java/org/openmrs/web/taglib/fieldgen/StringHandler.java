@@ -24,7 +24,7 @@ public class StringHandler extends AbstractFieldGenHandler implements FieldGenHa
 		checkEmptyVal((String) null);
 		if (fieldGenTag != null) {
 			Object initialValue = this.fieldGenTag.getVal();
-			log.debug("Initialvalue: '" + initialValue + "'");
+			log.debug("Initialvalue: '{}'", initialValue);
 			setParameter("initialValue", initialValue == null ? "" : initialValue);
 			
 			String fieldLength = this.fieldGenTag.getParameterMap() != null ? (String) this.fieldGenTag.getParameterMap()

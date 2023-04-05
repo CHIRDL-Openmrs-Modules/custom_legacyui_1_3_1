@@ -9,8 +9,14 @@
  */
 package org.openmrs.web.controller.encounter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import static org.springframework.util.StringUtils.hasText;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpSession;
+
 import org.openmrs.EncounterRole;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
@@ -21,18 +27,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.springframework.util.StringUtils.hasText;
 
 /**
  * This class controls the encounter.form jsp page. See
@@ -41,11 +39,6 @@ import static org.springframework.util.StringUtils.hasText;
 
 @Controller
 public class EncounterRoleFormController {
-	
-	/**
-	 * Logger for this class and subclasses
-	 */
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	public static final String MODULE_PATH = "/module/legacyui/";
 	
@@ -60,7 +53,7 @@ public class EncounterRoleFormController {
 	 * @should raise an error if validation of encounter role fails
 	 * @should edit and save an existing encounter
 	 */
-	@RequestMapping(value = ENCOUNTERS_PATH + "encounterRole.form", method = RequestMethod.POST, params = "saveEncounterRole")
+	@PostMapping(value = ENCOUNTERS_PATH + "encounterRole.form", params = "saveEncounterRole")
 	public String save(HttpSession session, @ModelAttribute("encounterRole") EncounterRole encounterRole,
 	        BindingResult errors) throws Exception {
 		new EncounterRoleValidator().validate(encounterRole, errors);
@@ -82,7 +75,7 @@ public class EncounterRoleFormController {
 	 * @should retire an existing encounter
 	 * @should raise an error if retire reason is not filled
 	 */
-	@RequestMapping(value = ENCOUNTERS_PATH + "encounterRole.form", method = RequestMethod.POST, params = "retire")
+	@PostMapping(value = ENCOUNTERS_PATH + "encounterRole.form", params = "retire")
 	public String retire(HttpSession session, @ModelAttribute("encounterRole") EncounterRole encounterRole,
 	        BindingResult errors) throws Exception {
 		new EncounterRoleValidator().validate(encounterRole, errors);
@@ -106,7 +99,7 @@ public class EncounterRoleFormController {
 	 * @throws Exception
 	 * @should unretire an existing encounter
 	 */
-	@RequestMapping(value = ENCOUNTERS_PATH + "encounterRole.form", method = RequestMethod.POST, params = "unretire")
+	@PostMapping(value = ENCOUNTERS_PATH + "encounterRole.form", params = "unretire")
 	public String unretire(HttpSession session, @ModelAttribute("encounterRole") EncounterRole encounterRole,
 	        BindingResult errors) throws Exception {
 		new EncounterRoleValidator().validate(encounterRole, errors);
@@ -128,7 +121,7 @@ public class EncounterRoleFormController {
 	 * @should raise an error if retire reason is not filled
 	 * @should purge an existing encounter
 	 */
-	@RequestMapping(value = ENCOUNTERS_PATH + "encounterRole.form", method = RequestMethod.POST, params = "purge")
+	@PostMapping(value = ENCOUNTERS_PATH + "encounterRole.form", params = "purge")
 	public String purge(HttpSession session, @ModelAttribute("encounterRole") EncounterRole encounterRole,
 	        BindingResult errors) throws Exception {
 		new EncounterRoleValidator().validate(encounterRole, errors);
@@ -151,7 +144,7 @@ public class EncounterRoleFormController {
 		return encounterRole;
 	}
 	
-	@RequestMapping(value = ENCOUNTERS_PATH + "encounterRole.form", method = RequestMethod.GET)
+	@GetMapping(value = ENCOUNTERS_PATH + "encounterRole.form")
 	public String showForm() {
 		return MODULE_PATH + ENCOUNTERS_PATH + "encounterRoleForm";
 	}
@@ -161,7 +154,7 @@ public class EncounterRoleFormController {
 	 * @return logical view for the encounter list
 	 * @should add list of encounter role objects to the model
 	 */
-	@RequestMapping(value = ENCOUNTERS_PATH + "encounterRole.list", method = RequestMethod.GET)
+	@GetMapping(value = ENCOUNTERS_PATH + "encounterRole.list")
 	public String getEncounterList(ModelMap modelMap) {
 		List<EncounterRole> encounterRoles = new ArrayList<EncounterRole>();
 		if (Context.isAuthenticated()) {

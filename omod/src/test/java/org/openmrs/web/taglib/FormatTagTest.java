@@ -15,8 +15,8 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
@@ -24,8 +24,7 @@ import org.openmrs.ConceptNameTag;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.mock.web.MockPageContext;
 
 public class FormatTagTest extends BaseModuleWebContextSensitiveTest {
@@ -72,7 +71,7 @@ public class FormatTagTest extends BaseModuleWebContextSensitiveTest {
 		format.setWithConceptNameTag(withTag);
 		StringBuilder sb = new StringBuilder();
 		format.printConcept(sb, concept);
-		Assert.assertEquals(expected, sb.toString());
+		Assertions.assertEquals(expected, sb.toString());
 	}
 	
 	/**
@@ -101,7 +100,7 @@ public class FormatTagTest extends BaseModuleWebContextSensitiveTest {
 		StringBuilder sb = new StringBuilder();
 		format.printConcept(sb, c);
 		
-		Assert.assertThat(sb.toString(), Matchers.not(Matchers.containsString("<script>")));
+		org.hamcrest.MatcherAssert.assertThat(sb.toString(), Matchers.not(Matchers.containsString("<script>")));
 	}
 	
 	/**
@@ -128,7 +127,6 @@ public class FormatTagTest extends BaseModuleWebContextSensitiveTest {
 	 * @see FormatTag#doStartTag()
 	 */
 	@Test
-	@Verifies(value = "print any domain object", method = "doStartTag()")
 	public void doStartTag_shouldPrintAnyDomainObject() throws Exception {
 		FormatTag tag = new FormatTag();
 		PageContext pageContext = new MockPageContext();
@@ -179,8 +177,8 @@ public class FormatTagTest extends BaseModuleWebContextSensitiveTest {
 	 */
 	private void checkStartTagEvaluation(PageContext pageContext, FormatTag tag, Object object, String expected) {
 		tag.setObject(object);
-		Assert.assertEquals(Tag.SKIP_BODY, tag.doStartTag());
-		Assert.assertNotNull(pageContext.getAttribute(ATTRIBUTE_OBJECT_VALUE));
-		Assert.assertEquals(expected, pageContext.getAttribute(ATTRIBUTE_OBJECT_VALUE));
+		Assertions.assertEquals(Tag.SKIP_BODY, tag.doStartTag());
+		Assertions.assertNotNull(pageContext.getAttribute(ATTRIBUTE_OBJECT_VALUE));
+		Assertions.assertEquals(expected, pageContext.getAttribute(ATTRIBUTE_OBJECT_VALUE));
 	}
 }

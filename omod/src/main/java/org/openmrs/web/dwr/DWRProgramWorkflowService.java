@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.PatientProgram;
@@ -32,7 +32,7 @@ import org.openmrs.util.OpenmrsUtil;
 
 public class DWRProgramWorkflowService {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(DWRProgramWorkflowService.class);
 	
 	DateFormat ymdDf = new SimpleDateFormat("yyyy-MM-dd");
 	
@@ -86,7 +86,7 @@ public class DWRProgramWorkflowService {
 	}
 	
 	public Vector<ListItem> getStatesByWorkflow(String uuid) {
-		log.debug("In getStatesByWorkflow with workflow uuid of " + uuid);
+		log.debug("In getStatesByWorkflow with workflow uuid of {}", uuid);
 		Vector<ListItem> ret = new Vector<ListItem>();
 		
 		ProgramWorkflow workflow = Context.getProgramWorkflowService().getWorkflowByUuid(uuid);
@@ -94,7 +94,7 @@ public class DWRProgramWorkflowService {
 			Set<ProgramWorkflowState> states = workflow.getSortedStates();
 			
 			if (states != null) {
-				log.debug("Got states of size " + states.size());
+				log.debug("Got states of size {}", states.size());
 				for (ProgramWorkflowState state : states) {
 					ListItem li = new ListItem();
 					li.setId(state.getProgramWorkflowStateId());
@@ -111,7 +111,7 @@ public class DWRProgramWorkflowService {
 			log.debug("Workflow was null, cannot get states");
 		}
 		
-		log.debug("Returning ret of size " + ret.size());
+		log.debug("Returning ret of size {}", ret.size());
 		return ret;
 	}
 	

@@ -9,97 +9,101 @@
  */
 package org.openmrs.web.controller.encounter;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.openmrs.web.controller.encounter.LocationFormController;
-import org.openmrs.validator.LocationValidator;
 
 /**
- * Tests for the {@link LocationFormController} which handles the location.form page.
+ * Tests for the {@link LocationFormController} which handles the location.form
+ * page.
  */
 public class LocationFormControllerTest extends BaseModuleWebContextSensitiveTest {
-	
-	private LocationFormController getLocationFormController()
-	{
-		LocationFormController controller = (LocationFormController) applicationContext.getBean("locationForm");
-		controller.setApplicationContext(applicationContext);
-		return controller;
+
+	@Autowired
+	LocationFormController controller;
+
+	private MockMvc mockMvc;
+
+	@BeforeEach
+	public void runBeforeEachTest() throws Exception {
+		this.mockMvc = MockMvcBuilders.standaloneSetup(this.controller).build();
 	}
-	
+
 	/**
 	 * @see LocationFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should not retire location if reason is empty", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldNotRetireLocationIfReasonIsEmpty() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("locationId", "1");
-		request.setParameter("retireReason", "");
-		request.setParameter("retired", "true");
 		request.setParameter("retireLocation", "true");
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		
-		LocationFormController controller = getLocationFormController();
-		
-		ModelAndView modelAndView = controller.handleRequest(request, response);
-		
+
+		Location location = Context.getLocationService().getLocation(1);
+		location.setRetireReason("");
+		location.setRetired(Boolean.TRUE);
+		BindingResult errors = new BindException(location, "location");
+		ModelAndView modelAndView = this.controller.processSubmit(request, location, errors);
+
 		// make sure an error is returned because of the empty retire reason
-		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult) modelAndView.getModel().get(
-		    "org.springframework.validation.BindingResult.location");
-		Assert.assertTrue(bindingResult.hasFieldErrors("retireReason"));
+		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult) modelAndView.getModel()
+				.get("org.springframework.validation.BindingResult.location");
+		Assertions.assertNotNull(bindingResult);
+		Assertions.assertTrue(bindingResult.hasFieldErrors("retireReason"));
 	}
-	
+
 	/**
 	 * @see LocationFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should retire location", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldRetireLocation() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
 		request.setParameter("locationId", "1");
 		request.setParameter("retireReason", "some non-null reason");
 		request.setParameter("retireLocation", "true");
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		
-		((SimpleFormController) getLocationFormController()).handleRequest(request, response);
-		
+
+		this.mockMvc
+				.perform(post("/admin/locations/location.form").param("locationId", "1")
+						.param("retireReason", "some non-null reason").param("retireLocation", "true"))
+				.andExpect(status().isFound()).andExpect(redirectedUrlPattern("location.*"))
+				.andExpect(model().hasNoErrors());
+
 		Location retiredLocation = Context.getLocationService().getLocation(1);
-		Assert.assertTrue(retiredLocation.isRetired());
+		Assertions.assertTrue(retiredLocation.isRetired());
 	}
-	
+
 	/**
 	 * @see LocationFormController#formBackingObject(HttpServletRequest)
 	 */
 	@Test
-	@Verifies(value = "should return valid location given valid locationId", method = "formBackingObject(HttpServletRequest)")
 	public void formBackingObject_shouldReturnValidLocationGivenValidLocationId() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "");
 		request.setParameter("locationId", "1");
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		
-		LocationFormController controller = getLocationFormController();
-		
-		ModelAndView modelAndView = controller.handleRequest(request, response);
-		
+
+		this.mockMvc.perform(get("/admin/locations/location.form").param("locationId", "1")).andExpect(status().isOk())
+				.andExpect(model().hasNoErrors());
+
+		Location command = (Location) this.controller.formBackingObject(request);
+
 		// make sure there is an "locationId" filled in on the concept
-		Location command = (Location) modelAndView.getModel().get("location");
-		Assert.assertNotNull(command.getLocationId());
+		Assertions.assertNotNull(command.getLocationId());
 	}
 }

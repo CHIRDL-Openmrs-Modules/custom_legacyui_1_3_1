@@ -15,9 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -39,6 +37,8 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.PatientValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -46,9 +46,9 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
@@ -62,7 +62,7 @@ import org.springframework.web.context.request.WebRequest;
 @Controller
 public class ShortPatientFormController {
 	
-	private static final Log log = LogFactory.getLog(ShortPatientFormController.class);
+    private static final Logger log = LoggerFactory.getLogger(ShortPatientFormController.class);
 	
 	private static final String SHORT_PATIENT_FORM_URL = "/admin/patients/shortPatientForm";
 	
@@ -73,7 +73,7 @@ public class ShortPatientFormController {
 	@Autowired
 	PatientValidator patientValidator;
 	
-	@RequestMapping(method = RequestMethod.GET, value = SHORT_PATIENT_FORM_URL)
+	@GetMapping(value = SHORT_PATIENT_FORM_URL)
 	public void showForm() {
 	}
 	
@@ -129,10 +129,10 @@ public class ShortPatientFormController {
 					log.debug("cod is null, so setting to empty string");
 					causeOfDeathOther = "";
 				} else {
-					log.debug("cod is valid: " + causeOfDeathOther);
+					log.debug("cod is valid: {}", causeOfDeathOther);
 				}
 			} else {
-				log.debug("obssDeath is wrong size: " + obssDeath.size());
+				log.debug("obssDeath is wrong size: {}", obssDeath.size());
 			}
 		} else {
 			log.debug("No concept cause found");
@@ -199,7 +199,7 @@ public class ShortPatientFormController {
 	 * @should not void address if it was not changed
 	 * @should void address if it was changed
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = SHORT_PATIENT_FORM_URL)
+	@PostMapping(value = SHORT_PATIENT_FORM_URL)
 	public String saveShortPatient(WebRequest request, @ModelAttribute("personNameCache") PersonName personNameCache,
 	        @ModelAttribute("personAddressCache") PersonAddress personAddressCache,
 	        @ModelAttribute("relationshipsMap") Map<String, Relationship> relationshipsMap,
@@ -471,7 +471,7 @@ public class ShortPatientFormController {
 				    causeOfDeath);
 				if (obssDeath != null) {
 					if (obssDeath.size() > 1) {
-						log.warn("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
+						log.warn("Multiple causes of death ({})?  Shouldn't be...", obssDeath.size());
 					} else {
 						Obs obsDeath = null;
 						if (obssDeath.size() == 1) {
@@ -525,7 +525,7 @@ public class ShortPatientFormController {
 									if (otherInfo == null) {
 										otherInfo = "";
 									}
-									log.debug("Setting value_text as " + otherInfo);
+									log.debug("Setting value_text as {}", otherInfo);
 									obsDeath.setValueText(otherInfo);
 									
 								} else {
@@ -571,8 +571,7 @@ public class ShortPatientFormController {
 			// if the existing persoName has been edited
 			if (!getPersonNameString(personName).equalsIgnoreCase(getPersonNameString(personNameCache))) {
 				if (log.isDebugEnabled()) {
-					log.debug("Voiding person name with id: " + personName.getId() + " and replacing it with a new one: "
-					        + personName.getFullName());
+					log.debug("Voiding person name with id: {} and replacing it with a new one: {}", personName.getId(), personName.getFullName());
 				}
 				foundChanges = true;
 				// create a new one and copy the changes to it
@@ -607,8 +606,7 @@ public class ShortPatientFormController {
 				if (!personAddress.isBlank() && !personAddressCache.isBlank()
 				        && !personAddress.equalsContent(personAddressCache)) {
 					if (log.isDebugEnabled()) {
-						log.debug("Voiding person address with id: " + personAddress.getId()
-						        + " and replacing it with a new one: " + personAddress.toString());
+						log.debug("Voiding person address with id: {} and replacing it with a new one: {}", personAddress.getId(), personAddress.toString());
 					}
 					
 					foundChanges = true;

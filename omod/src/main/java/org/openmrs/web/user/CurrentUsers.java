@@ -18,9 +18,9 @@ import java.util.TreeMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.User;
 import org.openmrs.web.WebConstants;
 
@@ -29,7 +29,7 @@ import org.openmrs.web.WebConstants;
  */
 public class CurrentUsers {
 	
-	private static final Log log = LogFactory.getLog(CurrentUsers.class);
+    private static final Logger log = LoggerFactory.getLogger(CurrentUsers.class);
 	
 	/**
 	 * Initialize the current users list.
@@ -72,7 +72,7 @@ public class CurrentUsers {
 			currentUserName = "systemid:" + user.getSystemId();
 		}
 		if (log.isDebugEnabled()) {
-			log.debug("Adding current user " + currentUserName);
+			log.debug("Adding current user {}", currentUserName);
 		}
 		currentUsers.put(httpSession.getId(), currentUserName);
 	}
@@ -86,8 +86,7 @@ public class CurrentUsers {
 		String sessionId = httpSession.getId();
 		Map<String, String> currentUsers = getCurrentUsers(httpSession);
 		if (log.isDebugEnabled()) {
-			log.debug("Removing user from the current users. session: " + sessionId + " user: "
-			        + currentUsers.get(sessionId));
+			log.debug("Removing user from the current users. session: {} user: {}", sessionId, currentUsers.get(sessionId));
 		}
 		currentUsers.remove(sessionId);
 	}

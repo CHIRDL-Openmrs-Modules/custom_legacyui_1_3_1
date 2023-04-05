@@ -17,9 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.apache.commons.text.StringEscapeUtils;
 import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -30,6 +28,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Shows the location hierarchy, in tree form
@@ -106,8 +106,8 @@ public class HierarchyController {
 	}
 	
 	private String getName(BaseOpenmrsMetadata element) {
-		String name = StringEscapeUtils.escapeHtml(element.getName());
-		name = StringEscapeUtils.escapeJavaScript(name);
+		String name = StringEscapeUtils.escapeHtml4(element.getName());
+		name = StringEscapeUtils.escapeEcmaScript(name);
 		return element.isRetired() ? "<strike>" + name + "</strike>" : name;
 	}
 	

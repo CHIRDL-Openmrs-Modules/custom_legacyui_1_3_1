@@ -15,9 +15,9 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.api.ConceptService;
@@ -27,7 +27,7 @@ public class ConceptTag extends BodyTagSupport {
 	
 	public static final long serialVersionUID = 1234324234333L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ConceptTag.class);
 	
 	private Concept c = null;
 	
@@ -59,15 +59,15 @@ public class ConceptTag extends BodyTagSupport {
 		}
 		if (c == null) {
 			if (conceptId != null && conceptId > 0) {
-				log.warn("ConceptTag is unable to find a concept with conceptId '" + conceptId + "'");
+				log.warn("ConceptTag is unable to find a concept with conceptId '{}'", conceptId);
 			}
 			if (conceptName != null) {
-				log.warn("ConceptTag is unable to find a concept with conceptName '" + conceptName + "'");
+				log.warn("ConceptTag is unable to find a concept with conceptName '{}'", conceptName);
 			}
 			return SKIP_BODY;
 		}
 		pageContext.setAttribute(var, c);
-		log.debug("Found concept with id " + conceptId + ", set to variable: " + var);
+		log.debug("Found concept with id {}, set to variable: {}", this.conceptId, this.var);
 		
 		// If user specifies a locale in the tag, try to find a matching locale. Otherwise, use the user's default locale
 		Locale loc = Context.getLocale();
@@ -86,7 +86,7 @@ public class ConceptTag extends BodyTagSupport {
 				cName = c.getName();
 			}
 			pageContext.setAttribute(nameVar, cName);
-			log.debug("Retrieved name " + cName.getName() + ", set to variable: " + nameVar);
+			log.debug("Retrieved name {}, set to variable: {}", cName.getName(), this.nameVar);
 		}
 		
 		if (shortestNameVar != null) {

@@ -12,31 +12,42 @@ package org.openmrs.web.controller.concept;
 import java.util.List;
 import java.util.Vector;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptClass;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.web.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class ConceptClassListController extends SimpleFormController {
+@Controller
+@RequestMapping(value = "admin/concepts/conceptClass.list")
+public class ConceptClassListController {
+	
+	private static final String FORM_VIEW = "/admin/concepts/conceptClassList";
+
+	/**
+	 * Set the name of the view that should be shown on successful submit.
+	 */
+	private static final String SUBMIT_VIEW = "conceptClass.list";
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(ConceptClassListController.class);
 	
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
@@ -45,8 +56,8 @@ public class ConceptClassListController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
+    @InitBinder
+	protected void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
 	
@@ -58,24 +69,24 @@ public class ConceptClassListController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
-		
+    @PostMapping
+	public ModelAndView processSubmit(HttpServletRequest request) throws Exception {
+	
 		HttpSession httpSession = request.getSession();
 		
-		String view = getFormView();
+		String view = FORM_VIEW;
 		if (Context.isAuthenticated()) {
 			StringBuilder success = new StringBuilder();
 			String error = "";
 			
-			MessageSourceAccessor msa = getMessageSourceAccessor();
+			MessageSourceService mss = Context.getMessageSourceService();
 			
 			String[] conceptClassList = request.getParameterValues("conceptClassId");
 			if (conceptClassList != null) {
 				ConceptService cs = Context.getConceptService();
 				
-				String deleted = msa.getMessage("general.deleted");
-				String notDeleted = msa.getMessage("ConceptClass.cannot.delete");
+				String deleted = mss.getMessage("general.deleted");
+				String notDeleted = mss.getMessage("ConceptClass.cannot.delete");
 				for (String cc : conceptClassList) {
 					try {
 						cs.purgeConceptClass(cs.getConceptClass(Integer.valueOf(cc)));
@@ -92,10 +103,10 @@ public class ConceptClassListController extends SimpleFormController {
 					}
 				}
 			} else {
-				error = msa.getMessage("ConceptClass.select");
+				error = mss.getMessage("ConceptClass.select");
 			}
 			
-			view = getSuccessView();
+			view = SUBMIT_VIEW;
 			if (!"".equals(success.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
@@ -131,7 +142,8 @@ public class ConceptClassListController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@ModelAttribute("conceptClassList")
+	protected Object formBackingObject() {
 		
 		//default empty Object
 		List<ConceptClass> conceptClassList = new Vector<ConceptClass>();
@@ -143,5 +155,10 @@ public class ConceptClassListController extends SimpleFormController {
 		}
 		
 		return conceptClassList;
+	}
+	
+	@GetMapping
+	public String initForm() throws Exception {
+		return FORM_VIEW;
 	}
 }

@@ -11,8 +11,6 @@ package org.openmrs.web.dwr;
 
 import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -22,8 +20,6 @@ import org.openmrs.api.context.Context;
  * package
  */
 public class DWRCohortService {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * Adds the {@link Patient} identified by <code>patientId</code> to the {@link Cohort}

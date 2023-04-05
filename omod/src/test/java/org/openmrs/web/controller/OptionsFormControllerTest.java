@@ -9,19 +9,21 @@
  */
 package org.openmrs.web.controller;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import java.net.BindException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -30,256 +32,258 @@ import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.Security;
 import org.openmrs.web.OptionsForm;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 import org.openmrs.web.test.WebTestHelper;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
 public class OptionsFormControllerTest extends BaseModuleWebContextSensitiveTest {
-	
+
 	private User user;
-	
+
 	private UserDAO userDao;
-	
+
+	@Autowired
 	private OptionsFormController controller;
-	
+
 	@Autowired
 	private WebTestHelper testHelper;
-	
-	@Before
+
+	private MockMvc mockMvc;
+
+	@BeforeEach
 	public void setUp() {
 		Context.authenticate("admin", "test");
-		user = Context.getAuthenticatedUser();
-		controller = (OptionsFormController) applicationContext.getBean("optionsForm");
-		userDao = (UserDAO) applicationContext.getBean("userDAO");
+		this.user = Context.getAuthenticatedUser();
+		this.userDao = (UserDAO) this.applicationContext.getBean("userDAO");
+		this.mockMvc = MockMvcBuilders.standaloneSetup(this.controller).build();
 	}
-	
+
 	@Test
 	public void shouldChangeSecretQuestionAndAnswer() throws Exception {
-		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("secretQuestionPassword", "test");
-		request.setParameter("secretQuestionNew", "test_question");
-		
+
 		String answer = "test_answer";
-		String hashedAnswer = Security.encodeString(answer);
-		request.setParameter("secretAnswerNew", answer);
-		request.setParameter("secretAnswerConfirm", answer);
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		controller.handleRequest(request, response);
-		
+
+		this.mockMvc
+				.perform(post("/options.form").param("secretQuestionPassword", "test")
+						.param("secretQuestionNew", "test_question").param("secretAnswerNew", answer)
+						.param("secretAnswerConfirm", answer))
+				.andExpect(status().isFound()).andExpect(model().hasNoErrors());
+
 		LoginCredential loginCredential = userDao.getLoginCredential(user);
 		assertEquals(Security.encodeString(answer + loginCredential.getSalt()), loginCredential.getSecretAnswer());
 	}
-	
+
 	@Test
 	public void shouldRejectEmptySecretAnswer() throws Exception {
-		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("secretQuestionPassword", "test");
-		request.setParameter("secretQuestionNew", "test_question");
-		
+
 		String emptyAnswer = "";
-		request.setParameter("secretAnswerNew", emptyAnswer);
-		request.setParameter("secretAnswerConfirm", emptyAnswer);
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		controller.handleRequest(request, response);
-		
+
+		this.mockMvc.perform(post("/options.form").param("secretQuestionPassword", "test")
+				.param("secretQuestionNew", "test_question").param("secretAnswerNew", emptyAnswer)
+				.param("secretAnswerConfirm", emptyAnswer)).andExpect(status().isOk());
+
 		LoginCredential loginCredential = userDao.getLoginCredential(user);
 		assertNull(loginCredential.getSecretAnswer());
 	}
-	
+
 	@Test
 	public void shouldRejectEmptySecretAnswerWhenSecretQuestionPasswordIsNotSet() throws Exception {
-		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("secretQuestionPassword", "");
-		request.setParameter("secretQuestionNew", "test_question");
-		
+
 		String emptyAnswer = "";
-		request.setParameter("secretAnswerNew", emptyAnswer);
-		request.setParameter("secretAnswerConfirm", emptyAnswer);
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		controller.handleRequest(request, response);
-		
+
+		this.mockMvc
+				.perform(post("/options.form").param("secretQuestionPassword", "")
+						.param("secretQuestionNew", "test_question").param("secretAnswerNew", emptyAnswer)
+						.param("secretAnswerConfirm", emptyAnswer))
+				.andExpect(status().isOk());
+
 		LoginCredential loginCredential = userDao.getLoginCredential(user);
 		assertNull(loginCredential.getSecretAnswer());
 	}
-	
+
 	@Test
 	public void shouldRejectEmptySecretQuestion() throws Exception {
 		LoginCredential loginCredential = userDao.getLoginCredential(user);
 		String originalQuestion = loginCredential.getSecretQuestion();
-		
-		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("secretQuestionPassword", "test");
-		request.setParameter("secretQuestionNew", "");
-		
+
 		String emptyAnswer = "test_answer";
-		request.setParameter("secretAnswerNew", emptyAnswer);
-		request.setParameter("secretAnswerConfirm", emptyAnswer);
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		controller.handleRequest(request, response);
-		
+
+		this.mockMvc
+				.perform(post("/options.form").param("secretQuestionPassword", "test").param("secretQuestionNew", "")
+						.param("secretAnswerNew", emptyAnswer).param("secretAnswerConfirm", emptyAnswer))
+				.andExpect(status().isOk());
+
 		loginCredential = userDao.getLoginCredential(user);
 		assertEquals(originalQuestion, loginCredential.getSecretQuestion());
 	}
-	
+
 	/**
 	 * @see OptionsFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 * @verifies accept email address as username if enabled
 	 */
+
 	@Test
 	public void onSubmit_shouldAcceptEmailAddressAsUsernameIfEnabled() throws Exception {
-		//given
+		// given
 		Context.getAdministrationService().saveGlobalProperty(
-		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "true"));
-		MockHttpServletRequest post = testHelper.newPOST("/options.form");
-		post.addParameter("username", "ab@gmail.com");
-		
-		//when
-		testHelper.handle(post);
-		
-		//then
-		Assert.assertThat("ab@gmail.com", is(Context.getAuthenticatedUser().getUsername()));
+				new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "true"));
+
+		// when
+		this.mockMvc.perform(post("/options.form").param("username", "ab@gmail.com")).andExpect(status().isOk());
+
+		// then
+		assertThat("ab@gmail.com", is(Context.getAuthenticatedUser().getUsername()));
 	}
-	
+
 	/**
 	 * @see OptionsFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 * @verifies reject invalid email address as username if enabled
 	 */
+
 	@Test
 	public void onSubmit_shouldRejectInvalidEmailAddressAsUsernameIfEnabled() throws Exception {
-		//given
+		// given
 		Context.getAdministrationService().saveGlobalProperty(
-		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "true"));
+				new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_REQUIRE_EMAIL_AS_USERNAME, "true"));
+
 		MockHttpServletRequest post = testHelper.newPOST("/options.form");
 		post.addParameter("username", "ab@");
-		
-		//when
-		testHelper.handle(post);
-		
-		//then
-		Assert.assertThat("ab@", is(not(Context.getAuthenticatedUser().getUsername())));
+
+		// when
+		this.testHelper.handle(post);
+
+		// then
+		assertThat("ab@", is(not(Context.getAuthenticatedUser().getUsername())));
 	}
-	
+
 	/**
 	 * @see OptionsFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 * @verifies accept 2 characters as username
 	 */
+
 	@Test
 	public void onSubmit_shouldAccept2CharactersAsUsername() throws Exception {
-		//given
+		// given
 		MockHttpServletRequest post = testHelper.newPOST("/options.form");
 		post.addParameter("username", "ab");
-		
-		//when
-		testHelper.handle(post);
-		
-		//then
-		Assert.assertThat("ab", is(Context.getAuthenticatedUser().getUsername()));
+
+		// when
+		this.testHelper.handle(post);
+
+		// then
+		assertThat("ab", is(Context.getAuthenticatedUser().getUsername()));
 	}
-	
+
 	/**
 	 * @see OptionsFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 * @verifies reject 1 character as username
 	 */
 	@Test
 	public void onSubmit_shouldReject1CharacterAsUsername() throws Exception {
-		//given
+		// given
 		MockHttpServletRequest post = testHelper.newPOST("/options.form");
 		post.addParameter("username", "a");
-		
-		//when
-		testHelper.handle(post);
-		
-		//then
-		Assert.assertThat("a", is(not(Context.getAuthenticatedUser().getUsername())));
+
+		// when
+		this.testHelper.handle(post);
+
+		// then
+		assertThat("a", is(not(Context.getAuthenticatedUser().getUsername())));
 	}
-	
+
 	@Test
 	public void shouldRejectInvalidNotificationAddress() throws Exception {
 		final String incorrectAddress = "gayan@gmail";
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("notification", "email");
-		request.setParameter("notificationAddress", incorrectAddress);
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		ModelAndView modelAndView = controller.handleRequest(request, response);
-		
-		OptionsForm optionsForm = (OptionsForm) controller.formBackingObject(request);
+
+		OptionsForm opts = new OptionsForm();
+		opts.setNotification("email");
+		opts.setNotificationAddress(incorrectAddress);
+		BindingResult errors = new BindException(opts, "opts");
+		ModelAndView modelAndView = this.controller.processSubmit(request, opts, errors);
+
+		OptionsForm optionsForm = (OptionsForm) this.controller.formBackingObject();
 		assertEquals(incorrectAddress, optionsForm.getNotificationAddress());
-		
-		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult) modelAndView.getModel().get(
-		    "org.springframework.validation.BindingResult.opts");
-		Assert.assertTrue(bindingResult.hasErrors());
+
+		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult) modelAndView.getModel()
+				.get("org.springframework.validation.BindingResult.opts");
+		Assertions.assertTrue(bindingResult.hasErrors());
 	}
-	
+
 	@Test
 	public void shouldAcceptValidNotificationAddress() throws Exception {
 		String notificationTypes[] = { "internal", "internalProtected", "email" };
 		String correctAddress = "gayan@gmail.com";
-		
+
 		for (String notifyType : notificationTypes) {
-			MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-			request.setParameter("notification", notifyType);
-			request.setParameter("notificationAddress", correctAddress);
-			
-			HttpServletResponse response = new MockHttpServletResponse();
-			controller.handleRequest(request, response);
-			
-			OptionsForm optionsForm = (OptionsForm) controller.formBackingObject(request);
+
+			this.mockMvc.perform(post("/options.form").param("notification", notifyType).param("notificationAddress",
+					correctAddress)).andExpect(status().isFound()).andExpect(model().hasNoErrors());
+
+			OptionsForm optionsForm = (OptionsForm) this.controller.formBackingObject();
 			assertEquals(correctAddress, optionsForm.getNotificationAddress());
 		}
 	}
-	
+
 	@Test
 	public void shouldRejectEmptyNotificationAddress() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
 		request.setParameter("notification", "email");
 		request.setParameter("notificationAddress", "");
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		ModelAndView modelAndView = controller.handleRequest(request, response);
-		
-		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult) modelAndView.getModel().get(
-		    "org.springframework.validation.BindingResult.opts");
-		Assert.assertTrue(bindingResult.hasErrors());
+
+		this.mockMvc.perform(post("/options.form").param("notification", "email").param("notificationAddress", ""))
+				.andExpect(status().isOk());
+
+		OptionsForm opts = new OptionsForm();
+		BindingResult errors = new BindException(opts, "opts");
+		ModelAndView modelAndView = this.controller.processSubmit(request, opts, errors);
+
+		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult) modelAndView.getModel()
+				.get("org.springframework.validation.BindingResult.opts");
+		Assertions.assertTrue(bindingResult.hasErrors());
 	}
-	
+
 	@Test
 	public void shouldNotOverwriteUserSecretQuestionOrAnswerWhenChangingPassword() throws Exception {
-		LoginCredential loginCredential = userDao.getLoginCredential(user);
-		HttpServletResponse response = new MockHttpServletResponse();
-		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		
-		request.setParameter("secretQuestionPassword", "test");
-		request.setParameter("secretQuestionNew", "easy question");
-		request.setParameter("secretAnswerNew", "easy answer");
-		request.setParameter("secretAnswerConfirm", "easy answer");
-		
-		controller.handleRequest(request, response);
-		Assert.assertEquals("easy question", loginCredential.getSecretQuestion());
+		LoginCredential loginCredential = this.userDao.getLoginCredential(user);
+
+		this.mockMvc
+				.perform(post("/options.form").param("secretQuestionPassword", "test")
+						.param("secretQuestionNew", "easy question").param("secretAnswerNew", "easy answer")
+						.param("secretAnswerConfirm", "easy answer"))
+				.andExpect(status().isFound()).andExpect(model().hasNoErrors());
+
+		Assertions.assertEquals("easy question", loginCredential.getSecretQuestion());
 		String hashedAnswer = Security.encodeString("easy answer" + loginCredential.getSalt());
-		Assert.assertEquals(hashedAnswer, loginCredential.getSecretAnswer());
+		Assertions.assertEquals(hashedAnswer, loginCredential.getSecretAnswer());
 		String oldPassword = loginCredential.getHashedPassword();
-		
-		request.removeAllParameters();
+
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
 		request.addParameter("secretQuestionNew", "easy question");
 		request.setParameter("oldPassword", "test");
 		request.setParameter("newPassword", "OpenMRS1");
 		request.setParameter("confirmPassword", "OpenMRS1");
-		ModelAndView mav = controller.handleRequest(request, response);
-		
+
+		this.mockMvc
+				.perform(post("/options.form").param("secretQuestionNew", "easy question").param("oldPassword", "test")
+						.param("newPassword", "OpenMRS1").param("confirmPassword", "OpenMRS1"))
+				.andExpect(status().isOk());
+
 		if (oldPassword == loginCredential.getHashedPassword()) {
 			request.setParameter("secretQuestionNew", "");
-			mav = controller.handleRequest(request, response);
+			OptionsForm opts = new OptionsForm();
+			BindingResult errors = new BindException(opts, "Test options form");
+			this.controller.processSubmit(request, opts, errors);
 		}
-		Assert.assertEquals(hashedAnswer, loginCredential.getSecretAnswer());
-		Assert.assertEquals("easy question", loginCredential.getSecretQuestion());
+		Assertions.assertEquals(hashedAnswer, loginCredential.getSecretAnswer());
+		Assertions.assertEquals("easy question", loginCredential.getSecretQuestion());
 	}
+
 }

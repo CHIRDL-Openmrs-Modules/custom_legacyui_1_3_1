@@ -18,8 +18,6 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.AdministrationService;
@@ -30,8 +28,9 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * Controls the moving/deleting of {@link PersonAttributeType}s.
@@ -40,17 +39,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping(value = "/admin/person/personAttributeType.list")
 public class PersonAttributeTypeListController {
 	
-	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
-	
 	/**
 	 * Show the page to the user.
 	 * 
 	 * @should not fail if not authenticated
 	 * @should put all attribute types into map
 	 */
-	@SuppressWarnings("unchecked")
-	@RequestMapping(method = RequestMethod.GET)
+	@GetMapping
 	public String displayPage(ModelMap modelMap) throws Exception {
 		
 		AdministrationService as = Context.getAdministrationService();
@@ -91,7 +86,7 @@ public class PersonAttributeTypeListController {
 	 * @param httpSession the current session
 	 * @should save given personListingAttributeTypes
 	 */
-	@RequestMapping(method = RequestMethod.POST, params = "action=attrs")
+	@PostMapping(params = "action=attrs")
 	protected String updateGlobalProperties(String patientListingAttributeTypes, String patientViewingAttributeTypes,
 	        String patientHeaderAttributeTypes, String userListingAttributeTypes, String userViewingAttributeTypes,
 	        HttpSession httpSession) {
@@ -123,7 +118,7 @@ public class PersonAttributeTypeListController {
 	 * @should not fail if given first id
 	 * @should not fail if not given any ids
 	 */
-	@RequestMapping(method = RequestMethod.POST, params = "action=moveup")
+	@PostMapping(params = "action=moveup")
 	public String moveUp(Integer[] personAttributeTypeId, HttpSession httpSession) {
 		if (personAttributeTypeId == null) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PersonAttributeType.select");
@@ -172,7 +167,7 @@ public class PersonAttributeTypeListController {
 	 * @should not fail if given last id
 	 * @should not fail if not given any ids
 	 */
-	@RequestMapping(method = RequestMethod.POST, params = "action=movedown")
+	@PostMapping(params = "action=movedown")
 	public String moveDown(Integer[] personAttributeTypeId, HttpSession httpSession) {
 		if (personAttributeTypeId == null) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PersonAttributeType.select");

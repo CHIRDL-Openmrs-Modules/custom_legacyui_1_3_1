@@ -12,28 +12,33 @@ package org.openmrs.web.controller.form;
 import java.util.List;
 import java.util.Vector;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.web.WebConstants;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.validation.BindException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class FormListController extends SimpleFormController {
+@Controller
+@RequestMapping(value = "admin/forms/form.list")
+public class FormListController {
 	
+	private static final String FORM_VIEW = "/module/legacyui/admin/forms/formList";
+    private static final String SUBMIT_VIEW = "form.list";
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(FormListController.class);
 	
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
@@ -43,12 +48,12 @@ public class FormListController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
+    @PostMapping
+    protected ModelAndView processSubmit(HttpServletRequest request) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
-		String view = getFormView();
+		String view = FORM_VIEW;
 		if (Context.isAuthenticated()) {
 			String[] formList = request.getParameterValues("formId");
 			FormService fs = Context.getFormService();
@@ -57,11 +62,11 @@ public class FormListController extends SimpleFormController {
 			StringBuilder success = new StringBuilder("");
 			StringBuilder error = new StringBuilder("");
 			
-			MessageSourceAccessor msa = getMessageSourceAccessor();
-			String deleted = msa.getMessage("general.deleted");
-			String notDeleted = msa.getMessage("general.cannot.delete");
-			String textForm = msa.getMessage("Form.form");
-			String noneDeleted = msa.getMessage("Form.nonedeleted");
+			MessageSourceService mss = Context.getMessageSourceService();
+			String deleted = mss.getMessage("general.deleted");
+			String notDeleted = mss.getMessage("general.cannot.delete");
+			String textForm = mss.getMessage("Form.form");
+			String noneDeleted = mss.getMessage("Form.nonedeleted");
 			if (formList != null) {
 				for (String p : formList) {
 					//TODO convenience method deleteForm(Integer) ??
@@ -83,7 +88,7 @@ public class FormListController extends SimpleFormController {
 			} else {
 				success.append(noneDeleted);
 			}
-			view = getSuccessView();
+			view = SUBMIT_VIEW;
 			if (!"".equals(success.toString())) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 			}
@@ -101,10 +106,11 @@ public class FormListController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+    @ModelAttribute("formList")
+    protected Object formBackingObject() {
 		
 		//default empty Object
-		List<Form> formList = new Vector<Form>();
+		List<Form> formList = new Vector<>();
 		
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
@@ -114,5 +120,10 @@ public class FormListController extends SimpleFormController {
 		}
 		
 		return formList;
+	}
+    
+    @GetMapping
+	public String initForm() throws Exception {
+		return FORM_VIEW;
 	}
 }

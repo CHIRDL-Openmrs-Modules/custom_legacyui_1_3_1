@@ -9,13 +9,12 @@
  */
 package org.openmrs.web.controller.user;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
@@ -40,7 +39,6 @@ public class UserFormControllerTest extends BaseModuleWebContextSensitiveTest {
 	 *
 	 */
 	@Test
-	@Verifies(value = "should work for an example", method = "handleSubmission(WebRequest,HttpSession,String,String,String,null, String, User,BindingResult)")
 	public void handleSubmission_shouldWorkForAnExample() throws Exception {
 		WebRequest request = new ServletWebRequest(new MockHttpServletRequest());
 		User user = controller.formBackingObject(request, null);
@@ -55,19 +53,18 @@ public class UserFormControllerTest extends BaseModuleWebContextSensitiveTest {
 	 *
 	 */
 	@Test
-	@Verifies(value = "Creates Provider Account when Provider Account Checkbox is selected", method = "handleSubmission(WebRequest,HttpSession,String,String,String,null, String, User,BindingResult)")
 	public void handleSubmission_createUserProviderAccountWhenProviderAccountCheckboxIsSelected() throws Exception {
 		executeDataSet(TEST_DATA);
 		WebRequest request = new ServletWebRequest(new MockHttpServletRequest());
 		//A user with userId=2 is preset in the Test DataSet and the relevant details are passed
 		User user = Context.getUserService().getUser(2);
-		Assert.assertTrue(Context.getProviderService().getProvidersByPerson(user.getPerson()).isEmpty());
+		Assertions.assertTrue(Context.getProviderService().getProvidersByPerson(user.getPerson()).isEmpty());
 		ModelMap model = new ModelMap();
 		model.addAttribute("isProvider", false);
 		controller.showForm(2, "true", user, model);
 		controller.handleSubmission(request, new MockHttpSession(), new ModelMap(), "", null, "Test1234", "valid secret question", "valid secret answer", "Test1234",
 				false, new String[] {"Provider"}, "true", "addToProviderTable", user, new BindException(user, "user"));
-		Assert.assertFalse(Context.getProviderService().getProvidersByPerson(user.getPerson()).isEmpty());
+		Assertions.assertFalse(Context.getProviderService().getProvidersByPerson(user.getPerson()).isEmpty());
 	}
 	
 }

@@ -9,24 +9,22 @@
  */
 package org.openmrs.web.controller.concept;
 
-import java.util.Locale;
-
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptStopWord;
 import org.openmrs.api.ConceptStopWordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.web.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ValidationUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 
 /**
  * This is the controlling class for the conceptStopWordForm.jsp page. This class used to
@@ -43,7 +41,7 @@ public class ConceptStopWordFormController {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(ConceptStopWordFormController.class);
 	
 	/**
 	 * Handle the add new ConceptStopWord
@@ -56,7 +54,7 @@ public class ConceptStopWordFormController {
 	 * @should return error message if a duplicate ConceptStopWord is added
 	 * @should return error message for an empty ConceptStopWord
 	 */
-	@RequestMapping(method = RequestMethod.POST)
+    @PostMapping
 	public String handleSubmission(HttpSession httpSession, @ModelAttribute("command") ConceptStopWord conceptStopWord,
 	        BindingResult errors) {
 		
@@ -85,7 +83,7 @@ public class ConceptStopWordFormController {
 		return new ConceptStopWord();
 	}
 	
-	@RequestMapping(method = RequestMethod.GET)
+	@GetMapping
 	public String showForm() {
 		return "admin/concepts/conceptStopWordForm";
 	}

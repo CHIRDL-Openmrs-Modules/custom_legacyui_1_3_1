@@ -10,17 +10,18 @@
 package org.openmrs.web.controller.form;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
-import org.springframework.validation.BindException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
@@ -28,48 +29,53 @@ import org.springframework.web.servlet.view.RedirectView;
  * <p>
  * This class calls the FormService's mergeDuplicateFields
  */
-public class AuditFieldController extends SimpleFormController {
+
+@Controller
+@RequestMapping(value = "admin/forms/auditField.form")
+public class AuditFieldController {
+
+	private static final String FORM_VIEW = "/module/legacyui/admin/forms/auditFieldForm";
+	private static final String SUBMIT_VIEW = "auditField.form";
+    // command name is auditField
 	
 	/** Logger for this class and subclasses */
-	private static final Log log = LogFactory.getLog(AuditFieldController.class);
-	
-	public AuditFieldController() {
-		setCommandName("auditField");
-		setCommandClass(java.lang.String.class);
-	}
-	
+	private static final Logger log = LoggerFactory.getLogger(AuditFieldController.class);
+
 	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by
+	 * the input form and saves it to the db
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
-		
+	@PostMapping
+	public ModelAndView processSubmit(HttpServletRequest request) throws Exception {
+
 		HttpSession httpSession = request.getSession();
-		
-		String view = getFormView();
-		
+
+		String view = FORM_VIEW;
+
 		if (Context.isAuthenticated()) {
-			view = getSuccessView();
-			
+			view = SUBMIT_VIEW;
+
 			try {
 				int i = Context.getFormService().mergeDuplicateFields();
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ARGS, i);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.auditSuccess");
-			}
-			catch (APIException e) {
+			} catch (APIException e) {
 				log.warn("Error in mergeDuplicateFields", e);
-				
+
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.auditError");
 			}
 		}
-		
+
 		return new ModelAndView(new RedirectView(view));
 	}
-	
+
+	@GetMapping
+	public String initForm() {
+		return FORM_VIEW;
+	}
+
 }

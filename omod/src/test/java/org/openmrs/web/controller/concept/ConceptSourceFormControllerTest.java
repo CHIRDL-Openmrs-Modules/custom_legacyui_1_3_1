@@ -9,101 +9,108 @@
  */
 package org.openmrs.web.controller.concept;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.net.BindException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openmrs.ConceptSource;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 /**
  * Tests the {@link ConceptSourceFormController}
  */
 public class ConceptSourceFormControllerTest extends BaseModuleWebContextSensitiveTest {
 	
+	private MockMvc mockMvc;
+	
+	@Autowired
+	ConceptSourceFormController controller;
+	
 	/**
 	 * @see ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should retire concept source", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldRetireConceptSource() throws Exception {
+		
+		this.mockMvc = MockMvcBuilders.standaloneSetup(this.controller).build();
 		ConceptService cs = Context.getConceptService();
-		ConceptSourceFormController controller = (ConceptSourceFormController) applicationContext
-		        .getBean("conceptSourceForm");
-		
-		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-		mockRequest.setMethod("POST");
-		mockRequest.setParameter("conceptSourceId", "3");
-		mockRequest.setParameter("retireReason", "dummy reason for retirement");
-		mockRequest.setParameter("retire", "dummy reason for retirement");
-		
-		controller.handleRequest(mockRequest, new MockHttpServletResponse());
+				
+		this.mockMvc
+		.perform(post("/admin/concepts/conceptSource.form")
+				.param("conceptSourceId", "3")
+				.param("retireReason", "dummy reason for retirement")
+				.param("retire", "dummy reason for retirement"))
+		.andExpect(status().isFound()).andExpect(redirectedUrlPattern("concept*"))
+		.andExpect(model().hasNoErrors());
 		
 		ConceptSource conceptSource = cs.getConceptSource(3);
-		Assert.assertTrue(conceptSource.isRetired());
-		Assert.assertEquals("dummy reason for retirement", conceptSource.getRetireReason());
+		Assertions.assertTrue(conceptSource.isRetired());
+		Assertions.assertEquals("dummy reason for retirement", conceptSource.getRetireReason());
 	}
 	
 	/**
 	 * @see ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should delete concept source", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldDeleteConceptSource() throws Exception {
+		
+		this.mockMvc = MockMvcBuilders.standaloneSetup(this.controller).build();
 		ConceptService cs = Context.getConceptService();
-		ConceptSourceFormController controller = (ConceptSourceFormController) applicationContext
-		        .getBean("conceptSourceForm");
-		
-		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-		mockRequest.setMethod("POST");
-		mockRequest.setParameter("conceptSourceId", "3");
-		mockRequest.setParameter("purge", "dummy reason for deletion");
-		
-		controller.handleRequest(mockRequest, new MockHttpServletResponse());
+			
+		this.mockMvc
+		.perform(post("/admin/concepts/conceptSource.form")
+				.param("conceptSourceId", "3")
+				.param("purge", "dummy reason for deletion"))
+		.andExpect(status().isFound()).andExpect(redirectedUrlPattern("concept*"))
+		.andExpect(model().hasNoErrors());
 		
 		ConceptSource nullConceptSource = cs.getConceptSource(3);
-		Assert.assertNull(nullConceptSource);
+		Assertions.assertNull(nullConceptSource);
 	}
 	
 	/**
 	 * @see ConceptSourceListController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)
 	 */
 	@Test
-	@Verifies(value = "should restore retired concept source", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
 	public void onSubmit_shouldRestoreRetiredConceptSource() throws Exception {
+		
+		this.mockMvc = MockMvcBuilders.standaloneSetup(this.controller).build();
 		ConceptService cs = Context.getConceptService();
-		ConceptSourceFormController controller = (ConceptSourceFormController) applicationContext
-		        .getBean("conceptSourceForm");
 		
-		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-		mockRequest.setMethod("POST");
-		mockRequest.setParameter("conceptSourceId", "3");
-		mockRequest.setParameter("retireReason", "dummy reason for retirement");
-		mockRequest.setParameter("retire", "dummy reason for retirement");
-		
-		controller.handleRequest(mockRequest, new MockHttpServletResponse());
+		this.mockMvc
+		.perform(post("/admin/concepts/conceptSource.form")
+				.param("conceptSourceId", "3")
+				.param("retireReason", "dummy reason for retirement")
+				.param("retire", "dummy reason for retirement"))
+		.andExpect(status().isFound()).andExpect(redirectedUrlPattern("concept*"))
+		.andExpect(model().hasNoErrors());
 		
 		ConceptSource conceptSource = cs.getConceptSource(3);
-		Assert.assertTrue(conceptSource.isRetired());
-		Assert.assertEquals("dummy reason for retirement", conceptSource.getRetireReason());
+		Assertions.assertTrue(conceptSource.isRetired());
+		Assertions.assertEquals("dummy reason for retirement", conceptSource.getRetireReason());
 		
-		MockHttpServletRequest restoreMockRequest = new MockHttpServletRequest();
-		restoreMockRequest.setMethod("POST");
-		restoreMockRequest.setParameter("conceptSourceId", "3");
-		restoreMockRequest.setParameter("restore", "dummy reason for restoration");
-		
-		controller.handleRequest(restoreMockRequest, new MockHttpServletResponse());
+		this.mockMvc
+		.perform(post("/admin/concepts/conceptSource.form")
+				.param("conceptSourceId", "3")
+				.param("restore", "dummy reason for restoration"))
+		.andExpect(status().isFound()).andExpect(redirectedUrlPattern("concept*"))
+		.andExpect(model().hasNoErrors());
 		
 		ConceptSource newConceptSource = cs.getConceptSource(3);
-		Assert.assertNotNull("Error, Object is null", newConceptSource);
-		Assert.assertTrue(!newConceptSource.isRetired());
+		Assertions.assertNotNull(newConceptSource, "Error, Object is null");
+		Assertions.assertTrue(!newConceptSource.isRetired());
 	}
 }

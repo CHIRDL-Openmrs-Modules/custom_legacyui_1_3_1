@@ -9,8 +9,8 @@
  */
 package org.openmrs.web.taglib;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.taglibs.standard.tag.common.core.ImportSupport;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
@@ -26,7 +26,7 @@ public class PortletTag extends ImportSupport {
 	
 	public static final long serialVersionUID = 21L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(PortletTag.class);
 	
 	private String size = "";
 	
@@ -152,7 +152,7 @@ public class PortletTag extends ImportSupport {
 			Module mod = ModuleFactory.getModuleById(moduleId);
 			if (mod == null) {
 				// Could not find the module, the standard portlet url will be used
-				log.warn("no module found with id: " + moduleId);
+				log.warn("no module found with id: {}", moduleId);
 			} else {
 				if (moduleId.contains(".")) {
 					// Module Id's that contain a '.' result in the module being in a sub-folder

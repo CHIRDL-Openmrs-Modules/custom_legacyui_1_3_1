@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InError;
@@ -35,7 +35,7 @@ public class Hl7InErrorListController {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	private static final Log log = LogFactory.getLog(Hl7InErrorListController.class);
+    private static final Logger log = LoggerFactory.getLogger(Hl7InErrorListController.class);
 	
 	/**
 	 * Render the HL7 error queue messages page

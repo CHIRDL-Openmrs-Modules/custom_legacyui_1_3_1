@@ -9,77 +9,95 @@
  */
 package org.openmrs.web.controller.concept;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.validator.ConceptDrugValidator;
+import org.openmrs.web.ShowFormUtil;
 import org.openmrs.web.WebConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class ConceptDrugFormController extends SimpleFormController {
-	
-	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
-	
+@Controller
+@RequestMapping(value = "admin/concepts/conceptDrug.form")
+public class ConceptDrugFormController {
+
+	private static final String FORM_VIEW = "/admin/concepts/conceptDrugForm";
 	/**
-	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
-	 * expected
+	 * Set the name of the view that should be shown on successful submit.
+	 */
+	private static final String SUBMIT_VIEW = "conceptDrug.list";
+	/** Logger for this class and subclasses */
+	private static final Logger log = LoggerFactory.getLogger(ConceptDrugFormController.class);
+
+	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only
+	 * strings and lists are expected
 	 * 
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
-		
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 		binder.registerCustomEditor(java.lang.Double.class, new CustomNumberEditor(java.lang.Double.class, true));
 		binder.registerCustomEditor(Concept.class, new ConceptEditor());
 	}
-	
+
 	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by
+	 * the input form and saves it to the db
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
+	@PostMapping
+	public ModelAndView processSubmit(HttpServletRequest request, @ModelAttribute("drug") Drug drug,
+			BindingResult errors) throws Exception {
+		
+		new ConceptDrugValidator().validate(drug, errors);
+		
+		if (errors.hasErrors()) {
+			if (log.isDebugEnabled()) {
+				log.debug("Data binding errors: {}", errors.getErrorCount());
+			}
+			return new ModelAndView(FORM_VIEW);
+		}
 		
 		HttpSession httpSession = request.getSession();
-		String view = getFormView();
+		String view = FORM_VIEW;
 		
 		if (Context.isAuthenticated()) {
-			Drug drug = (Drug) obj;
 			ConceptService conceptService = Context.getConceptService();
-			
+
 			if (request.getParameter("retireDrug") != null) {
 				String retireReason = request.getParameter("retireReason");
 				if (drug.getId() != null && (retireReason == null || retireReason.length() == 0)) {
 					errors.reject("retireReason", "ConceptDrug.retire.reason.empty");
-					return showForm(request, response, errors);
+					return ShowFormUtil.showForm(errors, FORM_VIEW);
 				}
-				
+
 				conceptService.retireDrug(drug, retireReason);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.retiredSuccessfully");
 			}
@@ -92,32 +110,32 @@ public class ConceptDrugFormController extends SimpleFormController {
 				try {
 					conceptService.purgeDrug(drug);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.purgedSuccessfully");
-				}
-				catch (DataIntegrityViolationException e) {
+				} catch (DataIntegrityViolationException e) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
 				}
 			} else {
 				conceptService.saveDrug(drug);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.saved");
 			}
-			
-			view = getSuccessView();
-			
+
+			view = SUBMIT_VIEW;
+
 		}
-		
+
 		return new ModelAndView(new RedirectView(view));
 	}
-	
+
 	/**
-	 * This is called prior to displaying a form for the first time. It tells Spring the
-	 * form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring
+	 * the form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
+	@ModelAttribute("drug")
+	protected Object formBackingObject(HttpServletRequest request) {
+
 		Drug drug = null;
-		
+
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
 			String id = request.getParameter("drugId");
@@ -125,41 +143,41 @@ public class ConceptDrugFormController extends SimpleFormController {
 				drug = cs.getDrug(Integer.valueOf(id));
 			}
 		}
-		
+
 		if (drug == null) {
 			drug = new Drug();
 		}
-		
+
 		return drug;
 	}
-	
+
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
 	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
-		
-		Drug drug = (Drug) obj;
-		
-		Map<String, Object> map = new HashMap<String, Object>();
+	@GetMapping
+	public String initForm(HttpServletRequest request, ModelMap map, @ModelAttribute("drug") Drug drug, BindingResult errors) throws Exception {
+
 		String defaultVerbose = "false";
-		
+
 		if (Context.isAuthenticated()) {
 			if (drug.getConcept() != null) {
 				map.put("conceptName", drug.getConcept().getName(request.getLocale()));
 			}
-			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			defaultVerbose = Context.getAuthenticatedUser()
+					.getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
-		
+
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
-		
+
 		String editReason = request.getParameter("editReason");
 		if (editReason == null) {
 			editReason = "";
 		}
-		
+
 		map.put("editReason", editReason);
-		
-		return map;
+
+		return FORM_VIEW;
 	}
+
 }

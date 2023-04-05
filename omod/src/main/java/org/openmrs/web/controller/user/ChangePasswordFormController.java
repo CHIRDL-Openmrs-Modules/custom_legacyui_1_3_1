@@ -11,7 +11,7 @@ package org.openmrs.web.controller.user;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.User;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.UserService;
@@ -24,9 +24,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -54,7 +55,7 @@ public class ChangePasswordFormController {
 	 * @param httpSession current browser session
 	 * @return the view to be rendered
 	 */
-	@RequestMapping(method = RequestMethod.GET)
+	@GetMapping
 	public String showForm(HttpSession httpSession) {
 		httpSession.setAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL, "false");
 		httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.password.change");
@@ -84,7 +85,7 @@ public class ChangePasswordFormController {
 	 * @param confirmAnswer confirmation of the answer for the question
 	 * @param errors while processing the form
 	 */
-	@RequestMapping(method = RequestMethod.POST)
+	@PostMapping
 	public String handleSubmission(HttpSession httpSession,
 			@RequestParam(required = true, value = "oldPassword") String oldPassword,
 	        @RequestParam(required = true, value = "password") String password,

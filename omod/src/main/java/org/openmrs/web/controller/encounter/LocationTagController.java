@@ -25,10 +25,11 @@ import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
@@ -86,7 +87,7 @@ public class LocationTagController {
 	/**
 	 * Display the edit page for LocationTag
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = "/admin/locations/locationTagEdit")
+	@GetMapping(value = "/admin/locations/locationTagEdit")
 	public void showEdit(@RequestParam("locationTagId") LocationTag locationTag, ModelMap model) {
 		model.addAttribute("locationTag", locationTag); // this will go in the session
 		List<Location> locations = Context.getLocationService().getLocationsByTag(locationTag);
@@ -98,26 +99,25 @@ public class LocationTagController {
 	/**
 	 * Handle submission for editing a LocationTag (for editing its name/description)
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/locations/locationTagEdit")
+	@PostMapping(value = "/admin/locations/locationTagEdit")
 	public String handleEditSubmission(WebRequest request, @ModelAttribute("locationTag") LocationTag locationTag,
 	        BindingResult result, SessionStatus status) {
 		
 		new LocationTagValidator().validate(locationTag, result);
 		if (result.hasErrors()) {
 			return "/admin/locations/locationTagEdit";
-		} else {
-			Context.getLocationService().saveLocationTag(locationTag);
-			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
-			    "LocationTag.saved"), WebRequest.SCOPE_SESSION);
-			status.setComplete();
-			return "redirect:/admin/locations/locationTag.list";
 		}
+		Context.getLocationService().saveLocationTag(locationTag);
+		request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
+		    "LocationTag.saved"), WebRequest.SCOPE_SESSION);
+		status.setComplete();
+		return "redirect:/admin/locations/locationTag.list";
 	}
 	
 	/**
 	 * Purge a locationTag
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/locations/locationTagPurge")
+	@PostMapping(value = "/admin/locations/locationTagPurge")
 	public String purge(WebRequest request, @RequestParam("id") LocationTag locationTag) {
 		Context.getLocationService().purgeLocationTag(locationTag);
 		request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
@@ -128,7 +128,7 @@ public class LocationTagController {
 	/**
 	 * Retire a locationTag
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/locations/locationTagRetire")
+	@PostMapping(value = "/admin/locations/locationTagRetire")
 	public String retire(WebRequest request, @RequestParam("id") LocationTag locationTag,
 	        @RequestParam("retireReason") String retireReason) {
 		Context.getLocationService().retireLocationTag(locationTag, retireReason);
@@ -140,7 +140,7 @@ public class LocationTagController {
 	/**
 	 * Unretire a locationTag
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/locations/locationTagUnretire")
+	@PostMapping(value = "/admin/locations/locationTagUnretire")
 	public String unretire(WebRequest request, @RequestParam("id") LocationTag locationTag) {
 		Context.getLocationService().unretireLocationTag(locationTag);
 		request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(

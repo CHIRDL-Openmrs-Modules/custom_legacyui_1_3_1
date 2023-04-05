@@ -9,22 +9,21 @@
  */
 package org.openmrs.web.dwr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Set;
 import java.util.Vector;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.PatientProgram;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.Verifies;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 
 public class DWRProgramWorkflowServiceTest extends BaseModuleWebContextSensitiveTest {
 	
@@ -34,14 +33,13 @@ public class DWRProgramWorkflowServiceTest extends BaseModuleWebContextSensitive
 	
 	protected static final String PROGRAM_NEXT_STATES_XML = "org/openmrs/web/dwr/include/DWRProgramWorkflowServiceTest-initialStates.xml";
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		dwrProgramWorkflowService = new DWRProgramWorkflowService();
 		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
 	}
 	
 	@Test
-	@Verifies(value = "should get possible outcomes for a program", method = "getPossibleOutcomes()")
 	public void getPossibleOutcomes_shouldReturnOutcomeConceptsFromProgram() throws Exception {
 		Vector<ListItem> possibleOutcomes = dwrProgramWorkflowService.getPossibleOutcomes(4);
 		assertFalse(possibleOutcomes.isEmpty());
@@ -49,7 +47,6 @@ public class DWRProgramWorkflowServiceTest extends BaseModuleWebContextSensitive
 	}
 	
 	@Test
-	@Verifies(value = "should return a list consisting of active, not retired, states", method = "getPossibleNextStates")
 	public void getPossibleNextStates_shouldReturnAllNext() throws Exception {
 		executeDataSet(PROGRAM_NEXT_STATES_XML);
 		
@@ -64,7 +61,6 @@ public class DWRProgramWorkflowServiceTest extends BaseModuleWebContextSensitive
 	}
 	
 	@Test
-	@Verifies(value = "should return a list consisting of active, not retired, states", method = "getPossibleNextStates")
 	public void getPossibleNextStates_shouldReturnNonRetiredConcepts() throws Exception {
 		executeDataSet(PROGRAM_NEXT_STATES_XML);
 		
@@ -95,7 +91,6 @@ public class DWRProgramWorkflowServiceTest extends BaseModuleWebContextSensitive
 	}
 	
 	@Test
-	@Verifies(value = "should return a list consisting of active, not retired, states", method = "getPossibleNextStates")
 	public void getPossibleNextStates_shouldReturnNonRetiredStates() throws Exception {
 		executeDataSet(PROGRAM_NEXT_STATES_XML);
 		

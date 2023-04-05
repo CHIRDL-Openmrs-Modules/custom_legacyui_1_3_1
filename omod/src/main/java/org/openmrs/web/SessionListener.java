@@ -12,8 +12,6 @@ package org.openmrs.web;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.web.user.CurrentUsers;
 
 /**
@@ -22,8 +20,6 @@ import org.openmrs.web.user.CurrentUsers;
  * This is set by the web.xml class
  */
 public class SessionListener implements HttpSessionListener {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * @see HttpSessionListener#sessionCreated(HttpSessionEvent)

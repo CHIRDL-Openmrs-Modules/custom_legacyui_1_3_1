@@ -16,8 +16,6 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
@@ -34,16 +32,18 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.UserValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
@@ -53,7 +53,7 @@ import org.springframework.web.context.request.WebRequest;
 @Controller
 public class UserFormController {
 	
-	protected static final Log log = LogFactory.getLog(UserFormController.class);
+    private static final Logger log = LoggerFactory.getLogger(UserFormController.class);
 	
 	@Autowired
 	private UserValidator userValidator;
@@ -103,7 +103,7 @@ public class UserFormController {
 		return roles;
 	}
 	
-	@RequestMapping(value = "/admin/users/user.form", method = RequestMethod.GET)
+	@GetMapping(value = "/admin/users/user.form")
 	public String showForm(
 			@RequestParam(required = false, value = "userId") Integer userId, 
 			@RequestParam(required = false, value = "createNewPerson") String createNewPerson, 
@@ -140,7 +140,7 @@ public class UserFormController {
 	/**
 	 * @should work for an example
 	 */
-	@RequestMapping(value = "/admin/users/user.form", method = RequestMethod.POST)
+	@PostMapping(value = "/admin/users/user.form")
 	public String handleSubmission(WebRequest request, HttpSession httpSession, ModelMap model,
 	        @RequestParam(required = false, value = "action") String action,
 	        @RequestParam(required = false, value = "userFormOldPassword") String oldPassword,
@@ -280,7 +280,7 @@ public class UserFormController {
 				
 				if (!"".equals(password) && Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
 					if (log.isDebugEnabled()) {
-						log.debug("calling changePassword for user " + user + " by user " + Context.getAuthenticatedUser());
+						log.debug("calling changePassword for user {} by user {}", user, Context.getAuthenticatedUser());
 					}
 					us.changePassword(user, oldPassword, password);
 				}

@@ -9,15 +9,15 @@
  */
 package org.openmrs.web.controller.maintenance;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
@@ -35,7 +35,7 @@ public class LocalesAndThemesFormController {
 	 * @param model the key value pair that will be accessible from the jsp page
 	 * @throws Exception if there is trouble getting the database changes from liquibase
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = "admin/maintenance/localesAndThemes")
+	@GetMapping(value = "admin/maintenance/localesAndThemes")
 	public String showPage(ModelMap model) throws Exception {
 		String theme = Context.getAdministrationService().getGlobalProperty(
 				OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_THEME);
@@ -58,7 +58,7 @@ public class LocalesAndThemesFormController {
 	 * @param locale the locale to save (en, en_GB, es, etc)
 	 * @throws Exception
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "admin/maintenance/localesAndThemes")
+	@PostMapping(value = "admin/maintenance/localesAndThemes")
 	public String saveDefaults(WebRequest request, @RequestParam("theme") String theme,
 			@RequestParam("locale") String locale) throws Exception {
 		boolean localeInList = false;

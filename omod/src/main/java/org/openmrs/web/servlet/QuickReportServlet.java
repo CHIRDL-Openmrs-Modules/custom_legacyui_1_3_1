@@ -26,9 +26,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.openmrs.Concept;
@@ -50,7 +50,7 @@ public class QuickReportServlet extends HttpServlet {
 	
 	public static final long serialVersionUID = 1231231L;
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private static final Logger log = LoggerFactory.getLogger(QuickReportServlet.class);
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
@@ -94,7 +94,7 @@ public class QuickReportServlet extends HttpServlet {
 			Velocity.evaluate(velocityContext, report, this.getClass().getName(), getTemplate(reportType));
 		}
 		catch (Exception e) {
-			log.error("Error evaluating report type " + reportType, e);
+			log.error("Error evaluating report type {}", reportType, e);
 		}
 		
 	}

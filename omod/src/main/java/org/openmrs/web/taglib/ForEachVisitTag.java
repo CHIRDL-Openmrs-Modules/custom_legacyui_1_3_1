@@ -23,16 +23,16 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.ReverseComparator;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Visit;
 
 public class ForEachVisitTag extends BodyTagSupport {
 	
 	public static final long serialVersionUID = 1L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ForEachVisitTag.class);
 	
 	int count = 0;
 	
@@ -54,7 +54,7 @@ public class ForEachVisitTag extends BodyTagSupport {
 	@Override
 	public int doStartTag() {
 		if (visits == null || visits.isEmpty()) {
-			log.debug("ForEachVisitTag skipping body due to 'visits' param = " + visits);
+			log.debug("ForEachVisitTag skipping body due to 'visits' param = {}", this.visits);
 			return SKIP_BODY;
 		}
 		// First retrieve all visits matching the passed visit type id, if provided.
@@ -66,7 +66,7 @@ public class ForEachVisitTag extends BodyTagSupport {
 				matchingVisits.add(e);
 			}
 		}
-		log.debug("ForEachVisitTag found " + matchingVisits.size() + " visits matching type = " + type);
+		log.debug("ForEachVisitTag found {} visits matching type = {}", this.matchingVisits.size(), this.type);
 		
 		// Next, sort the visits
 		if (StringUtils.isEmpty(sortBy)) {

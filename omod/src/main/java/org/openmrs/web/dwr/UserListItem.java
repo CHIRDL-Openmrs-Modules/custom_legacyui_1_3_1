@@ -9,16 +9,12 @@
  */
 package org.openmrs.web.dwr;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Arrays;
+
 import org.openmrs.Role;
 import org.openmrs.User;
 
-import java.util.Arrays;
-
 public class UserListItem extends PersonListItem {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer userId;
 	

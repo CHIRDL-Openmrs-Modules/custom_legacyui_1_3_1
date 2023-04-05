@@ -15,8 +15,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.GlobalProperty;
 import org.openmrs.VisitType;
 import org.openmrs.api.AdministrationService;
@@ -36,9 +36,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 
 /**
  * This class controls the configureVisits.form jsp page. See
@@ -73,7 +73,7 @@ public class ConfigureVisitsFormController {
 		return visitService.getAllVisitTypes();
 	}
 	
-	@RequestMapping(value = CONFIGURE_VISITS_PATH, method = RequestMethod.GET)
+	@GetMapping(value = CONFIGURE_VISITS_PATH)
 	public void manageEncounterVisitHandlers(Model model) {
 		Context.requirePrivilege(PrivilegeConstants.CONFIGURE_VISITS);
 		
@@ -116,7 +116,7 @@ public class ConfigureVisitsFormController {
 		model.addAttribute(VISIT_ENCOUNTER_HANDLER_FORM, form);
 	}
 	
-	@RequestMapping(value = CONFIGURE_VISITS_PATH, method = RequestMethod.POST)
+	@PostMapping(value = CONFIGURE_VISITS_PATH)
 	public void manageEncounterVisitHandlers(@ModelAttribute(VISIT_ENCOUNTER_HANDLER_FORM) ConfigureVisitsForm form,
 	        Errors errors, HttpServletRequest request) {
 		Context.requirePrivilege(PrivilegeConstants.CONFIGURE_VISITS);

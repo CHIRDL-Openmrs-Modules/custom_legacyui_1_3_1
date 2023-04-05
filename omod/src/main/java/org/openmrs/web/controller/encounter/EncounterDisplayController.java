@@ -22,8 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Field;
@@ -39,8 +37,6 @@ import org.springframework.web.servlet.mvc.Controller;
  * for this display popup is located at /web/WEB-INF/view/encounters/encounterDisplay.jsp
  */
 public class EncounterDisplayController implements Controller {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * The page that obs are put on if they are not given a page number in their associated

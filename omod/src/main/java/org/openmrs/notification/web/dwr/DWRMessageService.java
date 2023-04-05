@@ -13,9 +13,9 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.directwebremoting.WebContextFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.MessageService;
@@ -23,7 +23,7 @@ import org.openmrs.notification.NotificationConstants;
 
 public class DWRMessageService {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(DWRMessageService.class);
 	
 	public boolean sendFeedback(String sender, String subject, String content) {
 		
@@ -77,7 +77,7 @@ public class DWRMessageService {
 				objectList.add("Message has been sent successfully.");
 			}
 			catch (Exception e) {
-				log.error(e);
+				log.error("Error sending message: ", e);
 				objectList.add("Error while attempting to send message: " + e.getMessage());
 			}
 		}

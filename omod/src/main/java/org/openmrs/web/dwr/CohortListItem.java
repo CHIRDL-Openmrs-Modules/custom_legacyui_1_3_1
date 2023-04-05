@@ -9,18 +9,14 @@
  */
 package org.openmrs.web.dwr;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.Cohort;
-
 import java.util.Arrays;
+
+import org.openmrs.Cohort;
 
 /**
  * A cohort, including list its member list, for use with DWR.
  */
 public class CohortListItem {
-	
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer cohortId;
 	

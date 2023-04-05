@@ -18,9 +18,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -52,7 +52,7 @@ import org.springframework.validation.ObjectError;
  */
 public class DWRConceptService {
 	
-	protected static final Log log = LogFactory.getLog(DWRConceptService.class);
+    private static final Logger log = LoggerFactory.getLogger(DWRConceptService.class);
 	
 	/**
 	 * Gets a list of conceptListItems matching the given arguments
@@ -117,7 +117,7 @@ public class DWRConceptService {
 			for (Locale loc : searchLocales) {
 				searchLocalesString.append(loc.toString() + " ");
 			}
-			log.debug("searching locales: " + searchLocalesString);
+			log.debug("searching locales: {}", searchLocalesString);
 		}
 		
 		if (includeClassNames == null) {
@@ -218,7 +218,7 @@ public class DWRConceptService {
 			}
 		}
 		catch (Exception e) {
-			log.error("Error while finding concepts + " + e.getMessage(), e);
+			log.error("Error while finding concepts {} ", e.getMessage(), e);
 			objectList.add(Context.getMessageSourceService().getMessage("Concept.search.error") + " - " + e.getMessage());
 		}
 		
@@ -538,7 +538,7 @@ public class DWRConceptService {
 			for (Locale loc : searchLocales) {
 				searchLocalesString.append(loc.toString() + " ");
 			}
-			log.debug("searching locales: " + searchLocalesString);
+			log.debug("searching locales: {}", searchLocalesString);
 		}
 		
 		if (includeClassNames == null) {

@@ -13,9 +13,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -25,7 +25,7 @@ import org.openmrs.util.PrivilegeConstants;
 
 public class DWRAlertService {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(DWRAlertService.class);
 	
 	/**
 	 * Calls the corresponding AlertService.getAlertsByUser(null) method to get alerts for the
@@ -81,7 +81,7 @@ public class DWRAlertService {
 			
 		}
 		catch (Exception e) {
-			log.error("Error while marking alert '" + alertId + "' as read", e);
+			log.error("Error while marking alert '{}' as read", alertId, e);
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);

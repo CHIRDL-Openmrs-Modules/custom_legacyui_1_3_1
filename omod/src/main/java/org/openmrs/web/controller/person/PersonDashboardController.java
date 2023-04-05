@@ -9,27 +9,35 @@
  */
 package org.openmrs.web.controller.person;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  *
  */
-public class PersonDashboardController extends SimpleFormController {
-	
-	protected final Log log = LogFactory.getLog(getClass());
-	
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+@Controller
+@RequestMapping(value = "personDashboard.form")
+public class PersonDashboardController {
+
+	private static final String FORM_VIEW = "/personDashboardForm";
+	private static final String SUBMIT_VIEW = "personDashboard.form";
+
+	@ModelAttribute("person")
+	protected Object formBackingObject(HttpServletRequest request) {
 		if (!Context.isAuthenticated()) {
 			return new Person();
-		} else {
-			return Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("personId")));
 		}
+		return Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("personId")));
+	}
+
+	@GetMapping
+	public String initForm() {
+		return FORM_VIEW;
 	}
 }

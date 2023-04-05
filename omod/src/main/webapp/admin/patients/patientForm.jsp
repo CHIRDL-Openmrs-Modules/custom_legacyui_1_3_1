@@ -351,7 +351,7 @@
 		<spring:hasBindErrors name="patient.identifiers">
 			<span class="error">${error.errorMessage}</span><br/>
 		</spring:hasBindErrors>
-		<div id="pIds">
+        <div id="pIds">
 			<div class="tabBar" id="pIdTabBar">
 				<c:forEach var="identifier" items="${patient.identifiers}" varStatus="varStatus">
 					<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifier${varStatus.index}" <c:if test="${identifier.voided}">class='voided'</c:if>><span><c:out value="${identifier.identifierType.name}" /></span>&nbsp;</a>
@@ -376,7 +376,6 @@
 				</div>
 			</div>
 		</div>
-
 	<br style="clear: both" />
 
 	<h3><openmrs:message code="Patient.names"/></h3>
@@ -435,8 +434,8 @@
 				</c:forEach>
 				<div id="addressData" class="tabBox">
 					<spring:nestedPath path="emptyAddress">
-						<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true|layoutHideVoidOption=true|isNew=true" />
-						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<openmrs:message code="Patient.removeThisAddress"/>'/><br/> --> <br/>
+					    <openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true|layoutHideVoidOption=true|isNew=true" />
+						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<openmrs:message code="Patient.removeThisAddress"/>'/><br/> --> <br/>	
 					</spring:nestedPath>
 				</div>
 			</div>

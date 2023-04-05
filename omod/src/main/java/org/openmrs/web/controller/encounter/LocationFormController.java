@@ -10,17 +10,11 @@
 package org.openmrs.web.controller.encounter;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
 import org.openmrs.LocationTag;
@@ -30,20 +24,35 @@ import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.LocationTagEditor;
 import org.openmrs.util.MetadataComparator;
+import org.openmrs.validator.LocationValidator;
+import org.openmrs.web.ShowFormUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.attribute.WebAttributeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class LocationFormController extends SimpleFormController {
+@Controller
+@RequestMapping(value = "admin/locations/location.form")
+public class LocationFormController {
+	
+	private static final String FORM_VIEW = "/module/legacyui/admin/locations/locationForm";
+	private static final String SUBMIT_VIEW = "location.list";
 	
 	/** Logger for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
+    private static final Logger log = LoggerFactory.getLogger(LocationFormController.class);
 	
 	/**
 	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
@@ -52,8 +61,8 @@ public class LocationFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 		binder.registerCustomEditor(Location.class, new LocationEditor());
 		binder.registerCustomEditor(LocationTag.class, new LocationTagEditor());
@@ -62,14 +71,13 @@ public class LocationFormController extends SimpleFormController {
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
-	@Override
-	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
-		Map<String, Object> ret = new HashMap<String, Object>();
+    @GetMapping
+    public String initForm(ModelMap ret) throws Exception {
 		List<LocationTag> tags = Context.getLocationService().getAllLocationTags();
 		Collections.sort(tags, new MetadataComparator(Context.getLocale()));
 		ret.put("locationTags", tags);
 		ret.put("attributeTypes", Context.getLocationService().getAllLocationAttributeTypes());
-		return ret;
+		return FORM_VIEW;
 	}
 	
 	/**
@@ -82,20 +90,22 @@ public class LocationFormController extends SimpleFormController {
 	 * @should retire location
 	 * @should not retire location if reason is empty
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
+    @PostMapping
+    protected ModelAndView processSubmit(HttpServletRequest request, @ModelAttribute("location") Location location,
+            BindingResult errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
-		String view = getFormView();
+		String view = FORM_VIEW;
 		if (Context.isAuthenticated()) {
 			try {
-				Location location = (Location) obj;
 				WebAttributeUtil.handleSubmittedAttributesForType(location, errors, LocationAttribute.class, request,
 				    Context.getLocationService().getAllLocationAttributeTypes());
 				
+				new LocationValidator().validate(location, errors);
+				
 				if (errors.hasErrors()) {
-					return showForm(request, response, errors);
+					return ShowFormUtil.showForm(errors, FORM_VIEW);
 				}
 				
 				LocationService locationService = Context.getLocationService();
@@ -127,17 +137,17 @@ public class LocationFormController extends SimpleFormController {
 				}
 			}
 			catch (APIException e) {
-				log.error("Error while saving location: " + obj, e);
+				log.error("Error while saving location: {}", location, e);
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
-				return showForm(request, response, errors);
+				return ShowFormUtil.showForm(errors, FORM_VIEW);
 			}
 			
-			view = getSuccessView();
+			view = SUBMIT_VIEW;
 		}
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-	
+   
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
@@ -145,8 +155,8 @@ public class LocationFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 * @should return valid location given valid locationId
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
+    @ModelAttribute("location")
+    protected Object formBackingObject(HttpServletRequest request) {		
 		Location location = null;
 		
 		if (Context.isAuthenticated()) {

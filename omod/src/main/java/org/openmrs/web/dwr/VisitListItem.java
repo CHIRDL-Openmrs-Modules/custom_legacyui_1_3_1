@@ -11,8 +11,6 @@ package org.openmrs.web.dwr;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonName;
 import org.openmrs.Visit;
 import org.openmrs.util.Format;
@@ -23,8 +21,6 @@ import org.openmrs.util.Format;
  * @since 1.9
  */
 public class VisitListItem {
-	
-	protected static final Log log = LogFactory.getLog(VisitListItem.class);
 	
 	private Integer visitId;
 	

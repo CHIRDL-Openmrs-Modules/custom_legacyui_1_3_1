@@ -9,6 +9,8 @@
  */
 package org.openmrs.web.controller.concept;
 
+import java.util.Collection;
+
 import org.openmrs.ConceptAttributeType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
@@ -18,13 +20,11 @@ import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
-
-import java.util.Collection;
 
 @Controller
 public class ConceptAttributeTypeFormController {
@@ -61,11 +61,11 @@ public class ConceptAttributeTypeFormController {
     /**
      * Show existing (or instantiate blank)
      */
-    @RequestMapping(value = "/admin/concepts/conceptAttributeType", method = RequestMethod.GET)
+    @GetMapping(value = "/admin/concepts/conceptAttributeType")
     public void showForm() {
     }
 
-    @RequestMapping(value = "/admin/concepts/conceptAttributeType", method = RequestMethod.POST)
+    @PostMapping(value = "/admin/concepts/conceptAttributeType")
     public String handleSubmit(WebRequest request, @ModelAttribute("attributeType") ConceptAttributeType conceptAttributeType,
                                BindingResult errors) {
         if(Context.isAuthenticated()) {

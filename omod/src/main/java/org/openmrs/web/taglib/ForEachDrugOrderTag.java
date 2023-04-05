@@ -23,9 +23,9 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.ReverseComparator;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.DrugOrder;
 
 public class ForEachDrugOrderTag extends BodyTagSupport {
@@ -34,7 +34,7 @@ public class ForEachDrugOrderTag extends BodyTagSupport {
 	
 	private static final String defaultSortBy = "dateCreated";
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(ForEachDrugOrderTag.class);
 	
 	int count = 0;
 	
@@ -53,7 +53,7 @@ public class ForEachDrugOrderTag extends BodyTagSupport {
 	
 	public int doStartTag() {
 		if (drugOrders == null || drugOrders.isEmpty()) {
-			log.error("ForEachDrugOrderTag skipping body due to drugOrders param being null or empty: " + drugOrders);
+			log.error("ForEachDrugOrderTag skipping body due to drugOrders param being null or empty: {}", drugOrders);
 			return SKIP_BODY;
 		}
 		// First retrieve all encounters matching the passed concept id, if provided.
@@ -66,7 +66,7 @@ public class ForEachDrugOrderTag extends BodyTagSupport {
 				matchingDrugOrders.add(d);
 			}
 		}
-		log.debug("ForEachDrugOrderTag found " + matchingDrugOrders.size() + " drug orders");
+		log.debug("ForEachDrugOrderTag found {} drug orders", this.matchingDrugOrders.size());
 		
 		// Next, sort the encounters
 		if (StringUtils.isEmpty(sortBy)) {

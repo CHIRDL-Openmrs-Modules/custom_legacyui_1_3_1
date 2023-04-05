@@ -9,16 +9,21 @@
  */
 package org.openmrs.web.controller.patient;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * This controller is left around only so that a message can be displayed where the old Manage Tribe
  * link was. This controller will be removed in the next version.
  */
-public class TribeFormController extends SimpleFormController {
+@Controller
+@RequestMapping(value = "admin/patients/tribe.list")
+public class TribeFormController {
+	
+	private static final String FORM_VIEW = "/module/legacyui/admin/patients/tribeList";
+	private static final String SUBMIT_VIEW = "tribe.list";
 	
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
@@ -26,8 +31,13 @@ public class TribeFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@ModelAttribute("tribeForm")
+	protected Object formBackingObject() {
 		return new Object();
 	}
 	
+	@GetMapping
+	public String initForm() {
+		return FORM_VIEW;
+	}
 }

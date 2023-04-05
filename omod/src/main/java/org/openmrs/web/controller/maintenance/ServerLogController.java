@@ -10,20 +10,16 @@
 package org.openmrs.web.controller.maintenance;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.openmrs.util.MemoryAppender;
-import org.springframework.validation.BindException;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
@@ -32,37 +28,46 @@ import org.springframework.web.servlet.view.RedirectView;
  * 
  * @see org.openmrs.util.MemoryAppender
  */
-public class ServerLogController extends SimpleFormController {
+@Controller
+@RequestMapping(value = "admin/maintenance/serverLog.form")
+public class ServerLogController {
 
-	protected final Log log = LogFactory.getLog(getClass());
+	private static final String FORM_VIEW = "/module/legacyui/admin/maintenance/serverLog";
+	private static final String SUBMIT_VIEW = "serverLog.form";
 
 	/**
-	 * The onSubmit function receives the form/command object that was modified
-	 * by the input form and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by
+	 * the input form and saves it to the db
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-			BindException errors) throws Exception {
-		return new ModelAndView(new RedirectView(getSuccessView()));
+	@PostMapping
+	protected ModelAndView processSubmit() throws Exception {
+		return new ModelAndView(new RedirectView(SUBMIT_VIEW));
 	}
 
 	/**
-	 * This is called prior to displaying a form for the first time. It tells
-	 * Spring the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring
+	 * the form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected List<String> formBackingObject(HttpServletRequest request) throws ServletException {
+	@ModelAttribute("logLines")
+	protected Object formBackingObject() {
 		Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
 		if (appender instanceof MemoryAppender) {
 			MemoryAppender memoryAppender = (MemoryAppender) appender;
 			return memoryAppender.getLogLines();
 
-		} else {
-			return new ArrayList<String>();
 		}
+		return new ArrayList<String>();
 	}
+
+	@GetMapping
+	public String initForm() throws Exception {
+		return FORM_VIEW;
+	}
+
 }

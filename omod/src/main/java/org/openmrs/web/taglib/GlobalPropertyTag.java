@@ -14,8 +14,8 @@ import java.util.Collections;
 
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
@@ -26,7 +26,7 @@ public class GlobalPropertyTag extends TagSupport {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private final Log log = LogFactory.getLog(getClass());
+	private static final Logger log = LoggerFactory.getLogger(GlobalPropertyTag.class);
 	
 	private String key = "";
 	

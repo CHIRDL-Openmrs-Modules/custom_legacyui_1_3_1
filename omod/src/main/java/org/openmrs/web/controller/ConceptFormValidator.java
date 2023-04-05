@@ -13,9 +13,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.api.context.Context;
@@ -27,9 +25,6 @@ import org.springframework.validation.Validator;
  * The web validator for the concept editing form
  */
 public class ConceptFormValidator implements Validator {
-	
-	/** Log for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * Determines if the command object being submitted is a valid type
@@ -55,6 +50,7 @@ public class ConceptFormValidator implements Validator {
 		} else {
 			// validate the concept term mappings
 			for (int x = 0; x < backingObject.getConceptMappings().size(); x++) {
+				
 				ConceptMap map = backingObject.getConceptMappings().get(x);
 				//this mapping has been removed or is new with no term selected, so ignore it
 				if (map.getConceptReferenceTerm().getConceptReferenceTermId() == null) {
