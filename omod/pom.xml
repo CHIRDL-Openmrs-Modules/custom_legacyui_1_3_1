@@ -122,6 +122,12 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
                 <version>1.10.0</version>
+                <exclusions>
+			      <exclusion>
+			        <artifactId>commons-lang3</artifactId>
+				    <groupId>org.apache.commons</groupId>
+			      </exclusion>
+		        </exclusions>
             </dependency>
 
 	</dependencies>
