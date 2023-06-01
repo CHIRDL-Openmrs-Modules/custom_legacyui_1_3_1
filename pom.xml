@@ -108,6 +108,12 @@
                 <artifactId>jsp-api</artifactId>
                 <version>2.0</version>
                 <scope>provided</scope>
+                <exclusions>
+					<exclusion>
+						<artifactId>commons-lang3</artifactId>
+						<groupId>org.apache.commons</groupId>
+					</exclusion>
+				</exclusions>
             </dependency>
 
             <dependency>
