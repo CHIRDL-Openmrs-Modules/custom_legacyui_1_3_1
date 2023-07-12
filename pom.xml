@@ -238,9 +238,9 @@
 
     <repositories>
         <repository>
-            <id>openmrs-repo</id>
-            <name>OpenMRS Nexus Repository</name>
-            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+            <id>chirdl-repo</id>
+            <name>CHIRDL Nexus Repository</name>
+            <url>https://iu-ota-icechip.ads.iu.edu:8091/repository/maven-public/</url>
         </repository>
     </repositories>
 
