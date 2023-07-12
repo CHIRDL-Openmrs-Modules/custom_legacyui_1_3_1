@@ -19,15 +19,12 @@ import java.util.Map;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,15 +37,6 @@ public class HierarchyController {
 	@RequestMapping("/admin/locations/hierarchy")
 	public void showHierarchy(ModelMap model) throws IOException {
 		model.addAttribute("json", getHierarchyAsJson());
-		model.addAttribute("locationWidgetType", Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE, "default"));
-	}
-	
-	@RequestMapping("/admin/locations/changeLocationWidgetType")
-	public String setWidgetType(@RequestParam("locationWidgetType") String widgetType) {
-		Context.getAdministrationService().saveGlobalProperty(
-		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE, widgetType));
-		return "redirect:hierarchy.list";
 	}
 	
 	/**
@@ -59,7 +47,7 @@ public class HierarchyController {
 	 */
 	private String getHierarchyAsJson() throws IOException {
 		// TODO fetch all locations at once to avoid n+1 lazy-loads
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> list = new ArrayList<>();
 		for (Location loc : Context.getLocationService().getAllLocations()) {
 			if (loc.getParentLocation() == null) {
 				list.add(toJsonHelper(loc));
@@ -81,9 +69,9 @@ public class HierarchyController {
 	 * @return
 	 */
 	private Map<String, Object> toJsonHelper(Location loc) {
-		Map<String, Object> ret = new LinkedHashMap<String, Object>();
+		Map<String, Object> ret = new LinkedHashMap<>();
 		StringBuilder sb = new StringBuilder(getName(loc));
-		if (loc.getTags() != null && loc.getTags().size() > 0) {
+		if (loc.getTags() != null && !loc.getTags().isEmpty()) {
 			sb.append(" (");
 			for (Iterator<LocationTag> i = loc.getTags().iterator(); i.hasNext();) {
 				LocationTag t = i.next();
@@ -94,9 +82,10 @@ public class HierarchyController {
 			}
 			sb.append(")");
 		}
-		ret.put("data", sb.toString());
-		if (loc.getChildLocations() != null && loc.getChildLocations().size() > 0) {
-			List<Map<String, Object>> children = new ArrayList<Map<String, Object>>();
+		
+		ret.put("text", sb.toString());
+		if ( loc.getChildLocations() != null && !loc.getChildLocations().isEmpty()) {
+			List<Map<String, Object>> children = new ArrayList<>();
 			for (Location child : loc.getChildLocations()) {
 				children.add(toJsonHelper(child));
 			}
@@ -108,7 +97,7 @@ public class HierarchyController {
 	private String getName(BaseOpenmrsMetadata element) {
 		String name = StringEscapeUtils.escapeHtml4(element.getName());
 		name = StringEscapeUtils.escapeEcmaScript(name);
-		return element.isRetired() ? "<strike>" + name + "</strike>" : name;
+		return element.getRetired() ? "<strike>" + name + "</strike>" : name;
 	}
 	
 }

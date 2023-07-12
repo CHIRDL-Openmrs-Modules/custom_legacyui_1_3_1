@@ -14,8 +14,7 @@
 <%@ attribute name="useOnKeyDown" required="false" %> <%-- deprecated --%>
 
 <openmrs:htmlInclude file="/dwr/interface/DWRPersonService.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.ui.autocomplete.autoSelect.js" />
+ <openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" /> 
 
 <style>
 .not-found-link {

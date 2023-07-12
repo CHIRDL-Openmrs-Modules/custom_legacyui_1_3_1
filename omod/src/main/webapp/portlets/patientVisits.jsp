@@ -5,8 +5,7 @@
 <openmrs:htmlInclude
 	file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
 
-<openmrs:htmlInclude
-	file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
+<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.min.js" />
 <link
 	href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css"
 	type="text/css" rel="stylesheet" />

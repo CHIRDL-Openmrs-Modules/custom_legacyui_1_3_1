@@ -28,12 +28,13 @@
 	</c:if>
 </c:url>
 
-<openmrs:htmlInclude file="/scripts/jquery/jsTree/jquery.tree.min.js" />
+<openmrs:htmlInclude file="/scripts/jquery/jsTree/jstree.min.js" /> 
 <openmrs:htmlInclude file="/scripts/jquery/jsTree/themes/classic/style.css" />
 
 <script type="text/javascript">
 $j(document).ready(function() {
-	$j('#${id}').tree({
+    var $j = jQuery.noConflict();
+	$j('#${id}').jstree({
 			data: {
 				type: "json",
 				opts: {

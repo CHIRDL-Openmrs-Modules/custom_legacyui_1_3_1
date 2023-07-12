@@ -529,7 +529,12 @@ function AutoComplete(id, callback, opts) {
  		callback(request.term, response);
  	});
  	
- 	jq.autocomplete(opts);
+ 	jq.autocomplete(opts).data("ui-autocomplete")._renderItem = function (ul, item) {
+         return $j("<li></li>")
+             .data("item.autocomplete", item)
+             .append("<a>" + item.label + "</a>")
+             .appendTo(ul);
+     };
 
     //Add the placeholder text to the Search field
     if(opts.placeholder){
