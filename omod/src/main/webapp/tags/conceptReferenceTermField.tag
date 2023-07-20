@@ -7,7 +7,7 @@
 <%@ attribute name="callback" required="false" %> <%-- gets the relType, ConceptReferenceTermListItem sent back --%>
 
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
+<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" /> 
 
 <c:if test="${empty formFieldId}">
 	<c:set var="formFieldId" value="${formFieldName}_id" />

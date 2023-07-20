@@ -11,7 +11,6 @@
 
 <openmrs:htmlInclude file="/dwr/interface/DWRLocationService.js" />
 <openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.ui.autocomplete.autoSelect.js" />
 
 <c:if test="${empty formFieldId}">
 	<c:set var="formFieldId" value="${formFieldName}_id" />

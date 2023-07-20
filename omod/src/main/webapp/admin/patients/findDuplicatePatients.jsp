@@ -209,7 +209,7 @@
 				modal: true,
 				open: function(a, b) { $j('#mergePatientPopupLoading').show(); }
 		});
-		$j("#mergePatientPopupIframe").load(function() { $j('#mergePatientPopupLoading').hide(); });
+		$j("#mergePatientPopupIframe").on( "load", function() { $j('#mergePatientPopupLoading').hide(); } );
 	});
 
 	function showMergePatientPopup() {

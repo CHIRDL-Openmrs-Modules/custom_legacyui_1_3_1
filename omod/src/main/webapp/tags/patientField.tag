@@ -11,8 +11,8 @@
 <%@ attribute name="allowSearch" required="false" %> <%-- deprecated --%>
 
 <openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.ui.autocomplete.autoSelect.js" />
+<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" /> 
+
 
 <c:if test="${empty formFieldId}">
 	<c:set var="formFieldId" value="${formFieldName}_id" />
@@ -50,7 +50,13 @@
 			jquerySelectEscaped("${formFieldId}").val("${initialValue}");
 			DWRPatientService.getPatient("${initialValue}", function(patient) {
 				jquerySelectEscaped("${displayNameInputId}").val(patient.personName);
-				jquerySelectEscaped("${displayNameInputId}").autocomplete("option", "initialValue", patient.personName);
+				jquerySelectEscaped("${displayNameInputId}").autocomplete("option", "initialValue", patient.personName)
+				.data("ui-autocomplete")._renderItem = function (ul, item) {
+			         return $j("<li></li>")
+		             .data("item.autocomplete", item)
+		             .append("<a>" + item.label + "</a>")
+		             .appendTo(ul);
+		     };
 				<c:if test="${not empty callback}">
 					${callback}("${formFieldName}", patient, true);
 				</c:if>

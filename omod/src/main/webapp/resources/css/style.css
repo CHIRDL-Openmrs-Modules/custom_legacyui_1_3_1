@@ -2,3 +2,21 @@
 	This file is for customization purposes.  It is overwritten if/when 
 	an implementation adds custom.style.css.file=C:\\style.css to the runtime properties
 */
+
+.ui-dialog { z-index: 1000 !important ;}
+
+ table.dataTable thead .sorting {
+  background-image: url("../images/sort_both.png") !important;
+}
+table.dataTable thead .sorting_asc {
+  background-image: url("../images/sort_asc.png") !important;
+}
+table.dataTable thead .sorting_desc {
+  background-image: url("../images/sort_desc.png") !important;
+}
+table.dataTable thead .sorting_asc_disabled {
+  background-image: url("../images/sort_asc_disabled.png") !important;
+}
+table.dataTable thead .sorting_desc_disabled {
+  background-image: url("../images/sort_desc_disabled.png") !important;
+}

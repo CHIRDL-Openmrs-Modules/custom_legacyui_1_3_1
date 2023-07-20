@@ -8,7 +8,7 @@
 <%@ include file="localHeader.jsp"%>
 
 <script type="text/javascript">
-	var $j = jQuery.noConflict();
+
 	$j(document).ready(function() {
 		toggleVisitEncounterHandler();
 		
