@@ -9,6 +9,7 @@
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery-ui/css/jquery-ui.min.css" />
+<openmrs:htmlInclude file="/moduleResources/legacyui/css/moduleList.css" />
 
 <script type="text/javascript">
 	var oTable;

@@ -1,0 +1,4 @@
+.ui-dialog .ui-dialog-titlebar-close span {
+    display: inline !important;
+    margin: -8px !important;
+}
